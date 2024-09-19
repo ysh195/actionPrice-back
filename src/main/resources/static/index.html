@@ -591,7 +591,7 @@
       </div>
     </section>
 
-
+    <!-- py-5 : 위/아래 패딩값 설정. 숫자가 높을수록 패딩값 커짐 -->
     <section class="py-5"> <!-- 상세 상품 목록 : 시작 -->
       <!-- container-fluid : 요소의 갯수와 크기에 따라 동적으로 사이즈가 조절됨 -->
       <div class="container-fluid">
@@ -1337,23 +1337,36 @@
       </div>
     </section> <!-- 상세 상품 목록 : 종료 -->
 
-    <section class="py-5">
+    <!-- py-5 : 위/아래 패딩값 설정. 숫자가 높을수록 패딩값 커짐 -->
+    <section class="py-5"> <!-- 상품 큰 배너 목록 : 시작-->
+      <!-- container-fluid : 요소의 갯수와 크기에 따라 동적으로 사이즈가 조절됨 -->
       <div class="container-fluid">
+        <!-- row : 동적 사이즈 조절 및 요소의 자동 줄바꿈이 됨 -->
         <div class="row">
           
           <div class="col-md-6">
+            <!-- banner-ad : 위치가 상대적으로 조절되면서 html 밖으로 삐져 나오는 건 숨김 처리 -->
+            <!-- bg-danger : 배경색깔 자동조절. 임포턴트 붙음. | mb-3 : 아래 마진 조절. 숫자 클수록 마진이 큼 -->
+            <!-- 배너 이미지1 : 시작 -->
             <div class="banner-ad bg-danger mb-3" style="background: url('images/ad-image-3.png');background-repeat: no-repeat;background-position: right bottom;">
+              <!-- banner-content : 배너 문구 스타일 | p-5 : 전체 패딩 조절. 숫자가 클수록 패딩이 큼 -->
               <div class="banner-content p-5">
 
+                <!-- categories : 배너 내부 카테고리 폰트컬러 설정. | fw-bold : 텍스트를 굵게 강조  -->
+                <!-- fs-3 : 폰트 사이즈 동적 조절 | text-primary : 텍스트 투명도와 폰트컬러 설정 -->
                 <div class="categories text-primary fs-3 fw-bold">Upto 25% Off</div>
+                <!-- banner-title : 배너 타이틀 문구 스타일 -->
                 <h3 class="banner-title">Luxa Dark Chocolate</h3>
-                <p>Very tasty & creamy vanilla flavour creamy muffins.</p>
-                <a href="#" class="btn btn-dark text-uppercase">Show Now</a>
+                <p>Very tasty & creamy vanilla flavour creamy muffins.</p> <!-- 배너 내부 상세 문구 -->
+                <a href="#" class="btn btn-dark text-uppercase">Show Now</a> <!-- 배너 상품 링크로 이동하기 버튼 -->
 
               </div>
             
             </div>
           </div>
+          <!-- 배너 이미지1 : 종료 -->
+
+          <!-- 배너 이미지2 : 시작 -->
           <div class="col-md-6">
             <div class="banner-ad bg-info" style="background: url('images/ad-image-4.png');background-repeat: no-repeat;background-position: right bottom;">
               <div class="banner-content p-5">
@@ -1367,23 +1380,28 @@
             
             </div>
           </div>
+          <!-- 배너 이미지2 : 종료 -->
              
         </div>
       </div>
-    </section>
+    </section> <!-- 상품 큰 배너 목록 : 종료 -->
 
-    <section class="py-5 overflow-hidden">
+    <!-- py-5 : 위/아래 패딩값 설정. 숫자가 높을수록 패딩값 커짐 | overflow-hidden : 이름 그대로 html을 벗어나는 건 숨김 -->
+    <section class="py-5 overflow-hidden"> <!-- 베스트셀링프로덕트 슬라이드 : 시작 -->
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
 
+            <!-- my-5 : 위/아래 마진 설정 -->
             <div class="section-header d-flex flex-wrap justify-content-between my-5">
               
-              <h2 class="section-title">Best selling products</h2>
+              <h2 class="section-title">Best selling products</h2> <!-- 슬라이드 제목 -->
 
-              <div class="d-flex align-items-center">
+              <div class="d-flex align-items-center"> <!-- 슬라이드 버튼 목록 -->
                 <a href="#" class="btn-link text-decoration-none">View All Categories →</a>
                 <div class="swiper-buttons">
+                  <!-- swiper-prev & swiper-next : 버튼 스타일 설정 및 마우스를 올리면 hover로 다른 색깔이 나오는 애니메이션 -->
+                  <!-- products-carousel-prev & products-carousel-next : 자바스크립트 타겟 설정용 클래스 -->
                   <button class="swiper-prev products-carousel-prev btn btn-primary">❮</button>
                   <button class="swiper-next products-carousel-next btn btn-primary">❯</button>
                 </div>  
@@ -1395,10 +1413,13 @@
         <div class="row">
           <div class="col-md-12">
 
-            <div class="products-carousel swiper">
+            <!-- products-carousel : 자바스크립트 타겟 설정용 클래스 -->
+            <!-- swiper : 좌우 마진 자동 조절, 위치 상대적으로 조절, html을 벗어나는 요소 숨기기, 리스트 스타일 지우기, z-index: 1(맨 앞으로 오기) -->
+            <div class="products-carousel swiper"> <!-- 슬라이드 내 상품 목록 : 시작 -->
+              <!-- swiper-wrapper : 넓이 100%, 높이 100%, 위치 상대적, z-index:1, 사이즈가 요소의 크기를 따름, 무슨 애니메이션이 있음 -->
               <div class="swiper-wrapper">
-                
-                <div class="product-item swiper-slide">
+                <!-- swiper-slide : 애니메이션 효과 | product-item : 상품 정보 양식-->
+                <div class="product-item swiper-slide"> <!-- 상품 상세 정보 : 시작 --> <!-- 딱 위의 것 그대로임 -->
                   <span class="badge bg-success position-absolute m-3">-15%</span>
                   <a href="#" class="btn-wishlist"><svg width="24" height="24"><use xlink:href="#heart"></use></svg></a>
                   <figure>
@@ -1425,9 +1446,9 @@
                     </div>
                     <a href="#" class="nav-link">Add to Cart <iconify-icon icon="uil:shopping-cart"></a>
                   </div>
-                </div>
+                </div> <!-- 상품 상세 정보 : 종료 -->
 
-                <div class="product-item swiper-slide">
+                <div class="product-item swiper-slide"> <!-- 상품 상세 정보 : 시작 -->
                   <span class="badge bg-success position-absolute m-3">-15%</span>
                   <a href="#" class="btn-wishlist"><svg width="24" height="24"><use xlink:href="#heart"></use></svg></a>
                   <figure>
@@ -1454,9 +1475,9 @@
                     </div>
                     <a href="#" class="nav-link">Add to Cart <iconify-icon icon="uil:shopping-cart"></a>
                   </div>
-                </div>
+                </div> <!-- 상품 상세 정보 : 종료 -->
 
-                <div class="product-item swiper-slide">
+                <div class="product-item swiper-slide"> <!-- 상품 상세 정보 : 시작 -->
                   <span class="badge bg-success position-absolute m-3">-15%</span>
                   <a href="#" class="btn-wishlist"><svg width="24" height="24"><use xlink:href="#heart"></use></svg></a>
                   <figure>
@@ -1483,9 +1504,9 @@
                     </div>
                     <a href="#" class="nav-link">Add to Cart <iconify-icon icon="uil:shopping-cart"></a>
                   </div>
-                </div>
+                </div> <!-- 상품 상세 정보 : 종료 -->
 
-                <div class="product-item swiper-slide">
+                <div class="product-item swiper-slide"> <!-- 상품 상세 정보 : 시작 -->
                   <span class="badge bg-success position-absolute m-3">-15%</span>
                   <a href="#" class="btn-wishlist"><svg width="24" height="24"><use xlink:href="#heart"></use></svg></a>
                   <figure>
@@ -1626,27 +1647,30 @@
                 </div>
                 
               </div>
-            </div>
+            </div> <!-- 슬라이드 내 상품 목록 : 종료 -->
             <!-- / products-carousel -->
 
           </div>
         </div>
       </div>
-    </section>
+    </section> <!-- 베스트셀링프로덕트 슬라이드 : 종료 -->
 
-    <section class="py-5">
+    <section class="py-5"> <!-- 구독하기 상자 : 시작 -->
       <div class="container-fluid">
 
+        <!-- 상자 배경 -->
         <div class="bg-secondary py-5 my-5 rounded-5" style="background: url('images/bg-leaves-img-pattern.png') no-repeat;">
           <div class="container my-5">
             <div class="row">
               <div class="col-md-6 p-5">
-                <div class="section-header">
+                <div class="section-header"> <!-- 상자 내 헤더 문구. 강조됨 -->
                   <h2 class="section-title display-4">Get <span class="text-primary">25% Discount</span> on your first purchase</h2>
                 </div>
+                <!-- 상자 내 상세 문구 -->
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Dictumst amet, metus, sit massa posuere maecenas. At tellus ut nunc amet vel egestas.</p>
               </div>
-              <div class="col-md-6 p-5">
+              <div class="col-md-6 p-5"> <!-- 상자 내 입력폼 : 시작 -->
+                <!-- 이런 입력폼의 부트스트랩 스타일은 아주 많이 봤으니 따로 기록하지 않겠음 -->
                 <form>
                   <div class="mb-3">
                     <label for="name" class="form-label">Name</label>
@@ -1667,7 +1691,7 @@
                   </div>
                 </form>
                 
-              </div>
+              </div> <!-- 상자 내 입력폼 : 종료 -->
               
             </div>
             
@@ -1675,9 +1699,9 @@
         </div>
         
       </div>
-    </section>
+    </section> <!-- 구독하기 상자 : 종료 -->
 
-    <section class="py-5 overflow-hidden">
+    <section class="py-5 overflow-hidden"> <!-- 모스트파퓰러프로덕트 슬라이드 : 시작 --> <!-- 위와 동일함 -->
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
@@ -1933,9 +1957,9 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> <!-- 모스트파퓰러프로덕트 슬라이드 : 종료 -->
 
-    <section class="py-5 overflow-hidden">
+    <section class="py-5 overflow-hidden"> <!-- 저스트어라이브드프로덕트 슬라이드 : 시작 -->
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
@@ -2191,9 +2215,9 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> <!-- 저스트어라이브드프로덕트 슬라이드 : 종료 -->
 
-    <section id="latest-blog" class="py-5">
+    <section id="latest-blog" class="py-5"> <!-- 블로그포스팅리스트 : 시작 -->
       <div class="container-fluid">
         <div class="row">
           <div class="section-header d-flex align-items-center justify-content-between my-5">
@@ -2269,9 +2293,9 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> <!-- 블로그포스팅리스트 : 종료 -->
 
-    <section class="py-5 my-5">
+    <section class="py-5 my-5"> <!-- 앱 소개 상자 : 시작 -->
       <div class="container-fluid">
 
         <div class="bg-warning py-5 rounded-5" style="background-image: url('images/bg-pattern-2.png') no-repeat;">
@@ -2293,9 +2317,9 @@
         </div>
         
       </div>
-    </section>
+    </section> <!-- 앱 소개 상자 : 종료 -->
 
-    <section class="py-5">
+    <section class="py-5"> <!-- 태그 모음 : 시작 -->
       <div class="container-fluid">
         <h2 class="my-5">People are also looking for</h2>
         <a href="#" class="btn btn-warning me-2 mb-2">Blue diamon almonds</a>
@@ -2317,9 +2341,9 @@
         <a href="#" class="btn btn-warning me-2 mb-2">Chao Cheese Creamy</a>
         <a href="#" class="btn btn-warning me-2 mb-2">Chicken meatballs</a>
       </div>
-    </section>
+    </section> <!-- 태그 모음 : 종료 -->
 
-    <section class="py-5">
+    <section class="py-5"> <!-- 품질보증 문구 : 시작 -->
       <div class="container-fluid">
         <div class="row row-cols-1 row-cols-sm-3 row-cols-lg-5">
           <div class="col">
@@ -2399,9 +2423,10 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> <!-- 품질보증 문구 : 종료 -->
 
-    <footer class="py-5">
+
+    <footer class="py-5"> <!-- footer : 시작 -->
       <div class="container-fluid">
         <div class="row">
 
@@ -2528,7 +2553,7 @@
           
         </div>
       </div>
-    </footer>
+    </footer> <!-- footer : 종료 -->
     <div id="footer-bottom">
       <div class="container-fluid">
         <div class="row">
