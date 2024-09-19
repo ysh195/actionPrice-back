@@ -592,58 +592,87 @@
     </section>
 
 
-    <section class="py-5">
+    <section class="py-5"> <!-- 상세 상품 목록 : 시작 -->
+      <!-- container-fluid : 요소의 갯수와 크기에 따라 동적으로 사이즈가 조절됨 -->
       <div class="container-fluid">
-        
+        <!-- row : 동적 사이즈 조절 및 요소의 자동 줄바꿈이 됨 -->
+        <!-- row 등은 스프링부트 mini css. 기본적으로 flex : 0 0 으로 정해진 크기를 벗어나지 않게 했고, 맨 뒤에 있는 숫자가 부모 크기를 100%라고 했을 때 그것을 나누는 수 -->
+        <!-- 예를 들어, row-cols-md-3는 부모의 크기에 비해 33%의 크기를 갖는다는 의미 -->
+        <!-- 또, row-cols 들은 하나같이 @media 속성을 가지고 있으니, 여러 개의 클래스를 한 번에 적용시켰지만 크게 의미 있는 것은 아님. -->
+        <!-- @media는 웹 사용자의 화면 크기에 따른 조건 설정 기능 -->
         <div class="row">
           <div class="col-md-12">
-
             <div class="bootstrap-tabs product-tabs">
+              <!-- d-flex: display flex | justify-content-between : 이름 그대로 | border-bottom : 이름 그대로 | my-5 : 위 아래 마진 크게. 숫자 클수록 커지고 5가 최대. -->
               <div class="tabs-header d-flex justify-content-between border-bottom my-5">
-                <h3>Trending Products</h3>
-                <nav>
+                <h3>Trending Products</h3> <!-- 상세 상품 목록의 제목 -->
+                <nav> <!-- 상세 상품 목록의 오른쪽의 분류 : 시작 -->
+                  <!-- .product-tabs .nav-tabs : 요소 오른쪽 정렬, 경계선 없음. -->
+                  <!-- nav : nav용 상세 스타일. 대충 마진, 패딩, 리스트 스타일 없애주고, 사이즈, 폰트, 컬러 조절 -->
                   <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <!-- nav-link : nav의 요소용 상세 스타일. 사이즈, 폰트, 컬러, 애니메이션 등 -->
+                    <!-- text-uppercase : 텍스트 대문자화 | fs-6 : 동적 폰트 사이즈. 임포턴트 붙음. 숫자 클수록 폰트 작아짐 -->
+                    <!-- active : .nav-link.active이고, 현재 선택된 요소 강조 효과인 듯 -->
+                    <!-- data-bs-toggle="tab" : 탭형 메뉴 구성 및 자바스크립트 활용 용도. -->
+                    <!-- data-bs-target="#nav-all" : 이 요소에 이벤트가 발생했을 때, 그 이벤트의 대상을 id="nav-all"인 요소로 지정하기 위함 -->
                     <a href="#" class="nav-link text-uppercase fs-6 active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all">All</a>
                     <a href="#" class="nav-link text-uppercase fs-6" id="nav-fruits-tab" data-bs-toggle="tab" data-bs-target="#nav-fruits">Fruits & Veges</a>
                     <a href="#" class="nav-link text-uppercase fs-6" id="nav-juices-tab" data-bs-toggle="tab" data-bs-target="#nav-juices">Juices</a>
                   </div>
-                </nav>
+                </nav> <!-- 상세 상품 목록의 오른쪽의 분류 : 종료 -->
               </div>
               <div class="tab-content" id="nav-tabContent">
+                <!-- tab-pane : 안 보이게 하기. 하지만 active가 들어가면 보이게 됨. | fade : 선형적인 불투명 그라데이션 애니메이션 -->
                 <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
 
+                  <!-- product-grid : deprecated-->
                   <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
-                  
-                    <div class="col">
+
+                    <!-- 이 col 하나가 각 상품 정보가 들어갈 자리 -->
+                    <div class="col"> <!-- 상품 정보 : 시작 -->
+                      <!-- product-item은 상품 정보 양식 -->
                       <div class="product-item">
+                        <!-- 상품 정보 좌측 상단에 뱃지 형식으로 할인율 표시 -->
                         <span class="badge bg-success position-absolute m-3">-30%</span>
+                        <!-- 상품 정보 우측 상단에 별 모양의 찜 버튼 -->
                         <a href="#" class="btn-wishlist"><svg width="24" height="24"><use xlink:href="#heart"></use></svg></a>
-                        <figure>
+                        <figure> <!-- 각 상품 이미지가 들어가는 자리 -->
+                          <!-- href로 이걸 누르면 이동할 상품 페이지 설정. -->
                           <a href="single-product.html" title="Product Title">
                             <img src="images/thumb-bananas.png" class="tab-image">
                           </a>
                         </figure>
-                        <h3>Sunstar Fresh Melon Juice</h3>
-                        <span class="qty">1 Unit</span><span class="rating"><svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg> 4.5</span>
-                        <span class="price">$18.00</span>
+                        <h3>Sunstar Fresh Melon Juice</h3> <!-- 상품명 -->
+                        <span class="qty">1 Unit</span> <!-- 상품 판매 단위 | qty : 폰트 스타일 -->
+                        <!-- 별점 표시하는 부분 -->
+                        <span class="rating">
+                          <!-- 별 모양 아이콘 -->
+                          <svg width="24" height="24" class="text-primary"><use xlink:href="#star-solid"></use></svg>
+                          4.5 <!-- 별점 -->
+                        </span>
+                        <span class="price">$18.00</span> <!-- 가격 | price : 폰트 스타일 -->
+                        <!-- 그냥 이름 그대로의 스타일을 주는 클래스들 -->
                         <div class="d-flex align-items-center justify-content-between">
+                          <!-- product-qty : 넓이 고정 | input-group : input 관련된 것들 전용 스타일 -->
                           <div class="input-group product-qty">
-                              <span class="input-group-btn">
+                              <span class="input-group-btn"> <!-- 구매수량 조절 버튼 : (-) -->
                                   <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus">
                                     <svg width="16" height="16"><use xlink:href="#minus"></use></svg>
                                   </button>
                               </span>
+                              <!-- 구매 수량 -->
                               <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1">
-                              <span class="input-group-btn">
+                              <span class="input-group-btn"> <!-- 구매수량 조절 버튼 : (+) -->
                                   <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus">
                                       <svg width="16" height="16"><use xlink:href="#plus"></use></svg>
                                   </button>
                               </span>
                           </div>
+                          <!-- 장바구니 추가  -->
                           <a href="#" class="nav-link">Add to Cart <iconify-icon icon="uil:shopping-cart"></a>
                         </div>
                       </div>
-                    </div>
+                    </div> <!-- 상품 정보 : 종료 -->
 
                     <div class="col">
                       <div class="product-item">
@@ -918,14 +947,13 @@
 
                   </div>
                   <!-- / product-grid -->
-                  
                 </div>
 
                 <div class="tab-pane fade" id="nav-fruits" role="tabpanel" aria-labelledby="nav-fruits-tab">
-                  
                   <div class="product-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5">
 
                     <div class="col">
+
                       <div class="product-item">
                         <span class="badge bg-success position-absolute m-3">-30%</span>
                         <a href="#" class="btn-wishlist"><svg width="24" height="24"><use xlink:href="#heart"></use></svg></a>
@@ -986,7 +1014,7 @@
                         </div>
                       </div>
                     </div>
-                  
+
                     <div class="col">
                       <div class="product-item">
                         <span class="badge bg-success position-absolute m-3">-30%</span>
@@ -1307,7 +1335,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> <!-- 상세 상품 목록 : 종료 -->
 
     <section class="py-5">
       <div class="container-fluid">
