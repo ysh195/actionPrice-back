@@ -2221,35 +2221,43 @@
       <div class="container-fluid">
         <div class="row">
           <div class="section-header d-flex align-items-center justify-content-between my-5">
-            <h2 class="section-title">Our Recent Blog</h2>
+            <h2 class="section-title">Our Recent Blog</h2> <!-- 블로그포스팅리스트 제목 -->
             <div class="btn-wrap align-right">
+              <!-- 블로그포스팅 더보기 링크 -->
               <a href="#" class="d-flex align-items-center nav-link">Read All Articles <svg width="24" height="24"><use xlink:href="#arrow-right"></use></svg></a>
             </div>
           </div>
         </div>
         <div class="row">
           <div class="col-md-4">
-            <article class="post-item card border-0 shadow-sm p-3">
-              <div class="image-holder zoom-effect">
+            <!-- card : 부트스트랩 카드 전용 스타일. 하나의 카드로 포스트 구성한 듯 -->
+            <!-- post-item : 포스트 전용 클래스인데 이것만 가지고는 뭐가 없고 하위 클래스들에만 스타일이 들어감 -->
+            <!-- boder-0: 경계선 완전 제거 | shadow-sm : box 그림자 동적 설정 -->
+            <article class="post-item card border-0 shadow-sm p-3"> <!-- 개별 포스트 카드 : 시작 -->
+              <div class="image-holder zoom-effect"> <!-- 이미지 입력란 -->
                 <a href="#">
                   <img src="images/post-thumb-1.jpg" alt="post" class="card-img-top">
                 </a>
               </div>
-              <div class="card-body">
+              <div class="card-body"> <!-- 카드 내용 : 시작 -->
+                <!-- post-meta : post-item 하위 클래스로, 동적 폰트사이즈 설정 및 텍스트 줄 높이 고정하는 스타일 -->
                 <div class="post-meta d-flex text-uppercase gap-3 my-2 align-items-center">
+                  <!-- 날짜 표시 -->
                   <div class="meta-date"><svg width="16" height="16"><use xlink:href="#calendar"></use></svg>22 Aug 2021</div>
+                  <!-- 카테고리 표시 -->
                   <div class="meta-categories"><svg width="16" height="16"><use xlink:href="#category"></use></svg>tips & tricks</div>
                 </div>
-                <div class="post-header">
-                  <h3 class="post-title">
+                <div class="post-header"> <!-- 개별 포스트 텍스트 내용 -->
+                  <h3 class="post-title"> <!-- 개별 포스트 제목 및 바로가기 링크 -->
                     <a href="#" class="text-decoration-none">Top 10 casual look ideas to dress up your kids</a>
                   </h3>
+                  <!-- 개별 포스트 상세 내용 -->
                   <p>Lorem ipsum dolor sit amet, consectetur adipi elit. Aliquet eleifend viverra enim tincidunt donec quam. A in arcu, hendrerit neque dolor morbi...</p>
                 </div>
-              </div>
-            </article>
+              </div> <!-- 카드 내용 : 종료 -->
+            </article> <!-- 개별 포스트 카드 : 종료 -->
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4"> <!-- 개별 포스트 카드 : 시작 -->
             <article class="post-item card border-0 shadow-sm p-3">
               <div class="image-holder zoom-effect">
                 <a href="#">
@@ -2269,8 +2277,9 @@
                 </div>
               </div>
             </article>
-          </div>
-          <div class="col-md-4">
+          </div> <!-- 개별 포스트 카드 : 종료 -->
+
+          <div class="col-md-4"> <!-- 개별 포스트 카드 : 시작 -->
             <article class="post-item card border-0 shadow-sm p-3">
               <div class="image-holder zoom-effect">
                 <a href="#">
@@ -2292,24 +2301,28 @@
             </article>
           </div>
         </div>
-      </div>
+      </div> <!-- 개별 포스트 카드 : 종료 -->
+
     </section> <!-- 블로그포스팅리스트 : 종료 -->
 
     <section class="py-5 my-5"> <!-- 앱 소개 상자 : 시작 -->
       <div class="container-fluid">
 
+        <!-- 상자 배경 및 내용이 들어갈 자리 설정 -->
         <div class="bg-warning py-5 rounded-5" style="background-image: url('images/bg-pattern-2.png'); background-repeat: no-repeat;">
           <div class="container">
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-4"> <!-- 이미지 자리 배정 -->
+                <!-- 이미지 -->
                 <img src="images/phone.png" alt="phone" class="image-float img-fluid">
               </div>
-              <div class="col-md-8">
+              <div class="col-md-8"> <!-- 텍스트 자리 배정 -->
+                <!-- 텍스트 -->
                 <h2 class="my-5">Shop faster with foodmart App</h2>
                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sagittis sed ptibus liberolectus nonet psryroin. Amet sed lorem posuere sit iaculis amet, ac urna. Adipiscing fames semper erat ac in suspendisse iaculis. Amet blandit tortor praesent ante vitae. A, enim pretiummi senectus magna. Sagittis sed ptibus liberolectus non et psryroin.</p>
-                <div class="d-flex gap-2 flex-wrap">
-                  <img src="images/app-store.jpg" alt="app-store">
-                  <img src="images/google-play.jpg" alt="google-play">
+                <div class="d-flex gap-2 flex-wrap"> <!-- 앱 아이콘 이미지 묶음 -->
+                  <img src="images/app-store.jpg" alt="app-store"> <!-- 앱 아이콘 이미지1 -->
+                  <img src="images/google-play.jpg" alt="google-play"> <!-- 앱 아이콘 이미지2 -->
                 </div>
               </div>
             </div>
@@ -2321,7 +2334,7 @@
 
     <section class="py-5"> <!-- 태그 모음 : 시작 -->
       <div class="container-fluid">
-        <h2 class="my-5">People are also looking for</h2>
+        <h2 class="my-5">People are also looking for</h2> <!-- 태그 모음 설명 문구 -->
         <a href="#" class="btn btn-warning me-2 mb-2">Blue diamon almonds</a>
         <a href="#" class="btn btn-warning me-2 mb-2">Angie’s Boomchickapop Corn</a>
         <a href="#" class="btn btn-warning me-2 mb-2">Salty kettle Corn</a>
@@ -2345,23 +2358,27 @@
 
     <section class="py-5"> <!-- 품질보증 문구 : 시작 -->
       <div class="container-fluid">
+        <!-- 한 줄. row 관련 클래스는 모두 @media임. 사용자의 화면 크기에 따라 동적 스타일 설정 -->
+        <!-- row로 한 줄에 들어갈 갯수를 설정했으니, 자동으로 위치가 배정됨. 따라서 col로 설정된 여러 개 다 넣어버리면 알아서 맞춰짐 -->
         <div class="row row-cols-1 row-cols-sm-3 row-cols-lg-5">
-          <div class="col">
+          <div class="col"> <!-- 개별 품질보증 문구 : 시작 -->
             <div class="card mb-3 border-0">
               <div class="row">
-                <div class="col-md-2 text-dark">
+                <div class="col-md-2 text-dark"> <!-- 이미지/아이콘 -->
                   <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21.5 15a3 3 0 0 0-1.9-2.78l1.87-7a1 1 0 0 0-.18-.87A1 1 0 0 0 20.5 4H6.8l-.33-1.26A1 1 0 0 0 5.5 2h-2v2h1.23l2.48 9.26a1 1 0 0 0 1 .74H18.5a1 1 0 0 1 0 2h-13a1 1 0 0 0 0 2h1.18a3 3 0 1 0 5.64 0h2.36a3 3 0 1 0 5.82 1a2.94 2.94 0 0 0-.4-1.47A3 3 0 0 0 21.5 15Zm-3.91-3H9L7.34 6H19.2ZM9.5 20a1 1 0 1 1 1-1a1 1 0 0 1-1 1Zm8 0a1 1 0 1 1 1-1a1 1 0 0 1-1 1Z"/></svg>
                 </div>
-                <div class="col-md-10">
+                <div class="col-md-10"> <!-- 상세 문구 -->
                   <div class="card-body p-0">
-                    <h5>Free delivery</h5>
+                    <h5>Free delivery</h5> <!-- 상세문구 제목 -->
+                    <!-- 상세문구 내용 -->
                     <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipi elit.</p>
                   </div>
                 </div>
               </div>
               </div>
-          </div>
-          <div class="col">
+          </div> <!-- 개별 품질보증 문구 : 종료 -->
+
+          <div class="col"> <!-- 개별 품질보증 문구 : 시작 -->
             <div class="card mb-3 border-0">
               <div class="row">
                 <div class="col-md-2 text-dark">
@@ -2375,8 +2392,9 @@
                 </div>
               </div>
               </div>
-          </div>
-          <div class="col">
+          </div> <!-- 개별 품질보증 문구 : 종료 -->
+
+          <div class="col"> <!-- 개별 품질보증 문구 : 시작 -->
             <div class="card mb-3 border-0">
               <div class="row">
                 <div class="col-md-2 text-dark">
@@ -2390,8 +2408,9 @@
                 </div>
               </div>
               </div>
-          </div>
-          <div class="col">
+          </div> <!-- 개별 품질보증 문구 : 종료 -->
+
+          <div class="col"> <!-- 개별 품질보증 문구 : 시작 -->
             <div class="card mb-3 border-0">
               <div class="row">
                 <div class="col-md-2 text-dark">
@@ -2405,8 +2424,9 @@
                 </div>
               </div>
               </div>
-          </div>
-          <div class="col">
+          </div> <!-- 개별 품질보증 문구 : 종료 -->
+
+          <div class="col">  <!-- 개별 품질보증 문구 : 시작 -->
             <div class="card mb-3 border-0">
               <div class="row">
                 <div class="col-md-2 text-dark">
@@ -2420,9 +2440,11 @@
                 </div>
               </div>
               </div>
-          </div>
+          </div>  <!-- 개별 품질보증 문구 : 종료 -->
+
         </div>
       </div>
+
     </section> <!-- 품질보증 문구 : 종료 -->
 
 
