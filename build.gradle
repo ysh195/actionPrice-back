@@ -13,12 +13,6 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
 }
@@ -29,54 +23,51 @@ ext {
 }
 
 dependencies {
-
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    annotationProcessor 'org.projectlombok:lombok'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
-
+    // implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+    // implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // implementation 'com.google.cloud:spring-cloud-gcp-starter' // 추가적인 세팅 필요. 세팅 없이 시작하려니 오류 발생함
+    implementation 'org.hibernate:hibernate-core:6.1.7.Final'
+    implementation 'jakarta.annotation:jakarta.annotation-api'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'    
+    
+    
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // webclient
+    implementation 'io.projectreactor:reactor-core:3.4.18' // flux
+    
+    implementation 'org.springframework.boot:spring-boot-starter-mail' // email
 
-    implementation 'com.google.cloud:spring-cloud-gcp-starter'
-
-
-    annotationProcessor 'org.projectlombok:lombok'
     compileOnly 'org.projectlombok:lombok'
+
+    runtimeOnly 'mysql:mysql-connector-java:8.0.30'
+    
     testCompileOnly 'org.projectlombok:lombok'
+
     testAnnotationProcessor 'org.projectlombok:lombok'
 
-
-
-
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
-
-    runtimeOnly 'com.mysql:mysql-connector-j'
-
-
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
-
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
-
+    testImplementation 'mysql:mysql-connector-java:8.0.30'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-dependencyManagement {
-    imports {
-        mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}"
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-    }
-}
+// dependencyManagement {
+//     imports {
+//         mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}"
+//         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+//     }
+// }
 
 tasks.named('test') {
     useJUnitPlatform()
