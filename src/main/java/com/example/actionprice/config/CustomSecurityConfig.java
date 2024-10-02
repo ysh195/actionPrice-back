@@ -12,6 +12,8 @@ import org.springframework.security.web.SecurityFilterChain;
  * @updated 24/10/01 13:46
  * @info SpringSecurity를 그레이들에 추가해두었기 때문에 스웨거를 그냥 사용할 수 없음. 이것을 추가해야만 사용 가능
  */
+
+
 @Configuration
 public class CustomSecurityConfig {
 
