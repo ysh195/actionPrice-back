@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author 연상훈 임호민 다시 수정중
+ * @author 연상훈 임호민 다시 수정중 dsafghjklasd
  * @created 24/10/01 20:10
  * @updated 24/10/02 11:35
  * @info api에서 제공하는 객체 형태 그대로 가져옴
