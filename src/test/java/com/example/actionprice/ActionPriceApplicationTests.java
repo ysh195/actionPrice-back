@@ -102,13 +102,18 @@ class ActionPriceApplicationTests {
 	}
 
 	void createAuctionDataEntity() throws Exception {
-//		Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux("20150801", "서울강서도매시장");
-//
-//
-//		auctionDataFlux.toStream().forEach(row -> {
-//			AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder().delngDe(DateTimeFormatter.ofPattern("yyyyMMdd").format(row.getDelngDe()))
-//					.build();
-//		});
+		Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux("20150801", "서울강서도매시장");
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+		auctionDataFlux.toStream().map(row -> {
+			AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder()
+					.delngDe(LocalDateTime.parse(row.getDelngDe(), formatter))
+					.build();
+
+			return auctionDataEntity;
+		}).forEach(entity -> {auctionDataRepository.save(entity);});
+
 	}
 
 }
