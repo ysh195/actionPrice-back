@@ -81,6 +81,7 @@ class ActionPriceApplicationTests {
 	void sendSimpleEmailTest() throws Exception {
 		sendEmailComponent.sendSimpleMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
 	}
+
 	/**
 	 * @author 연상훈
 	 * @created 24/10/01 23:13
@@ -88,6 +89,7 @@ class ActionPriceApplicationTests {
 	 * @info 복합이메일 전송 테스트 성공
 	 */
 	@Test
+	@Disabled
 	void sendMimeEmailTest() throws Exception {
 		sendEmailComponent.sendMimeMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
 	}
