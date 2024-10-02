@@ -1,6 +1,6 @@
 package com.example.actionprice;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -101,19 +101,45 @@ class ActionPriceApplicationTests {
 		sendEmailComponent.sendMimeMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
 	}
 
+	@Test
 	void createAuctionDataEntity() throws Exception {
 		Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux("20150801", "서울강서도매시장");
-
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+
 
 		auctionDataFlux.toStream().map(row -> {
 			AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder()
-					.delngDe(LocalDateTime.parse(row.getDelngDe(), formatter))
+					.delngDe(LocalDate.parse(row.getDelngDe(), formatter))
+					.whsalMrktNewCode(row.getWhsalMrktNewCode())
+					.whsalMrktNewNm(row.getWhsalMrktNewNm())
+					.whsalMrktCode(row.getWhsalMrktCode())
+					.whsalMrktNm(row.getWhsalMrktNm())
+					.catgoryNewCode(row.getCatgoryNewCode())
+					.catgoryNewNm(row.getCatgoryNewNm())
+					.catgoryCode(row.getCatgoryCode())
+					.catgoryNm(row.getCatgoryNm())
+					.stdPrdlstNewCode(row.getStdPrdlstNewCode())
+					.stdPrdlstNewNm(row.getStdPrdlstNewNm())
+					.stdPrdlstCode(row.getStdPrdlstCode())
+					.stdPrdlstNm(row.getStdPrdlstNm())
+					.stdSpciesNewCode(row.getStdSpciesNewCode())
+					.stdSpciesNewNm(row.getStdSpciesNewNm())
+					.stdSpciesCode(row.getStdSpciesCode())
+					.stdSpciesNm(row.getStdSpciesNm())
+					.delngPrut(row.getDelngPrut())
+					.stdUnitNewCode(row.getStdUnitNewCode())
+					.stdUnitNewNm(row.getStdUnitNewNm())
+					.sbidPric(row.getSbidPric())
+					.stdMtcNewCode(row.getStdMtcNewCode())
+					.stdMtcNewNm(row.getStdMtcNewNm())
+					.cprMtcCode(row.getCprMtcCode())
+					.cprMtcNm(row.getCprMtcNm())
+					.delngQy(row.getDelngQy())
 					.build();
 
 			return auctionDataEntity;
 		}).forEach(entity -> {auctionDataRepository.save(entity);});
-
 	}
 
 }

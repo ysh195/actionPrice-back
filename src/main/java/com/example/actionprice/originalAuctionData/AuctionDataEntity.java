@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 //TODO entity에 대한 논의 필요
@@ -33,7 +34,7 @@ public class AuctionDataEntity {
 
     private int rowNum; // 열 번호
 
-    private LocalDateTime delngDe;  // 경락일자
+    private LocalDate delngDe;  // 경락일자
 
     private String whsalMrktNewCode; // 시장코드
 
