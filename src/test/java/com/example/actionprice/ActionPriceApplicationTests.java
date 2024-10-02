@@ -1,5 +1,6 @@
 package com.example.actionprice;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -106,9 +107,11 @@ class ActionPriceApplicationTests {
 		Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux("20150801", "서울강서도매시장");
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
+
+
 		auctionDataFlux.toStream().map(row -> {
 			AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder()
-					.delngDe(LocalDateTime.parse(row.getDelngDe(),formatter))
+					.delngDe(LocalDate.parse(row.getDelngDe(), formatter))
 					.whsalMrktNewCode(row.getWhsalMrktNewCode())
 					.whsalMrktNewNm(row.getWhsalMrktNewNm())
 					.whsalMrktCode(row.getWhsalMrktCode())
