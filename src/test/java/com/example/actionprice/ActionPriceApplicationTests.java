@@ -1,7 +1,11 @@
 package com.example.actionprice;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import com.example.actionprice.originalAuctionData.AuctionDataEntity;
+import com.example.actionprice.originalAuctionData.AuctionDataRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +29,9 @@ class ActionPriceApplicationTests {
 	
 	@Autowired
 	SendEmailComponent sendEmailComponent;
+
+	@Autowired
+	AuctionDataRepository auctionDataRepository;
 
 	// TODO 비즈니스 로직에 대한 논의 후 해당 클래스에 대한 재조정이 필요함
 	/**
@@ -92,6 +99,16 @@ class ActionPriceApplicationTests {
 	@Disabled
 	void sendMimeEmailTest() throws Exception {
 		sendEmailComponent.sendMimeMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
+	}
+
+	void createAuctionDataEntity() throws Exception {
+//		Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux("20150801", "서울강서도매시장");
+//
+//
+//		auctionDataFlux.toStream().forEach(row -> {
+//			AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder().delngDe(DateTimeFormatter.ofPattern("yyyyMMdd").format(row.getDelngDe()))
+//					.build();
+//		});
 	}
 
 }
