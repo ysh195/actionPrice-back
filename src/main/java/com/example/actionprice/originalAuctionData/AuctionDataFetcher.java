@@ -21,7 +21,7 @@ import java.net.URISyntaxException;
 // TODO 이것을 활용한 비즈니스에 로직에 대한 논의 필요. 그리고 예외 처리를 매우 대충 해뒀음. 에러 대응 로직의 구체화 필요
 // TODO 이게 날짜별로 데이터 호출이라 확실히 데이터를 우리가 관리할 필요가 있겠음
 /**
-* @author 연상훈
+* @author 연상훈 임호민
 * @created 24/10/01 17:50
 * @updated 24/10/01 17:50
 * @value : baseAuctionUrl = api를 사용하기 위한 기본 경로. 해당 값을 application.properties에서 불러옴
