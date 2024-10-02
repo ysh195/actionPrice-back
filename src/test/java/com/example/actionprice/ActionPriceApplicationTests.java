@@ -47,7 +47,7 @@ class ActionPriceApplicationTests {
 	 * @updated 24/10/01 20:20
 	 * @info AuctionData 객체를 사용한 api 연결 테스트 성공.
 	 */
-	@Disabled
+
 	@Test
 	void auctionDataObjectTest() throws Exception {
 		AuctionDataBody responseEntity = auctionDataFetcher.getOriginalAuctionData_AuctionDataBody("20150801", "서울강서도매시장");
@@ -62,7 +62,7 @@ class ActionPriceApplicationTests {
 	 * @updated 24/10/01 20:58
 	 * @info AuctionData 객체와 flux를 사용한 api 연결 테스트 성공.
 	 */
-	@Disabled
+
 	@Test
 	void auctionDataFluxTest() throws Exception {
 		Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux("20150801", "서울강서도매시장");
