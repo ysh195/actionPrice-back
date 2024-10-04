@@ -30,6 +30,7 @@ public class CustomSecurityConfig {
             .csrf().disable()
             .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/public/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/hello/getTest").permitAll()
+                        .requestMatchers("/admin/**").authenticated()
                         .anyRequest().authenticated());
         return http.build();
     }
@@ -37,7 +38,7 @@ public class CustomSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5174"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
