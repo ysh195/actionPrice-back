@@ -1,7 +1,6 @@
 package com.example.actionprice;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -111,32 +110,32 @@ class ActionPriceApplicationTests {
 
 		auctionDataFlux.toStream().map(row -> {
 			AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder()
-					.delngDe(LocalDate.parse(row.getDelngDe(), formatter))
-					.whsalMrktNewCode(row.getWhsalMrktNewCode())
-					.whsalMrktNewNm(row.getWhsalMrktNewNm())
-					.whsalMrktCode(row.getWhsalMrktCode())
-					.whsalMrktNm(row.getWhsalMrktNm())
-					.catgoryNewCode(row.getCatgoryNewCode())
-					.catgoryNewNm(row.getCatgoryNewNm())
-					.catgoryCode(row.getCatgoryCode())
-					.catgoryNm(row.getCatgoryNm())
-					.stdPrdlstNewCode(row.getStdPrdlstNewCode())
-					.stdPrdlstNewNm(row.getStdPrdlstNewNm())
-					.stdPrdlstCode(row.getStdPrdlstCode())
-					.stdPrdlstNm(row.getStdPrdlstNm())
-					.stdSpciesNewCode(row.getStdSpciesNewCode())
-					.stdSpciesNewNm(row.getStdSpciesNewNm())
-					.stdSpciesCode(row.getStdSpciesCode())
-					.stdSpciesNm(row.getStdSpciesNm())
-					.delngPrut(row.getDelngPrut())
-					.stdUnitNewCode(row.getStdUnitNewCode())
-					.stdUnitNewNm(row.getStdUnitNewNm())
-					.sbidPric(row.getSbidPric())
-					.stdMtcNewCode(row.getStdMtcNewCode())
-					.stdMtcNewNm(row.getStdMtcNewNm())
-					.cprMtcCode(row.getCprMtcCode())
-					.cprMtcNm(row.getCprMtcNm())
-					.delngQy(row.getDelngQy())
+					.DELNG_DE(LocalDate.parse(row.getDELNG_DE(), formatter))
+					.WHSAL_MRKT_NEW_CODE(row.getWHSAL_MRKT_NEW_CODE())
+					.WHSAL_MRKT_NEW_NM(row.getWHSAL_MRKT_NEW_NM())
+					.WHSAL_MRKT_CODE(row.getWHSAL_MRKT_CODE())
+					.WHSAL_MRKT_NM(row.getWHSAL_MRKT_NM())
+					.CATGORY_NEW_CODE(row.getCATGORY_NEW_CODE())
+					.CATGORY_NEW_NM(row.getCATGORY_NEW_NM())
+					.CATGORY_CODE(row.getCATGORY_CODE())
+					.CATGORY_NM(row.getCATGORY_NM())
+					.STD_PRDLST_NEW_CODE(row.getSTD_PRDLST_NEW_CODE())
+					.STD_PRDLST_NEW_NM(row.getSTD_PRDLST_NEW_NM())
+					.STD_PRDLST_CODE(row.getSTD_PRDLST_CODE())
+					.STD_PRDLST_NM(row.getSTD_PRDLST_NM())
+					.STD_SPCIES_NEW_CODE(row.getSTD_SPCIES_NEW_CODE())
+					.STD_SPCIES_NEW_NM(row.getSTD_SPCIES_NEW_NM())
+					.STD_SPCIES_CODE(row.getSTD_SPCIES_CODE())
+					.STD_SPCIES_NM(row.getSTD_SPCIES_NM())
+					.DELNG_PRUT(row.getDELNG_PRUT())
+					.STD_UNIT_NEW_CODE(row.getSTD_UNIT_NEW_CODE())
+					.STD_UNIT_NEW_NM(row.getSTD_UNIT_NEW_NM())
+					.SBID_PRIC(row.getSBID_PRIC())
+					.STD_MTC_NEW_CODE(row.getSTD_MTC_NEW_CODE())
+					.STD_MTC_NEW_NM(row.getSTD_MTC_NEW_NM())
+					.CPR_MTC_CODE(row.getCPR_MTC_CODE())
+					.CPR_MTC_NM(row.getCPR_MTC_NM())
+					.DELNG_QY(row.getDELNG_QY())
 					.build();
 
 			return auctionDataEntity;
