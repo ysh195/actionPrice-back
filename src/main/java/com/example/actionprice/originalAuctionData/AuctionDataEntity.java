@@ -30,64 +30,64 @@ public class AuctionDataEntity {
 	
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long dataiId;
+    private Long dataId;
 
-    private int rowNum; // 열 번호
+    private int ROW_NUM; // 열 번호
 
-    private LocalDate delngDe;  // 경락일자
+    private LocalDate DELNG_DE;  // 경락일자
 
-    private String whsalMrktNewCode; // 시장코드
+    private String WHSAL_MRKT_NEW_CODE; // 시장코드
 
-    private String whsalMrktNewNm; // 시장명
+    private String WHSAL_MRKT_NEW_NM; // 시장명
 
-    private String whsalMrktCode; // 구시장 코드
+    private String WHSAL_MRKT_CODE; // 구시장 코드
 
-    private String whsalMrktNm; // 구시장명
+    private String WHSAL_MRKT_NM; // 구시장명
 
-    private String catgoryNewCode; // 부류코드
+    private String CATGORY_NEW_CODE; // 부류코드
 
-    private String catgoryNewNm; // 부류명
+    private String CATGORY_NEW_NM; // 부류명
 
-    private String catgoryCode; // 구부류코드
+    private String CATGORY_CODE; // 구부류코드
 
-    private String catgoryNm; // 구부류명
+    private String CATGORY_NM; // 구부류명
 
-    private String stdPrdlstNewCode; // 품목코드
+    private String STD_PRDLST_NEW_CODE; // 품목코드
 
-    private String stdPrdlstNewNm; // 품목명
+    private String STD_PRDLST_NEW_NM; // 품목명
 
-    private String stdPrdlstCode; // 구품목코드
+    private String STD_PRDLST_CODE; // 구품목코드
 
-    private String stdPrdlstNm; // 구품목명
+    private String STD_PRDLST_NM; // 구품목명
 
-    private String stdSpciesNewCode; // 품종코드
+    private String STD_SPCIES_NEW_CODE; // 품종코드
 
-    private String stdSpciesNewNm; // 품종명
+    private String STD_SPCIES_NEW_NM; // 품종명
 
-    private String stdSpciesCode; // 구품종코드
+    private String STD_SPCIES_CODE; // 구품종코드
 
-    private String stdSpciesNm; // 구품종명
+    private String STD_SPCIES_NM; // 구품종명
 
-    private int delngPrut; // 거래단량
+    private int DELNG_PRUT; // 거래단량
 
-    private String stdUnitNewCode; //  단위코드
+    private String STD_UNIT_NEW_CODE; //  단위코드
 
-    private String stdUnitNewNm; // 단위명
+    private String STD_UNIT_NEW_NM; // 단위명
 
-    private String stdQlityNewCode; // 등급코드
+    private String STD_QLITY_NEW_CODE; // 등급코드
 
-    private String stdQlityNewNm; // 등급명
+    private String STD_QLITY_NEW_NM; // 등급명
 
-    private int sbidPric; // 거래가격
+    private int SBID_PRIC; // 거래가격
 
-    private String stdMtcNewCode; // 산지코드
+    private String STD_MTC_NEW_CODE; // 산지코드
 
-    private String stdMtcNewNm; // 산지명
+    private String STD_MTC_NEW_NM; // 산지명
 
-    private String cprMtcCode; // 구산지코드
+    private String CPR_MTC_CODE; // 구산지코드
 
-    private String cprMtcNm; // 구산지명
+    private String CPR_MTC_NM; // 구산지명
 
-    private int delngQy; //거래량
+    private int DELNG_QY; //거래량
 
 }
