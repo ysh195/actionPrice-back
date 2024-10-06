@@ -16,7 +16,7 @@ import org.springframework.http.ResponseEntity;
 import com.example.actionprice.originalAuctionData.AuctionDataFetcher;
 import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataBody;
 import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataRow;
-import com.example.actionprice.sendEmail.SendEmailComponent;
+import com.example.actionprice.sendEmail.SendEmailServiceImpl;
 
 import reactor.core.publisher.Flux;
 
@@ -28,7 +28,7 @@ class ActionPriceApplicationTests {
 	AuctionDataFetcher auctionDataFetcher;
 	
 	@Autowired
-	SendEmailComponent sendEmailComponent;
+	SendEmailServiceImpl sendEmailServiceImpl;
 
 	@Autowired
 	AuctionDataRepository auctionDataRepository;
@@ -105,7 +105,7 @@ class ActionPriceApplicationTests {
 	@Disabled
 	@Test
 	void sendSimpleEmailTest() throws Exception {
-		sendEmailComponent.sendSimpleMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
+		sendEmailServiceImpl.sendSimpleMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
 	}
 
 	/**
@@ -119,9 +119,19 @@ class ActionPriceApplicationTests {
 	@Test
 	@Disabled
 	void sendMimeEmailTest() throws Exception {
-		sendEmailComponent.sendMimeMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
+		sendEmailServiceImpl.sendMimeMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
 	}
 
+	/**
+	 * @author : 연상훈
+	 * @created : 2024-10-06 오전 12:16
+	 * @updated : 2024-10-06 오전 12:16
+	 * @see :
+	 * 1. 만약 농산/수산/축산 별로 테이블을 나누려면 여기에서 분류하는 로직이 필요함
+	 * 2. 그리고 현재 만들어둔 AuctionDataEntity를 베이스엔티티로 두고, 다른 엔티티들에게 extends 하는 방식으로 가야 함
+	 * 3. 거기에 service에서 각 엔티티별 repository를 두고, 팩토리 패턴으로 상황에 맞는 레포지토리가 나오게 해야 함.
+	 * 4. 그 반대도 마찬가지
+	 */
 	@Test
 	@Disabled
 	void createAuctionDataEntity() throws Exception {
