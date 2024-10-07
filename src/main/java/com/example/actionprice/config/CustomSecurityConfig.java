@@ -36,6 +36,8 @@ import java.util.Arrays;
  * @updated 24/10/05 20:42
  * @info 어느 정도 개발이 완성되기 전까지는 보안을 포괄적으로 다 열어뒀음. 토큰관련 로직이 추가로 더 필요하긴 함.
  */
+
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -116,6 +118,7 @@ public class CustomSecurityConfig {
                     .defaultSuccessUrl("/", true))
             .logout((logout) -> logout.logoutUrl("/api/user/logout").logoutSuccessUrl("/api/user/login"));
         return http.build();
+
     }
 
     /**
@@ -161,3 +164,4 @@ public class CustomSecurityConfig {
     }
 
 }
+
