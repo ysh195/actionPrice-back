@@ -15,7 +15,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * @author : 연상훈
@@ -33,7 +32,6 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"user"})
 public class Favorite implements Comparable<Favorite> {
 
   // field
@@ -41,6 +39,7 @@ public class Favorite implements Comparable<Favorite> {
   // field - basic
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "favoriteId")
   private int favoriteId;
 
   @Column(nullable = false)

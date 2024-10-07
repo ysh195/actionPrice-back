@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
- * rest 컨트롤러 사용 시의 exception 관리해주는 녀석이었던 걸로 기억함
+ * 모든 컨트롤러에서 발생하는 예외를 처리함
  * @author : 연상훈
  * @created : 2024-10-06 오후 6:46
- * @updated : 2024-10-06 오후 6:46
- * @see : 일단 책대로 함
+ * @updated : 2024-10-06 오후 11:57
+ * @see :
+ * RestControllerAdvice는 ControllerAdvice를 기본적으로 상속하기 때문에
+ * RestController뿐만 아니라 Controller도 처리 가능.
+ * 선언만 하면 spring이 알아서 가져다 사용함.
  */
 @RestControllerAdvice
 @Log4j2

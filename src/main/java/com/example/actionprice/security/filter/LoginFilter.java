@@ -36,7 +36,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
    * @see : 책과 달리 UserLoginForm을 활용해서 입력하는 것이 보다 직관적이고, 깔끔하다고 판단해서 그렇게 수정
    */
   @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
     log.info("[class] LoginFilter - [method] attemptAuthentication > 시작");
 
     if(request.getMethod().equalsIgnoreCase("GET")) {
