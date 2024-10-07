@@ -77,23 +77,23 @@ public class CustomSecurityConfig {
 
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        // API Login Success Handler
+        // Login Success Handler
         LoginSuccessHandler successHandler = new LoginSuccessHandler(jwtUtil, userRepository);
 
-        // API Login Filter
-        LoginFilter loginFilter = new LoginFilter("/generateToken"); // "/generateToken"라는 경로를 호출하면 APILoginFilter가 실행됨
+        // Login Filter
+        LoginFilter loginFilter = new LoginFilter("/generateToken"); // "/generateToken"라는 경로를 호출하면 LoginFilter가 실행됨
         loginFilter.setAuthenticationManager(authenticationManager);
         loginFilter.setAuthenticationSuccessHandler(successHandler);
 
         http.cors(httpSecurityCorsConfigurer -> {httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());}) // corsConfigurationSource
             .csrf((csrfconfig) -> csrfconfig.disable())
             .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/**").permitAll()
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/**").permitAll()
                         .anyRequest().authenticated())
             .authenticationManager(authenticationManager)
-            .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // apiLoginFilter가 내가 추가하는 필터고, UsernamePasswordAuthenticationFilter.class는 기본 내장 필터. UsernamePasswordAuthenticationFilter보다 apiLoginFilter를 먼저 실행시키겠다
+            .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // LoginFilter가 내가 추가하는 필터고, UsernamePasswordAuthenticationFilter.class는 기본 내장 필터. UsernamePasswordAuthenticationFilter보다 LoginFilter를 먼저 실행시키겠다
             .addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new RefreshTokenFilter("/refreshToken", jwtUtil), TokenCheckFilter.class)
             .rememberMe(httpSecurityRememberMeConfigurer -> {httpSecurityRememberMeConfigurer.rememberMeParameter("rememberMe")
@@ -101,10 +101,11 @@ public class CustomSecurityConfig {
                 .tokenValiditySeconds(60);}) // 토큰 기능의 테스트를 위해 rememberMe 기능의 토큰 유효 시간을 1분으로 설정
             .formLogin((formLogin) -> formLogin.usernameParameter("username")
                     .passwordParameter("password")
-                    .failureForwardUrl("/user/login")
+                    .failureUrl("/user/login") // TODO failureForwardUrl는 기존 url을 유지하면서 이동. 거기에 failureHandler를 쓰면 로그인 실패 횟수를 체크할 수 있을 것 같은데?
                     .loginProcessingUrl("/user/login")
-                    .defaultSuccessUrl("/", true))
-            .logout((logout) -> logout.logoutSuccessUrl("/user/login"));
+                    .defaultSuccessUrl("/", true)
+                    .permitAll())
+            .logout((logout) -> logout.logoutSuccessUrl("/user/login").permitAll());
         return http.build();
     }
 

@@ -27,7 +27,6 @@ import lombok.NoArgsConstructor;
 public class VerificationEmail extends BaseEntity {
 
   @Id
-  @Column(nullable=false, unique=true)
   private String email;
 
   @Column(nullable=false, length = 8)

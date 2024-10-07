@@ -43,7 +43,7 @@ import org.hibernate.annotations.BatchSize;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"user", "commentSet"})
+@ToString(exclude = {"commentSet"})
 public class Post extends BaseEntity implements Comparable<Post> {
 
   // field
@@ -51,6 +51,7 @@ public class Post extends BaseEntity implements Comparable<Post> {
   // field - basic
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "postId")
   private int postId;
 
   @Column(nullable=false)

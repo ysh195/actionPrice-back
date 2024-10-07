@@ -18,7 +18,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * @author : 연상훈
@@ -37,7 +36,6 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"user"})
 @EntityListeners(CommentListener.class)
 public class Comment extends BaseEntity implements Comparable<Comment> {
 
@@ -46,6 +44,7 @@ public class Comment extends BaseEntity implements Comparable<Comment> {
   // field - basic
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "commentId")
   private int commentId;
 
   @Column(nullable = false)

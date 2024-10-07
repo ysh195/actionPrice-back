@@ -12,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class User {
 
   // field - basic
   @Id
-  @Column(unique=true, nullable=false)
+  @Column(name = "username")
   @Size(min = 6, max=20)
   private String username;
 
@@ -61,6 +62,7 @@ public class User {
   private String password;
 
   @Column(nullable=false, unique=true)
+  @Email
   private String email;
 
   @Column(nullable=true)
