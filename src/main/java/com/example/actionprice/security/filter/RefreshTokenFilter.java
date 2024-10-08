@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.example.actionprice.util.JWTUtil;
 
+// TODO 토큰 유효시간 재설정
 /**
  * 리프레시 토큰 체크 필터
  * @author : 연상훈

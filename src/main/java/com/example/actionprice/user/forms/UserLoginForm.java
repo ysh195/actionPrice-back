@@ -25,6 +25,6 @@ public class UserLoginForm {
   @Size(min = 8, max=16, message = "비밀번호는 8자 이상 16자 이하로 입력해야 합니다.")
   private String password;
 
-  private boolean rememberMe = false; // rememberMe(자동 로그인)을 위한 항목
+  private boolean rememberMe; // rememberMe(자동 로그인)을 위한 항목
 
 }
