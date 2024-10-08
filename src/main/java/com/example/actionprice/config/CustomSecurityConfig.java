@@ -98,7 +98,7 @@ public class CustomSecurityConfig {
             .addFilterBefore(new RefreshTokenFilter("/refreshToken", jwtUtil), TokenCheckFilter.class)
             .rememberMe(httpSecurityRememberMeConfigurer -> {httpSecurityRememberMeConfigurer.rememberMeParameter("rememberMe")
                 .tokenRepository(persistentTokenRepository()) // persistentTokenRepository
-                .tokenValiditySeconds(60);}) // 토큰 기능의 테스트를 위해 rememberMe 기능의 토큰 유효 시간을 1분으로 설정
+                .tokenValiditySeconds(3600);}) // 토큰 기능의 테스트를 위해 rememberMe 기능의 토큰 유효 시간을 1분으로 설정
             .formLogin((formLogin) -> formLogin.loginPage("/api/user/login")
                     .usernameParameter("username")
                     .passwordParameter("password")

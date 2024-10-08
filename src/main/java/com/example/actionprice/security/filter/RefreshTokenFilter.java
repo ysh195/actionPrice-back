@@ -80,7 +80,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
       // refresh token의 유효시간이 얼마 남지 않은 경우
       Integer exp = (Integer) refreshClaims.get("exp");
 
-      Date expTime = new Date(Instant.ofEpochMilli(exp).toEpochMilli() * 1000);
+      Date expTime = new Date(Instant.ofEpochMilli(exp).toEpochMilli() * 1000 * 60 * 60);
       Date current = new Date(System.currentTimeMillis());
 
       // 만료 시간과 현재 시간의 간격 계산
@@ -95,13 +95,13 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
       String username = (String) refreshClaims.get("username");
 
       // 이 상태까지 오면 무조건 access token은 새로 생성
-      String accessTokenValue = jwtUtil.generateToken(Map.of("username", username), 1);
+      String accessTokenValue = jwtUtil.generateToken(Map.of("username", username), 60);
       String refreshTokenValue = tokens.get("refreshToken");
 
       // refresh token도 3일도 안 남았다면
-      if(gapTime < (1000 * 60 * 60 * 24 * 3)){
+      if(gapTime < (60)){
         log.info("new refresh token required");
-        refreshTokenValue = jwtUtil.generateToken(Map.of("username", username), 30);
+        refreshTokenValue = jwtUtil.generateToken(Map.of("username", username), 60 * 3);
       }
 
       log.info("results of refreshing tokens");
