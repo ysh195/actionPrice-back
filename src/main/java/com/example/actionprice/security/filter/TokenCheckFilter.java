@@ -25,7 +25,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * 토큰을 검사하는 필터
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:43
- * @updated : 2024-10-06 오후 2:43
+ * @updated : 2024-10-08 오후 4:11
  * @see : @RequiredArgsConstructor를 사용했기 때문에 나중에 생성할 때 넣어줘야 함
  */
 @Log4j2
@@ -40,6 +40,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
     log.info("[class] TokenCheckFilter - [method] doFilterInternal > 시작");
 
     // 나중에 반대로 막아둘 곳만 따로 지정해서 관리
+    // TODO 토큰 필터 연구 및 관리 필요. 이거 쓰면 이것저것 기능이 막혀버림
     String requestURI = request.getRequestURI();
     if (!requestURI.startsWith("/later/")){
       filterChain.doFilter(request, response);
