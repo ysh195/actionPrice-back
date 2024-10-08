@@ -46,7 +46,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
   ) throws IOException
   {
 
-    log.info("Login Success Handler");
+    log.info("----------- Login Success Handler -----------");
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
@@ -69,6 +69,8 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     Map<String, String> keyMap = Map.of("access_token", accessToken,"refresh_token", refreshToken); // map 형태로 토큰 정보를 저장
 
     String jsonStr = gson.toJson(keyMap); // json에 토큰 정보를 전달
+
+    log.info("Login Success Handler : " + jsonStr);
 
     response.getWriter().println(jsonStr); // response(json 형태)의 writer에 토큰 정보 추가
   }
