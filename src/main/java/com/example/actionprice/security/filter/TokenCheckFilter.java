@@ -36,6 +36,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
   private final JWTUtil jwtUtil;
 
   // 토큰 검사를 하지 않는 경로
+  // 어쩌면 반대로 토큰의 검사가 필요한 경로를 설정하는 게 더 간결하고 효율적일 수도 있음
   private final String[] NoTokenCheckPath = {
           "/",
           "/api/user/login",

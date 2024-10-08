@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// TODO exception 처리를 구체화할 필요가 있음
 /**
  * @author : 연상훈
  * @created : 2024-10-05 오후 10:52

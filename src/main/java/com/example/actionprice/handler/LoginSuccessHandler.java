@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 // TODO admin 페이지 만들고, 블랙리스트 관리하기
+// TODO exception 처리를 구체화할 필요가 있음
 /**
  * 로그인 성공 시 사용되는 핸들러
  * @author : 연상훈
@@ -36,7 +37,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
    * @author : 연상훈
    * @created : 2024-10-06 오후 6:17
    * @updated : 2024-10-06 오후 6:17
-   * @see : 거의 책대로임
+   * @see : 토큰 유효기간 재설정 필요.
    */
   @Override
   public void onAuthenticationSuccess(
