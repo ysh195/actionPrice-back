@@ -3,6 +3,9 @@ package com.example.actionprice.advice;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+
+import com.example.actionprice.exception.InvalidEmailAddressException;
+import com.example.actionprice.exception.UsernameAlreadyExistsException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -74,6 +77,18 @@ public class CustomRestAdvice {
     errorMap.put("message", "No Such element Exception");
 
     return ResponseEntity.badRequest().body(errorMap);
+  }
+
+  @ExceptionHandler(UsernameAlreadyExistsException.class)
+  public ResponseEntity<String> handlerUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
+    log.error(e);
+    return ResponseEntity.badRequest().body(e.getMessage());
+  }
+
+  @ExceptionHandler(InvalidEmailAddressException.class)
+  public ResponseEntity<String> invalidEmailAddressException(InvalidEmailAddressException e) {
+    log.error(e);
+    return ResponseEntity.badRequest().body(e.getMessage());
   }
 
 
