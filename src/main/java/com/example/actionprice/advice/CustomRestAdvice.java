@@ -86,10 +86,9 @@ public class CustomRestAdvice {
   }
 
   @ExceptionHandler(InvalidEmailAddressException.class)
-  public ResponseEntity<String> invalidEmailAddressException(InvalidEmailAddressException e) {
+  public ResponseEntity<String> handlerInvalidEmailAddressException(InvalidEmailAddressException e) {
     log.error(e);
     return ResponseEntity.badRequest().body(e.getMessage());
   }
-
 
 }
