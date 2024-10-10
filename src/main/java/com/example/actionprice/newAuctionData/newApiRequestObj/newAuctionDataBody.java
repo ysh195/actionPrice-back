@@ -1,4 +1,4 @@
-package com.example.actionprice.newAuctionData;
+package com.example.actionprice.newAuctionData.newApiRequestObj;
 
 import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataContent;
 import com.fasterxml.jackson.annotation.JsonProperty;

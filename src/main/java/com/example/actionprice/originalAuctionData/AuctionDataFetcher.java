@@ -32,14 +32,15 @@ import java.net.URISyntaxException;
 */
 @Component
 public class AuctionDataFetcher {
-	
+
 	@Value("${auctionData.url}")
 	String baseAuctionUrl;
 	
 	@Value("${auctionData.encodedKey}")
 	String auctionEncodedKey;
-	
+
 	private final WebClient webClient;
+
 
 	public AuctionDataFetcher() {
 		this.webClient = WebClient.builder().build();

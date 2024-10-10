@@ -5,6 +5,8 @@ import jakarta.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Service;
  * 1. 객체를 @Service로 수정.
  * 2. 비즈니스 로직 구현.
  */
+
 @Service
 @RequiredArgsConstructor
 @Log4j2
