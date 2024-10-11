@@ -1,9 +1,8 @@
 package com.example.actionprice;
 
-import com.example.actionprice.sendEmail.Pop3Properties;
+import com.example.actionprice.config.Pop3Properties;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Store;
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -23,11 +22,7 @@ import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataBody
 import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataRow;
 import com.example.actionprice.sendEmail.SendEmailServiceImpl;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import reactor.core.publisher.Flux;
-
-import javax.xml.parsers.DocumentBuilderFactory;
 
 // TODO 데이터 저장 기능은 논의 후 구현
 @SpringBootTest(classes = {ActionPriceApplication.class})

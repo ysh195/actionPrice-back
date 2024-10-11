@@ -1,5 +1,6 @@
 package com.example.actionprice.sendEmail;
 
+import com.example.actionprice.config.Pop3Properties;
 import com.example.actionprice.exception.InvalidEmailAddressException;
 import jakarta.mail.Flags;
 import jakarta.mail.Folder;

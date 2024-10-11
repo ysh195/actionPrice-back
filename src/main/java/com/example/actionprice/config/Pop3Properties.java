@@ -1,4 +1,4 @@
-package com.example.actionprice.sendEmail;
+package com.example.actionprice.config;
 
 import jakarta.mail.Session;
 import jakarta.mail.Store;
