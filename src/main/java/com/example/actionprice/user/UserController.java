@@ -119,9 +119,10 @@ public class UserController {
    * 회원가입 시 인증코드 발송 기능
    * @author : 연상훈
    * @created : 2024-10-06 오후 8:24
-   * @updated : 2024-10-10 오전 11:09
+   * @updated : 2024-10-11 오후 21:41
    * @see : UserRegisterForm을 사용해야 함
    * 검증 그룹으로 SendVerificationCodeGroup을 사용합니다.
+   * 내부적으로 InvalidEmailAddressException을 사용합니다. 존재하지 않는 이메일로 발송 시 에러를 일으키니, 그에 대한 처리가 필요합니다.
    * https://www.knotend.com/g/a#N4IgzgpgTglghgGxgLwnARgiAxA9lAWxAC5QA7XAEwjBPIEYAmRgVkYBZ6AOOkBDCAhIhALuOAVLsA+4wAJAOD2BCwZABfADQgy7AJwAGAMwA2DU1790g4SMAf3bLmAcFqniJIqYBcJwDXjAfiWqyAdh1cNDUYfLWMBIWIQAHkvNQ0Weno9PXYfMNMIkHk7QAHJqRZAEN6pHMAKhs8VNXp2FnZgrRZ0s0iADViyYJ16Qy4G0j5w4RiK9RZAxK0ePpMmkFbh0a4fdi4jKYHIwAmBwB0O2UBIOqlAEbX7SWs2vS16H0WORszABjrnKUAHGqlAB5HAH3bAA5qpQAtVtsCND4fIleqBpplACATcikgEZBwCvNeVvPF2OwdEC9LdhAAzRCQNo9apAiaYyJDbxAnSseok2ZtHRsDQpPT0GnwqRiQA7Qzk2okDHpGIyaQ4pIAM8cA3V2ACha2lclnp9OwaQAXKAAVwgdJYWkYXD0aTWGWEEAAHgBjCAAB0VMFwZCkgAyZwA1nUoKhBKABzGgkADaXsqzDYnB43k0ugMRgAuspfeptPpDIwQOT-IE6iBI9GQ3GjN4qjU6g102o-AEgiFE3EEkkUmlC2R4rzq+X2n4utwC1GKw3Uk3qmN6MTa7naiEGt4FksVgnax1Wz0m+PlhGOyM+8TvOdLtcFbWF5OmwCgSC08uNzKbkiaqj0cfowfgfRR2oCSwiTxa3ej+S-FT29Hn6+m3pAUmRZWsKR-JteUZYCbzUIDGXYZkmxlRD5VgsgoP5QVvHpLUdRrcMKjNBAEAAdRgShFQACxIeh6VUYiEAACQgGA3SoxUSGWBjBAQAAFOBKEoGAyDdEh6LUKgICiKBqFgUTvT9VgOG4HtYzDBMkxLVMLy7NIc2qYdqW8GdukfFdDH7IM1F3bM1FPLd90CQ8H33S80R8DFvH-EJrN8b9NXM+CQMgpJoOwotFlQlJAM1bVdTTRQgA
    */
   @PostMapping(value = "/sendVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -132,17 +133,18 @@ public class UserController {
     }
 
     String email = userRegisterForm.getEmail();
-    boolean isEmailSent = sendEmailService.sendVerificationEmail(email);
 
-    String resultOfSending = "";
-
-    // 발송되었으면 true, 이미 5분 내로 발송된 것이 있으면 false, 발송에 실패하면 UsernameAlreadyExistsException
-    if(isEmailSent){
-      resultOfSending = "인증코드가 성공적으로 발송되었습니다.";
-    } else {
-      resultOfSending = "최근 5분 내로 이미 발송된 인증코드가 있습니다. 발송된 코드를 사용해주세요.";
+    if(userService.checkUserExistsWithEmail(email)){
+      log.info("[class] UserController - [method] sendVerificationCode - email already used");
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already used");
     }
 
+    // 발송되었으면 true, 이미 5분 내로 발송된 것이 있으면 false.
+    // 이미 발송된 것이 있지만 5분이 지났으면 새로 발송해주고 true 반환.
+    // 발송 실패 시 InvalidEmailAddressException으로 처리
+    boolean isEmailSent = sendEmailService.sendVerificationEmail(email);
+
+    String resultOfSending = isEmailSent ? "인증코드가 성공적으로 발송되었습니다." : "최근 5분 내로 이미 발송된 인증코드가 있습니다. 발송된 코드를 사용해주세요.";
     return ResponseEntity.ok(resultOfSending);
   }
 
@@ -187,7 +189,7 @@ public class UserController {
       return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
     }
 
-    boolean useranme_already_exist = userService.checkUserExists(form.getUsername());
+    boolean useranme_already_exist = userService.checkUserExistsWithUsername(form.getUsername());
 
     // userService.checkUserExists()는 존재하면 true, 존재하지 않으면 false 반환
     if (useranme_already_exist) {

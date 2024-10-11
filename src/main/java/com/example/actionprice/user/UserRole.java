@@ -6,5 +6,5 @@ package com.example.actionprice.user;
  * @updated : 2024-10-05 오후 10:51
  */
 public enum UserRole {
-  USER, ADMIN;
+  ROLE_USER, ROLE_ADMIN;
 }

@@ -10,6 +10,9 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
@@ -67,9 +70,14 @@ public class User {
   @Column(nullable=true)
   private String refreshToken;
 
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+  @JoinTable(
+      name = "user_authorities",
+      joinColumns = @JoinColumn(name = "username"),
+      inverseJoinColumns = @JoinColumn(name = "authority_id")
+  )
   @Builder.Default
-  private Set<GrantedAuthority> authorities = new HashSet<>();
+  private Set<CustomAuthority> authorities = new HashSet<>(); // 권한 객체를 별도로 관리해서 유저 생성할 때마다 권한이 쓸데없이 늘어나는 것을 방지
 
   // field - relationship
   @JsonManagedReference //부모객체에서 자식객체 관리 json형태로 반환될때 이게 부모라는것을 알려줌
@@ -114,10 +122,11 @@ public class User {
    * @created : 2024-10-06 오전 11:09
    * @updated : 2024-10-06 오전 11:09
    * @param : role = 해당 user에게 추가할 role입니다. 반드시 "ROLE_USER", "ROLE_ADMIN"로 입력해주세요.
+   * 오탈자 방지를 위해 UserRole 활용할 것
    */
   public void addAuthorities(String role) {
-    GrantedAuthority authority = new SimpleGrantedAuthority(role);
-    this.authorities.add(authority);
+    // 있으면 제거. 없으면 말고
+    this.authorities.removeIf(authority -> authority.getAuthority().equals(role));
   }
 
   /**
@@ -125,9 +134,10 @@ public class User {
    * @created : 2024-10-06 오전 11:11
    * @updated : 2024-10-06 오전 11:11
    * @param : role = 해당 user에게 삭제할 role입니다. 반드시 "ROLE_USER", "ROLE_ADMIN"로 입력해주세요.
+   * 오탈자 방지를 위해 UserRole 활용할 것
    */
   public void removeAuthorities(String role) {
-    GrantedAuthority authority = new SimpleGrantedAuthority(role);
+    CustomAuthority authority = CustomAuthority.builder().authority(role).build();
     this.authorities.remove(authority);
   }
 
