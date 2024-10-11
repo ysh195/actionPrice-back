@@ -49,7 +49,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     log.info(loginForm);
 
     // 인증토큰에 유저 정보를 입력할 때 비밀번호는 숨김처리 함
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginForm.getUsername(), "PASSWORD_HIDDEN");
+    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword());
 
     log.info("[class] LoginFilter - [method] attemptAuthentication > authenticationToken : " + authenticationToken);
 
