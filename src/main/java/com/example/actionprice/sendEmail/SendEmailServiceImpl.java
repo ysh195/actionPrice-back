@@ -138,16 +138,10 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @created : 2024-10-10 오후 9:44
 	 * @updated : 2024-10-10 오후 11:57
 	 * @see :
-	 * 이메일 발송도 시간이 오래 걸리는데, 발송이 완료되고 나서 이것도 5초를 기다리면 너무 오래 걸리니까
-	 * @Async로 비동기 처리하여 발송과 동시에 메서드 시작
 	 * 그리고 store와 folder를 try() 안에 넣어서 try가 실패하면 자연스럽게 닫히게 함
 	 */
-	@Async
-	public CompletableFuture<Boolean> isCompleteSentEmail(String email) throws Exception {
-		log.info("이메일 발송이 완료되었는지 확인을 시작합니다. 먼저, 이메일 발송까지 5초 간 대기합니다.");
-
-		// 이메일 발송까지 5초 간 대기
-		Thread.sleep(5000);
+	public boolean isCompleteSentEmail(String email) throws Exception {
+		log.info("이메일 발송이 완료되었는지 확인을 시작합니다.");
 
 		try (Store store = pop3Properties.getPop3Store()) {
 			if (store.isConnected()) {
@@ -180,7 +174,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 							} catch (MessagingException e) {
 								log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
 							}
-							return CompletableFuture.completedFuture(false);
+							return false;
 						}
 					}
 				}
@@ -188,7 +182,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 		} // Store 자동으로 닫힘
 
 		log.info("반송된 이메일이 없으므로, true를 반환합니다.");
-		return CompletableFuture.completedFuture(true);
+		return true;
 	}
 
 	/**
@@ -202,7 +196,6 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @throws :  Exception, InvalidEmailAddressException
 	 * @info : 이 메서드 실행 중에 오류가 발생하면 자체적으로 InvalidEmailAddressException 으로 던지기 때문에 별도의 오류 처리가 필요 없음.
 	 */
-	@SneakyThrows
 	public void sendSimpleMail(String receiverEmail, String subject, String content) throws InvalidEmailAddressException {
 		log.info("이메일 전송 메서드 시작");
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
@@ -214,11 +207,14 @@ public class SendEmailServiceImpl implements SendEmailService {
 		javaMailSender.send(simpleMailMessage);
 		log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
 
-		try {
-			isCompleteSentEmail(receiverEmail).get();  // 결과 대기 후 반환
-		} catch (InterruptedException | ExecutionException e) {
+    try {
+			if(!isCompleteSentEmail(receiverEmail)){
+				throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
+			}
+    } catch (Exception e) {
 			throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
-		}
+    }
+
 	}
 
 	/**
