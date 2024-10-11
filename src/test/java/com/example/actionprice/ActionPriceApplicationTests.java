@@ -24,6 +24,13 @@ import com.example.actionprice.sendEmail.SendEmailServiceImpl;
 
 import reactor.core.publisher.Flux;
 
+/**
+ * 
+ * @author : 연상훈
+ * @created : 2024-10-11 오후 8:29
+ * @updated : 2024-10-11 오후 8:29
+ * @info : 이메일 테스트는 더이상 불필요하여 삭제
+ */
 // TODO 데이터 저장 기능은 논의 후 구현
 @SpringBootTest(classes = {ActionPriceApplication.class})
 @Log4j2
@@ -31,9 +38,6 @@ class ActionPriceApplicationTests {
 
 	@Autowired
 	AuctionDataFetcher auctionDataFetcher;
-	
-	@Autowired
-	SendEmailServiceImpl sendEmailServiceImpl;
 
 	@Autowired
 	AuctionDataRepository auctionDataRepository;
@@ -118,32 +122,6 @@ class ActionPriceApplicationTests {
 
 	}
 	
-	/**
-	 * @author 연상훈
-	 * @created 24/10/01 22:43
-	 * @updated 24/10/01 22:43
-	 * @info 심플이메일 전송 테스트 성공
-	 */
-	@Disabled
-	@Test
-	void sendSimpleEmailTest() throws Exception {
-		sendEmailServiceImpl.sendSimpleMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
-	}
-
-	/**
-	 * @author 연상훈
-	 * @created 24/10/01 23:13
-	 * @updated 24/10/01 23:13
-	 * @param : endDay = 각 달의 마지막 날이 언제인지 확인 후 입력
-	 * @param : marketNameArr = 경매장 이름을 모두 여기에 입력
-	 * @info 복합이메일 전송 테스트 성공
-	 */
-	@Test
-	@Disabled
-	void sendMimeEmailTest() throws Exception {
-		sendEmailServiceImpl.sendMimeMail("dnqnp@naver.com", "스프링부트테스트", "테스트");
-	}
-
 	/**
 	 * @author : 연상훈
 	 * @created : 2024-10-06 오전 12:16

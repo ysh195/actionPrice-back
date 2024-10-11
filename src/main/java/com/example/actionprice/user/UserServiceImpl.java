@@ -31,6 +31,7 @@ public class UserServiceImpl implements UserService {
    * src/main/java/com/example/actionprice/exception/UsernameAlreadyExistsException.java
    * src/main/java/com/example/actionprice/advice/CustomRestAdvice.java
    */
+  @Transactional
   @Override
   public User createUser(UserRegisterForm userRegisterForm) {
     log.info("--------------- [UserService] createUser ----------------");
@@ -54,8 +55,8 @@ public class UserServiceImpl implements UserService {
         .email(userRegisterForm.getEmail())
         .build();
 
-    // 권한은 일반 유저
-    newUser.addAuthorities("ROLE_USER");
+    // 권한은 일반 유저. 사용자 권한을 줄 때는 반드시 UserRole 사용
+    newUser.addAuthorities(UserRole.ROLE_USER.name());
 
     // 저장
     userRepository.save(newUser);
@@ -91,12 +92,35 @@ public class UserServiceImpl implements UserService {
    * 재사용 가능성이 높은 메서드인 만큼, 간단하게 username만 입력 받도록 구성
    */
   @Override
-  public boolean checkUserExists(String username) {
+  public boolean checkUserExistsWithUsername(String username) {
 
-    log.info("--------------- [UserService] checkUserExists ----------------");
+    log.info("--------------- [UserService] check User Exists With Username ----------------");
 
     log.info("inputed_username: " + username);
     User existing_user = userRepository.findById(username).orElse(null);
+
+    if(existing_user != null) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * 해당 username을 가진 사용자가 존재하는지 체크하는 메서드.
+   * @author 연상훈
+   * @created 2024-10-10 오전 10:25
+   * @updated 2024-10-10 오전 10:25
+   * @see :
+   * 존재하면 true / 존재하지 않으면 false 반환
+   * 재사용 가능성이 높은 메서드인 만큼, 간단하게 username만 입력 받도록 구성
+   */
+  @Override
+  public boolean checkUserExistsWithEmail(String email) {
+    log.info("--------------- [UserService] check User Exists With Email ----------------");
+
+    log.info("inputed_email: " + email);
+    User existing_user = userRepository.findByEmail(email).orElse(null);
 
     if(existing_user != null) {
       return true;
