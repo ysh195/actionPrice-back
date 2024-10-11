@@ -1,12 +1,15 @@
 package com.example.actionprice;
 
-import java.net.URL;
+import com.example.actionprice.config.Pop3Properties;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Store;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import com.example.actionprice.originalAuctionData.AuctionDataEntity;
 import com.example.actionprice.originalAuctionData.AuctionDataRepository;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,14 +22,11 @@ import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataBody
 import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataRow;
 import com.example.actionprice.sendEmail.SendEmailServiceImpl;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 import reactor.core.publisher.Flux;
-
-import javax.xml.parsers.DocumentBuilderFactory;
 
 // TODO 데이터 저장 기능은 논의 후 구현
 @SpringBootTest(classes = {ActionPriceApplication.class})
+@Log4j2
 class ActionPriceApplicationTests {
 
 	@Autowired
@@ -38,6 +38,22 @@ class ActionPriceApplicationTests {
 	@Autowired
 	AuctionDataRepository auctionDataRepository;
 
+	@Autowired
+	Pop3Properties pop3Properties;
+
+	@Test
+	@Disabled
+	void sessionClose() throws Exception {
+		try {
+			Store store = pop3Properties.getPop3Store();
+			if (store.isConnected()) {
+				store.close(); // Store 연결 닫기
+				log.info("POP3 Store connection closed.");
+			}
+		} catch (MessagingException e) {
+			log.error("Error closing the POP3 Store: {}", e.getMessage());
+		}
+	}
 	// TODO 비즈니스 로직에 대한 논의 후 해당 클래스에 대한 재조정이 필요함
 	/**
 	 * @author 연상훈
