@@ -91,7 +91,9 @@ public class Post extends BaseEntity implements Comparable<Post> {
   }
 
   public void addComment(Comment comment) {
-    commentSet.add(comment);
+    if(this.commentSet.stream().noneMatch(c -> c.getCommentId() == comment.getCommentId())){
+      this.commentSet.add(comment);
+    }
   }
 
   /**
@@ -103,11 +105,9 @@ public class Post extends BaseEntity implements Comparable<Post> {
    * 2. orphanRemoval = true, cascade = {CascadeType.ALL}로, 부모와의 연결 끊어지면 지워짐
    * 3. 근데 지워진다는 신호를 받으면 지워지기 전에 @EntityListeners(CommentListener.class) 내부의 comment 객체 제거 로직이 발동
    * 4. 양쪽 부모에서 안전하게 지워짐.
+   * 5. if-contains로 간단하게 하려면 commentSet에 equals를 오버라이드 해야 하는데, 거기에 엮인 게 많아서 생각보다 귀찮음
    */
   public void removeComment(Comment comment) {
-    if (commentSet.contains(comment)) {
-      commentSet.remove(comment);
-      comment.setPost(null);
-    }
+    this.commentSet.removeIf(c -> c.getCommentId() == comment.getCommentId());
   }
 }

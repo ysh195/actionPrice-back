@@ -32,8 +32,8 @@ import com.example.actionprice.util.JWTUtil;
 @RequiredArgsConstructor
 public class RefreshTokenFilter extends OncePerRequestFilter {
 
+  // SecurityConfig에서 생성하면서 주입 받을 것들
   private final String refreshPath;
-
   private final JWTUtil jwtUtil;
 
   /**
@@ -48,12 +48,12 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     String path = request.getRequestURI();
 
     if(!path.equals(refreshPath)){
-      log.info("skip refresh token filter");
+      log.info("리프레시 토큰 필터를 위한 경로가 아니므로 넘어갑니다.");
       filterChain.doFilter(request, response);
       return;
     }
 
-    log.info("refresh token filter run");
+    log.info("리프레시 토큰 필터 실행");
 
     // 전송된 json에서 accessToken과 refreshToken을 얻어온다
     Map<String, String> tokens = parseRequestJSON(request);
@@ -76,38 +76,41 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
     try{
       refreshClaims = checkRefreshToken(refresh_token);
-      log.info("refresh claims: " + refreshClaims);
+      log.info("현재 리프레시 토큰 상태 : " + refreshClaims.toString());
 
       // refresh token의 유효시간이 얼마 남지 않은 경우
       Integer exp = (Integer) refreshClaims.get("exp");
 
-      Date expTime = new Date(Instant.ofEpochMilli(exp).toEpochMilli() * 1000 * 60 * 60);
+      // 밀리초 단위이기 때문에 1000 = 1초 / 1000 * 60 * 60 = 1시간
       Date current = new Date(System.currentTimeMillis());
+      Date expTime = new Date(Instant.ofEpochMilli(exp).toEpochMilli() * 1000 * 60 * 60);
 
       // 만료 시간과 현재 시간의 간격 계산
       // 만일 3일 미만인 경우에는 refresh token도 다시 생성
       long gapTime = (expTime.getTime() - current.getTime());
 
       log.info("--------------------------------");
-      log.info("current time: " + current);
-      log.info("exp time: " + exp);
-      log.info("gap time: " + gapTime);
+      log.info("현재 시간 : " + current);
+      log.info("만료 시간 : " + exp);
+      log.info("남은 시간 : " + gapTime);
 
       String username = (String) refreshClaims.get("username");
 
       // 이 상태까지 오면 무조건 access token은 새로 생성
+      // tokens의 시간은 분 단위임.
       String accessTokenValue = jwtUtil.generateToken(Map.of("username", username), 60);
       String refreshTokenValue = tokens.get("refresh_token");
 
       // refresh token도 3일도 안 남았다면
       if(gapTime < (60)){
-        log.info("new refresh token required");
+        log.info("새로운 리프레시 토큰 발급이 필요합니다.");
         refreshTokenValue = jwtUtil.generateToken(Map.of("username", username), 60 * 3);
       }
 
-      log.info("results of refreshing tokens");
+      log.info("---------------- 현재 리프레시 토큰 값 ---------------- ");
       log.info("new access token: " + accessTokenValue);
       log.info("new refresh token: " + refreshTokenValue);
+      log.info("--------------------------------");
 
       sendTokens(accessTokenValue, refreshTokenValue, response);
     }
@@ -139,7 +142,7 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
       jwtUtil.validateToken(accessToken);
     }
     catch(ExpiredJwtException e){
-      log.info("access token expired");
+      log.info("엑세스 토큰이 만료되었습니다.");
     }
     catch(Exception e){
       throw new RefreshTokenException(RefreshTokenException.ErrorCase.NO_ACCESS);
