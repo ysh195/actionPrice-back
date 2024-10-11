@@ -61,12 +61,10 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @see :
 	 */
 	@Override
-	public boolean sendVerificationEmail(String email) throws Exception {
+	public boolean sendVerificationEmail(String email) {
 
 		// 해당 이메일로 발급 받은 verificationEmail이 있으면 가져오고, 없으면 null 반환
 		VerificationEmail verificationEmail = verificationEmailRepository.findById(email).orElse(null);
-
-		String verificationCode = generateRandomCode();
 
 		if (verificationEmail != null) { // 이미 존재하는지 체크
 			// 이미 있으면, 생성된 지 5분 이상 지났는지 체크
@@ -82,7 +80,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 		// 생성된 적 없거나 5분이 지났으면(위에서 지우고) 새로 생성됨
 		verificationEmail = VerificationEmail.builder()
 				.email(email)
-				.verificationCode(verificationCode)
+				.verificationCode(generateRandomCode())
 				.build();
 
 		// 이메일 내용 구성.
@@ -92,7 +90,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 						-------------------------------------------
 						%s
 						-------------------------------------------
-						""", verificationCode);
+						""", verificationEmail.getVerificationCode());
 
 		// 이메일 발송. 존재하지 않는 이메일로 발송 시 자동으로 예외 처리.
 		// 그 경우에는 해당 객체가 DB에 저장되지 않으니 따로 삭제해줄 필요가 없음
@@ -167,13 +165,17 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 				// 폴더 내 모든 메일 메시지 검색
 				for (Message message : emailFolder.getMessages()) {
+
 					// 메일의 발송 날짜가 지정된 시간 이내인지 확인
 					if (untilTime.isBefore(message.getSentDate().toInstant())) {
+
 						// 반송된 이메일 확인
-						String[] failedRecipients = message.getHeader("From");
+						String[] from = message.getHeader("From");
+
 						// 누구한테서 온 이메일인지 확인하고, 그게 Mail Delivery Subsystem <mailer-daemon@googlemail.com>이라면 반송된 메일이 맞습니다.
 						// X-Failed-Recipients를 사용하면 훨씬 간결하지만 X-Failed-Recipients가 존재하지 않는 경우도 많아서 안정성이 매우 떨어집니다.
-						if (failedRecipients != null && Arrays.asList(failedRecipients).contains("Mail Delivery Subsystem <mailer-daemon@googlemail.com>")) {
+						if (from != null && Arrays.asList(from).contains("Mail Delivery Subsystem <mailer-daemon@googlemail.com>")) {
+
 							// 이번에는 그 이메일의 내용물을 확인합니다.
 							MimeMultipart multipart = (MimeMultipart) message.getContent();
 
@@ -182,6 +184,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 								// 이메일이 누구한테 보냈다가 반송된 것인지는 message/rfc822 안에만 있습니다.
 								if (bodyPart.isMimeType("message/rfc822")) {
+
 									MimeMessage originalMessage = (MimeMessage) bodyPart.getContent();
 
 									// 반송된 이메일의 주인을 출력합니다.
@@ -202,9 +205,13 @@ public class SendEmailServiceImpl implements SendEmailService {
 										} catch (MessagingException e) {
 											log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
 										}
+
 									}
+
 								}
+
 							}
+
 						}
 					}
 				}
@@ -247,32 +254,6 @@ public class SendEmailServiceImpl implements SendEmailService {
 	}
 
 	/**
-	 * @author 연상훈
-	 * @created 24/10/01 22:50
-	 * @updated 24/10/02 11:46
-	 * @param : receiverEmail = 받는 사람의 이메일
-	 * @param : subject = 보낼 이메일의 제목
-	 * @param : content = 보낼 이메일의 내용
-	 * @throws : Exception
-	 * @info 간단 이메일 발송 로직. 오류를 대충 처리했음
-	 */
-	private void sendMimeMail(String receiverEmail, String subject, String content) throws Exception{
-		MimeMessage message = javaMailSender.createMimeMessage();
-		
-		MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, false, "UTF-8");
-		mimeMessageHelper.setFrom(senderEmail);
-		mimeMessageHelper.setTo(receiverEmail); // 메일 수신자
-		mimeMessageHelper.setSubject(subject); // 메일 제목
-		mimeMessageHelper.setText(content); // 메일 본문 내용, HTML 여부
-		
-		try {
-			javaMailSender.send(message);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * 인증코드 구성을 위한 랜덤한 8자리 문자열 생성 메서드
 	 * @author : 연상훈
 	 * @created : 2024-10-06 오후 7:42
@@ -285,6 +266,33 @@ public class SendEmailServiceImpl implements SendEmailService {
 			code.append(CHARACTERS.charAt(randomIndex));
 		}
 		return code.toString();
+	}
+
+	/**
+	 * @author 연상훈
+	 * @created 24/10/01 22:50
+	 * @updated 24/10/02 11:46
+	 * @param : receiverEmail = 받는 사람의 이메일
+	 * @param : subject = 보낼 이메일의 제목
+	 * @param : content = 보낼 이메일의 내용
+	 * @throws : Exception
+	 * @info 간단 이메일 발송 로직. 오류를 대충 처리했음.
+	 * 현재 사용되지 않음
+	 */
+	private void sendMimeMail(String receiverEmail, String subject, String content) throws Exception{
+		MimeMessage message = javaMailSender.createMimeMessage();
+
+		MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, false, "UTF-8");
+		mimeMessageHelper.setFrom(senderEmail);
+		mimeMessageHelper.setTo(receiverEmail); // 메일 수신자
+		mimeMessageHelper.setSubject(subject); // 메일 제목
+		mimeMessageHelper.setText(content); // 메일 본문 내용, HTML 여부
+
+		try {
+			javaMailSender.send(message);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

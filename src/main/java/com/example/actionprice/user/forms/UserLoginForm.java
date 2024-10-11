@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.ToString;
+import lombok.NoArgsConstructor;
 
 /**
  * @author : 연상훈
@@ -13,8 +13,8 @@ import lombok.ToString;
  * @see : 사용자가 로그인할 때 입력한 데이터를 담아올 객체입니다. 실질적으로 이게 dto 역할입니다.
  */
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class UserLoginForm {
 
   @NotBlank(message = "사용자 이름은 필수 입력 사항입니다.")

@@ -24,6 +24,7 @@ public class UserServiceImpl implements UserService {
   private final PasswordEncoder passwordEncoder;
 
   /**
+   * 유저 생성 기능. 대체로 회원가입
    * @author 연상훈
    * @created 2024-10-10 오전 11:05
    * @updated 2024-10-10 오전 11:05
@@ -107,13 +108,13 @@ public class UserServiceImpl implements UserService {
   }
 
   /**
-   * 해당 username을 가진 사용자가 존재하는지 체크하는 메서드.
+   * 해당 email을 사용 중인 사용자가 존재하는지 체크하는 메서드.
    * @author 연상훈
    * @created 2024-10-10 오전 10:25
    * @updated 2024-10-10 오전 10:25
    * @see :
    * 존재하면 true / 존재하지 않으면 false 반환
-   * 재사용 가능성이 높은 메서드인 만큼, 간단하게 username만 입력 받도록 구성
+   * 재사용 가능성이 높은 메서드인 만큼, 간단하게 email만 입력 받도록 구성
    */
   @Override
   public boolean checkUserExistsWithEmail(String email) {
