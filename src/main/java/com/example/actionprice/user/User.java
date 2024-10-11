@@ -38,8 +38,10 @@ import org.hibernate.annotations.BatchSize;
  * 5. 즐겨찾기가 과도하게 늘어나는 것을 막기 위해 10개로 제한했습니다.
  * 6. OneToMany 관계에 있는 객체의 컬렉션 타입은, 해당 객체를 쉽게 찾아낼 수 있도록 set으로 설정했습니다.
  * 7. jwt 토큰은 로그인 시에 발급하는 것이지, 계정 생성 시에 발급하는 것이 아니기 때문에 생성할 당시에는 발급되지 않습니다. 그렇기 때문에 nullable입니다.
- * 8. 유연한 권한 관리를 위해 role을 Set<GrantedAuthority> authorities로 변경했습니다. 추후 "ROLE_USER", "ROLE_ADMIN"과 같은 입력이 필요합니다.
- * 9.추후 수정 및 추가가 예고된 항목들의 수정 및 추가를 위해 Builder를 사용하는 것은 불필요한 코드의 증가를 야기하므로, set 메서드를 지정하여 단순화합니다.
+ * 8.추후 수정 및 추가가 예고된 항목들의 수정 및 추가를 위해 Builder를 사용하는 것은 불필요한 코드의 증가를 야기하므로, set 메서드를 지정하여 단순화합니다.
+ * 9. 간편한 권한 관리를 위해 Set<String> authorities 사용
+ * 10. set 객체들에 이미 존재하는 것을 추가하거나 존재하지 않는 것을 삭제할 때의 에러처리를 하느니, 차라리 에러 없이 안정적으로 실행되는 것이 효율적일 것 같아서
+ * add/remove 메서드를 좀 더 복잡하게 구성함
  */
 @Entity
 @Table(name="user")
@@ -68,6 +70,13 @@ public class User {
   @Column(nullable=true)
   private String refreshToken;
 
+  /**
+   * 유저 권한
+   * @author : 연상훈
+   * @created : 2024-10-11 오후 11:33
+   * @updated : 2024-10-11 오후 11:33
+   * @info : 권한 관리를 간편하게 하기 위해 Set<String>으로 변경
+   */
   @ElementCollection(fetch = FetchType.EAGER)
   @Builder.Default
   private Set<String> authorities = new HashSet<>(); // 권한 객체를 별도로 관리해서 유저 생성할 때마다 권한이 쓸데없이 늘어나는 것을 방지
@@ -113,9 +122,9 @@ public class User {
   /**
    * @author : 연상훈
    * @created : 2024-10-06 오전 11:09
-   * @updated : 2024-10-06 오전 11:09
-   * @param : role = 해당 user에게 추가할 role입니다. 반드시 "ROLE_USER", "ROLE_ADMIN"로 입력해주세요.
-   * 오탈자 방지를 위해 UserRole 활용할 것
+   * @updated : 2024-10-11 오후 11:36
+   * @param : 오탈자 방지를 위해 UserRole 활용할 것. ex) UserRole.ROLE_USER, UserRole.ROLE_ADMIN.
+   * @see : 절대 UserRole.ROLE_USER.name()까지 하면 안 됨. 그건 메서드 내부에서 알아서 함.
    */
   public void addAuthorities(UserRole role) {
     // 없으면 추가
@@ -127,24 +136,32 @@ public class User {
   /**
    * @author : 연상훈
    * @created : 2024-10-06 오전 11:11
-   * @updated : 2024-10-06 오전 11:11
-   * @param : role = 해당 user에게 삭제할 role입니다. 반드시 "ROLE_USER", "ROLE_ADMIN"로 입력해주세요.
-   * 오탈자 방지를 위해 UserRole 활용할 것
+   * @updated : 2024-10-11 오후 11:36
+   * @param : 오탈자 방지를 위해 UserRole 활용할 것. ex) UserRole.ROLE_USER, UserRole.ROLE_ADMIN.
+   * @see : 절대 UserRole.ROLE_USER.name()까지 하면 안 됨. 그건 메서드 내부에서 알아서 함.
    */
   public void removeAuthorities(UserRole role) {
+    // 있으면 삭제
     this.authorities.removeIf(authority -> authority.equals(role.name()));
   }
 
   public void addPost(Post post) {
-    this.postSet.add(post);
+    // 없으면 추가
+    if(this.postSet.stream().noneMatch(p -> p.getPostId() == post.getPostId())){
+      this.postSet.add(post);
+    }
   }
 
   public void removePost(Post post) {
-    this.postSet.remove(post); // post는 서로 1부모-1자식이기 때문에 단순한 로직이면 충분함.
+    // 있으면 삭제
+    this.postSet.removeIf(p -> p.getPostId() == post.getPostId());
   }
 
   public void addComment(Comment comment) {
-    this.commentSet.add(comment);
+    // 없으면 추가
+    if(this.commentSet.stream().noneMatch(c -> c.getCommentId() == comment.getCommentId())){
+      this.commentSet.add(comment);
+    }
   }
 
   /**
@@ -156,19 +173,22 @@ public class User {
    * 2. orphanRemoval = true, cascade = {CascadeType.ALL}로, 부모와의 연결 끊어지면 지워짐
    * 3. 근데 지워진다는 신호를 받으면 지워지기 전에 @EntityListeners(CommentListener.class) 내부의 comment 객체 제거 로직이 발동
    * 4. 양쪽 부모에서 안전하게 지워짐.
+   * 5. if-contains로 간단하게 하려면 commentSet에 equals를 오버라이드 해야 하는데, 거기에 엮인 게 많아서 생각보다 귀찮음
    */
   public void removeComment(Comment comment) {
-    if (commentSet.contains(comment)) {
-      commentSet.remove(comment);
-      comment.setUser(null);
-    }
+    // 있으면 삭제
+    this.commentSet.removeIf(c -> c.getCommentId() == comment.getCommentId());
   }
 
   public void addFavorite(Favorite favorite) {
-    this.favoriteSet.add(favorite);
+    // 없으면 추가
+    if (this.favoriteSet.stream().noneMatch(f -> f.getFavoriteId() == favorite.getFavoriteId())){
+      this.favoriteSet.add(favorite);
+    }
   }
 
   public void removeFavorite(Favorite favorite) {
-    this.favoriteSet.remove(favorite);
+    // 있으면 삭제
+    this.commentSet.removeIf(c -> c.getCommentId() == favorite.getFavoriteId());
   }
 }
