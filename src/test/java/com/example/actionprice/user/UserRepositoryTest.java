@@ -19,12 +19,12 @@ public class UserRepositoryTest {
   @Test
   public void userCreateTest() {
     User user = User.builder()
-        .username("useruser")
+        .username("useraaaa")
         .password(passwordEncoder.encode("11111111"))
         .email("bscom129@naver.com")
         .build();
 
-    user.addAuthorities(UserRole.USER.name());
+    user.addAuthorities(UserRole.ROLE_USER);
 
     userRepository.save(user);
   }

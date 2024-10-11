@@ -25,8 +25,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * @author : 연상훈
@@ -70,14 +68,9 @@ public class User {
   @Column(nullable=true)
   private String refreshToken;
 
-  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-  @JoinTable(
-      name = "user_authorities",
-      joinColumns = @JoinColumn(name = "username"),
-      inverseJoinColumns = @JoinColumn(name = "authority_id")
-  )
+  @ElementCollection(fetch = FetchType.EAGER)
   @Builder.Default
-  private Set<CustomAuthority> authorities = new HashSet<>(); // 권한 객체를 별도로 관리해서 유저 생성할 때마다 권한이 쓸데없이 늘어나는 것을 방지
+  private Set<String> authorities = new HashSet<>(); // 권한 객체를 별도로 관리해서 유저 생성할 때마다 권한이 쓸데없이 늘어나는 것을 방지
 
   // field - relationship
   @JsonManagedReference //부모객체에서 자식객체 관리 json형태로 반환될때 이게 부모라는것을 알려줌
@@ -124,9 +117,11 @@ public class User {
    * @param : role = 해당 user에게 추가할 role입니다. 반드시 "ROLE_USER", "ROLE_ADMIN"로 입력해주세요.
    * 오탈자 방지를 위해 UserRole 활용할 것
    */
-  public void addAuthorities(String role) {
-    // 있으면 제거. 없으면 말고
-    this.authorities.removeIf(authority -> authority.getAuthority().equals(role));
+  public void addAuthorities(UserRole role) {
+    // 없으면 추가
+    if (this.authorities.stream().noneMatch(authority -> authority.equals(role.name()))) {
+      this.authorities.add(role.name());
+    }
   }
 
   /**
@@ -136,9 +131,8 @@ public class User {
    * @param : role = 해당 user에게 삭제할 role입니다. 반드시 "ROLE_USER", "ROLE_ADMIN"로 입력해주세요.
    * 오탈자 방지를 위해 UserRole 활용할 것
    */
-  public void removeAuthorities(String role) {
-    CustomAuthority authority = CustomAuthority.builder().authority(role).build();
-    this.authorities.remove(authority);
+  public void removeAuthorities(UserRole role) {
+    this.authorities.removeIf(authority -> authority.equals(role.name()));
   }
 
   public void addPost(Post post) {

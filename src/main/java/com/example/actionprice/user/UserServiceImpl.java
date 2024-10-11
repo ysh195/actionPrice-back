@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         .build();
 
     // 권한은 일반 유저. 사용자 권한을 줄 때는 반드시 UserRole 사용
-    newUser.addAuthorities(UserRole.ROLE_USER.name());
+    newUser.addAuthorities(UserRole.ROLE_USER);
 
     // 저장
     userRepository.save(newUser);
