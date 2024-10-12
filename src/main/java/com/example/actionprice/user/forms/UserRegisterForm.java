@@ -3,9 +3,9 @@ package com.example.actionprice.user.forms;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author : 연상훈
@@ -15,9 +15,9 @@ import lombok.ToString;
  * 하나의 form이지만, 상황에 따라 검증이 필요한 영역이 다르기 때문에
  * 검증을 위한 별도의 그룹을 지정하여 처리합니다.
  */
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserRegisterForm {
 
   @NotBlank(message = "사용자 이름은 필수입니다.", groups = {CheckForDuplicateUsernameGroup.class, SendVerificationCodeGroup.class, CheckVerificationCodeGroup.class})

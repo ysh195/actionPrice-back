@@ -14,7 +14,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,8 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * @author : 연상훈
  * @created : 2024-10-05 오후 10:52
- * @updated : 2024-10-10 오전 9:30
- * @see : 단순한 페이지 이동 기능만 구현하였습니다.
+ * @updated : 2024-10-12 오전 00:59
+ * @see :
+ * 1. @CustomRestAdvice - handlerBindException로 유효성 검사 오류 처리하고 있으니 별도로 할 필요가 없음
  */
 @RestController
 @RequestMapping("/api/user")
@@ -98,15 +98,10 @@ public class UserController {
    * src/main/java/com/example/actionprice/advice/CustomRestAdvice.java
    */
   @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> register(@Valid @RequestBody UserRegisterForm form, BindingResult bindingResult) {
-    // 조건에 맞게 입력했는지 체크
-    if (bindingResult.hasErrors()) {
-      // 맞지 않으면 에러
-      String errorMessage = bindingResult.getFieldError().getDefaultMessage();
-      return ResponseEntity.badRequest().body(errorMessage);
-    }
+  public ResponseEntity<String> register(@Valid @RequestBody UserRegisterForm form) {
 
-    // 조건을 통과했으면 유저 객체 생성
+    // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
+
     userService.createUser(form);
 
     // 그리고 로그인페이지로 리다이렉트
@@ -126,11 +121,9 @@ public class UserController {
    * https://www.knotend.com/g/a#N4IgzgpgTglghgGxgLwnARgiAxA9lAWxAC5QA7XAEwjBPIEYAmRgVkYBZ6AOOkBDCAhIhALuOAVLsA+4wAJAOD2BCwZABfADQgy7AJwAGAMwA2DU1790g4SMAf3bLmAcFqniJIqYBcJwDXjAfiWqyAdh1cNDUYfLWMBIWIQAHkvNQ0Weno9PXYfMNMIkHk7QAHJqRZAEN6pHMAKhs8VNXp2FnZgrRZ0s0iADViyYJ16Qy4G0j5w4RiK9RZAxK0ePpMmkFbh0a4fdi4jKYHIwAmBwB0O2UBIOqlAEbX7SWs2vS16H0WORszABjrnKUAHGqlAB5HAH3bAA5qpQAtVtsCND4fIleqBpplACATcikgEZBwCvNeVvPF2OwdEC9LdhAAzRCQNo9apAiaYyJDbxAnSseok2ZtHRsDQpPT0GnwqRiQA7Qzk2okDHpGIyaQ4pIAM8cA3V2ACha2lclnp9OwaQAXKAAVwgdJYWkYXD0aTWGWEEAAHgBjCAAB0VMFwZCkgAyZwA1nUoKhBKABzGgkADaXsqzDYnB43k0ugMRgAuspfeptPpDIwQOT-IE6iBI9GQ3GjN4qjU6g102o-AEgiFE3EEkkUmlC2R4rzq+X2n4utwC1GKw3Uk3qmN6MTa7naiEGt4FksVgnax1Wz0m+PlhGOyM+8TvOdLtcFbWF5OmwCgSC08uNzKbkiaqj0cfowfgfRR2oCSwiTxa3ej+S-FT29Hn6+m3pAUmRZWsKR-JteUZYCbzUIDGXYZkmxlRD5VgsgoP5QVvHpLUdRrcMKjNBAEAAdRgShFQACxIeh6VUYiEAACQgGA3SoxUSGWBjBAQAAFOBKEoGAyDdEh6LUKgICiKBqFgUTvT9VgOG4HtYzDBMkxLVMLy7NIc2qYdqW8GdukfFdDH7IM1F3bM1FPLd90CQ8H33S80R8DFvH-EJrN8b9NXM+CQMgpJoOwotFlQlJAM1bVdTTRQgA
    */
   @PostMapping(value = "/sendVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> sendVerificationCode(@Validated(SendVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm, BindingResult bindingResult) throws Exception {
-    // 이메일 유효성 검사 후 처리
-    if (bindingResult.hasErrors()) {
-      return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
-    }
+  public ResponseEntity<String> sendVerificationCode(@Validated(SendVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm) throws Exception {
+
+    // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
 
     String email = userRegisterForm.getEmail();
 
@@ -157,15 +150,11 @@ public class UserController {
    * 검증 그룹으로 CheckVerificationCodeGroup 사용합니다.
    */
   @PostMapping(value = "/checkVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> checkVerificationCode(@Validated(CheckVerificationCodeGroup.class) @RequestBody UserRegisterForm form, BindingResult bindingResult){
-    // 이메일과 인증 코드 유효성 검사 후 처리
-    if (bindingResult.hasErrors()) {
-      return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
-    }
+  public ResponseEntity<String> checkVerificationCode(@Validated(CheckVerificationCodeGroup.class) @RequestBody UserRegisterForm form){
 
-    String email = form.getEmail();
-    String verificationCode = form.getVerificationCode();
-    String resultOfVerification = sendEmailService.checkVerificationCode(email, verificationCode);
+    // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
+
+    String resultOfVerification = sendEmailService.checkVerificationCode(form.getEmail(), form.getVerificationCode());
     return ResponseEntity.ok(resultOfVerification);
   }
 
@@ -179,19 +168,15 @@ public class UserController {
    * 이곳은 register와 달리 에러 처리 없이 그대로 감
    */
   @PostMapping(value = "/checkForDuplicateUsername", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> checkForDuplicateUsername(@Validated(CheckForDuplicateUsernameGroup.class) @RequestBody UserRegisterForm form, BindingResult bindingResult){
+  public ResponseEntity<String> checkForDuplicateUsername(@Validated(CheckForDuplicateUsernameGroup.class) @RequestBody UserRegisterForm form){
+
+    // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
 
     log.info("[class] UserController - [method] checkForDuplicateUsername - operate");
 
-    // 아이디 중복 체크 유효성 검사
-    if (bindingResult.hasErrors()) {
-      log.info("[class] UserController - [method] checkForDuplicateUsername - validate err");
-      return ResponseEntity.badRequest().body(bindingResult.getFieldError().getDefaultMessage());
-    }
-
     boolean useranme_already_exist = userService.checkUserExistsWithUsername(form.getUsername());
 
-    // userService.checkUserExists()는 존재하면 true, 존재하지 않으면 false 반환
+    // userService.checkUserExistsWithUsername()는 존재하면 true, 존재하지 않으면 false 반환
     if (useranme_already_exist) {
       log.info("[class] UserController - [method] checkForDuplicateUsername - Username already exists");
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exists");

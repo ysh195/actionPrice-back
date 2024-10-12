@@ -31,8 +31,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Log4j2
 public class CustomRestAdvice {
 
+  /**
+   * BindException(컨트롤러에서의 유효성 검사)를 커스텀하는 handler
+   * @author : 연상훈
+   * @created : 2024-10-12 오전 12:54
+   * @updated : 2024-10-12 오전 12:54
+   */
   @ExceptionHandler(BindException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED) // 상태코드 417 : 의도된 에러임을 의미한다고 함
   public ResponseEntity<Map<String, String>> handlerBindException(BindException e) {
 
     log.error(e);
@@ -80,12 +86,14 @@ public class CustomRestAdvice {
   }
 
   @ExceptionHandler(UsernameAlreadyExistsException.class)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
     log.error(e);
     return ResponseEntity.badRequest().body(e.getMessage());
   }
 
   @ExceptionHandler(InvalidEmailAddressException.class)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerInvalidEmailAddressException(InvalidEmailAddressException e) {
     log.error(e);
     return ResponseEntity.badRequest().body(e.getMessage());
