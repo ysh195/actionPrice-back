@@ -2,6 +2,7 @@ package com.example.actionprice.sendEmail;
 
 import com.example.actionprice.config.Pop3Properties;
 import com.example.actionprice.exception.InvalidEmailAddressException;
+import jakarta.mail.Address;
 import jakarta.mail.BodyPart;
 import jakarta.mail.Flags;
 import jakarta.mail.Folder;
@@ -9,6 +10,7 @@ import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Store;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.search.FlagTerm;
 import jakarta.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -58,7 +60,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @author 연상훈
 	 * @created 2024-10-10 오전 11:13
 	 * @updated 2024-10-11 오후 20:39
-	 * @see :
+	 * @value : email = 전송 받을 이메일(수신자 이메일)
 	 */
 	@Override
 	public boolean sendVerificationEmail(String email) {
@@ -101,6 +103,14 @@ public class SendEmailServiceImpl implements SendEmailService {
 		return true;
 	}
 
+	/**
+	 * 인증코드 검증 로직
+	 * @author : 연상훈
+	 * @created : 2024-10-12 오후 12:10
+	 * @updated : 2024-10-12 오후 12:10
+	 * @value : email = 전송 받은 이메일(사용자가 입력한 이메일)
+	 * @value : verificationCode = 인증코드(사용자가 입력한 인증코드)
+	 */
 	@Override
 	public String checkVerificationCode(String email, String verificationCode) {
 		VerificationEmail verificationEmail = verificationEmailRepository.findById(email).orElse(null);
@@ -135,8 +145,9 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * 이메일 발송이 완료되었는지 확인하는 메서드
 	 * @author : 연상훈
 	 * @created : 2024-10-10 오후 9:44
-	 * @updated : 2024-10-11 오후 8:29
-	 * @see :
+	 * @updated : 2024-10-12 오전 11:39
+	 * 2024-10-12 오전 11:39 > 기능적으로는 차이가 없지만, 읽지 않은 메시지만 검색함으로써 메모리 사용량을 크게 줄임
+	 * @info :
 	 * store와 folder를 try() 안에 넣어서 try가 실패하면 자연스럽게 닫히게 함
 	 * result 변수를 사용하여 folder와 store가 닫히고 나서 메서드가 종료하도록 합니다.
 	 * 너무 길어서 별도의 메서드로 내부 로직을 분리하려다가, 그러면 이게 너무 짧아져서 그대로 둠
@@ -157,62 +168,71 @@ public class SendEmailServiceImpl implements SendEmailService {
 			try (Folder emailFolder = store.getFolder(pop3Properties.getFolder())) {
 				emailFolder.open(Folder.READ_ONLY); // 읽기 전용으로 폴더 열기
 
-				log.info("이메일 폴더를 개방합니다.");
+				log.info("이메일 폴더를 개방합니다. 아직 읽지 않은 메시지를 찾습니다.");
 
-				// 현재 시간에서 지정된 시간만큼 이전 시간 계산
-				Instant untilTime = Instant.now().minusSeconds(pop3Properties.getUntilTime());
-				log.info("1분 내로 반송된 이메일이 있는지 검색합니다.");
+				// 아직 읽지 않은 메시지만 찾기
+				Message[] messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
-				// 폴더 내 모든 메일 메시지 검색
-				for (Message message : emailFolder.getMessages()) {
+				// 각 메시지의 내용을 뜯어보기
+				for (Message message : messages) {
+
+					// 현재 시간에서 지정된 시간만큼 이전 시간 계산
+					Instant untilTime = Instant.now().minusSeconds(pop3Properties.getUntilTime());
+					log.info("30초 내로 반송된 이메일이 있는지 검색합니다.");
 
 					// 메일의 발송 날짜가 지정된 시간 이내인지 확인
 					if (untilTime.isBefore(message.getSentDate().toInstant())) {
 
 						// 반송된 이메일 확인
-						String[] from = message.getHeader("From");
+						Address[] fromAddresses = message.getFrom();
 
-						// 누구한테서 온 이메일인지 확인하고, 그게 Mail Delivery Subsystem <mailer-daemon@googlemail.com>이라면 반송된 메일이 맞습니다.
-						// X-Failed-Recipients를 사용하면 훨씬 간결하지만 X-Failed-Recipients가 존재하지 않는 경우도 많아서 안정성이 매우 떨어집니다.
-						if (from != null && Arrays.asList(from).contains("Mail Delivery Subsystem <mailer-daemon@googlemail.com>")) {
+						if(fromAddresses != null || fromAddresses.length > 0){
+							String from = fromAddresses[0].toString();
+							if (from != null || !from.isEmpty()) {
+								// 누구한테서 온 이메일인지 확인하고, 그게 Mail Delivery Subsystem <mailer-daemon@googlemail.com>이라면 반송된 메일이 맞습니다.
+								// X-Failed-Recipients를 사용하면 훨씬 간결하지만 X-Failed-Recipients가 존재하지 않는 경우도 많아서 안정성이 매우 떨어집니다.
+								if (from != null && from.contains("mailer-daemon") || from.contains("postmaster")) {
 
-							// 이번에는 그 이메일의 내용물을 확인합니다.
-							MimeMultipart multipart = (MimeMultipart) message.getContent();
+									// 이번에는 그 이메일의 내용물을 확인합니다.
+									MimeMultipart multipart = (MimeMultipart) message.getContent();
 
-							for (int i = 0; i < multipart.getCount(); i++) {
-								BodyPart bodyPart = multipart.getBodyPart(i);
+									for (int i = 0; i < multipart.getCount(); i++) {
+										BodyPart bodyPart = multipart.getBodyPart(i);
 
-								// 이메일이 누구한테 보냈다가 반송된 것인지는 message/rfc822 안에만 있습니다.
-								if (bodyPart.isMimeType("message/rfc822")) {
+										// 이메일이 누구한테 보냈다가 반송된 것인지는 message/rfc822 안에만 있습니다.
+										if (bodyPart.isMimeType("message/rfc822")) {
 
-									MimeMessage originalMessage = (MimeMessage) bodyPart.getContent();
+											MimeMessage originalMessage = (MimeMessage) bodyPart.getContent();
 
-									// 반송된 이메일의 주인을 출력합니다.
-									String originalTo = originalMessage.getRecipients(Message.RecipientType.TO)[0].toString();
+											// 반송된 이메일의 주인을 출력합니다.
+											String originalTo = originalMessage.getRecipients(Message.RecipientType.TO)[0].toString();
 
-									// 방금 보낸 이메일과 반송된 이메일의 주인이 일치하는지 확인합니다.
-									if(originalTo.equals(email)) {
+											// 방금 보낸 이메일과 반송된 이메일의 주인이 일치하는지 확인합니다.
+											if(originalTo.equals(email)) {
 
-										log.info("[{}]로 전송한 이메일이 반송되었습니다.", email);
-										result = false; // 반송된 이메일이므로, 이메일 전송은 실패입니다.
+												log.info("[{}]로 전송한 이메일이 반송되었습니다.", email);
+												result = false; // 반송된 이메일이므로, 이메일 전송은 실패입니다.
 
-										try {
+												try {
 
-											// 반송된 이메일을 이메일 수신함에서 삭제
-											log.info("반송된 이메일은 삭제합니다.");
-											message.setFlag(Flags.Flag.DELETED, true);
+													// 반송된 이메일을 이메일 수신함에서 삭제
+													log.info("반송된 이메일은 삭제합니다.");
+													message.setFlag(Flags.Flag.DELETED, true);
 
-										} catch (MessagingException e) {
-											log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
+												} catch (MessagingException e) {
+													log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
+												}
+
+											}
+
 										}
 
 									}
 
 								}
-
 							}
-
 						}
+
 					}
 				}
 			} // Folder 자동으로 닫힘
@@ -229,10 +249,10 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @param : receiverEmail = 받는 사람의 이메일
 	 * @param : subject = 보낼 이메일의 제목
 	 * @param : content = 보낼 이메일의 내용
-	 * @throws :  Exception, InvalidEmailAddressException
-	 * @info : 이 메서드 실행 중에 오류가 발생하면 자체적으로 InvalidEmailAddressException 으로 던지기 때문에 별도의 오류 처리가 필요 없음.
+	 * @throw : InvalidEmailAddressException, {MessagingException, Exception >> RuntimeException}
+	 * @info : 이 메서드 실행 중에 오류가 발생하면 자체적으로 InvalidEmailAddressException 등의 예외로 던지기 때문에 별도의 오류 처리가 필요 없음.
 	 */
-	private void sendSimpleMail(String receiverEmail, String subject, String content) throws InvalidEmailAddressException {
+	private void sendSimpleMail(String receiverEmail, String subject, String content) {
 		log.info("이메일 전송 메서드 시작");
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setFrom(senderEmail);
@@ -240,15 +260,17 @@ public class SendEmailServiceImpl implements SendEmailService {
 		simpleMailMessage.setSubject(subject);
 		simpleMailMessage.setText(content);
 
-		javaMailSender.send(simpleMailMessage);
-		log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
-
     try {
-			if(!isCompleteSentEmail(receiverEmail)){
+			javaMailSender.send(simpleMailMessage);
+			log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
+
+			if (!isCompleteSentEmail(receiverEmail)) {
 				throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
 			}
+		} catch (MessagingException e) {
+			throw new RuntimeException("이메일 전송 중 오류 발생 - 이메일 전송 오류 - " + e);
     } catch (Exception e) {
-			throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
+			throw new RuntimeException("이메일 전송 중 오류 발생 - 기타 오류 - " + e);
     }
 
 	}
@@ -276,8 +298,8 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @param : subject = 보낼 이메일의 제목
 	 * @param : content = 보낼 이메일의 내용
 	 * @throws : Exception
-	 * @info 간단 이메일 발송 로직. 오류를 대충 처리했음.
-	 * 현재 사용되지 않음
+	 * @info : 간단 이메일 발송 로직. 오류를 대충 처리했음.
+	 * @deprecated
 	 */
 	private void sendMimeMail(String receiverEmail, String subject, String content) throws Exception{
 		MimeMessage message = javaMailSender.createMimeMessage();
