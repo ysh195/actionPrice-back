@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 /**
  * @author : 연상훈
  * @created : 2024-10-05 오후 10:57
- * @updated : 2024-10-05 오후 10:57
+ * @updated : 2024-10-12 오후 1:48
+ * 2024-10-12 오후 1:48 - 전체 검증은 그냥 @Valid를 쓰기 때문에 불필요한 검증 그룹인 CheckVerificationCodeGroup 삭제
  * @see : 사용자가 user로 등록할 때 입력한 데이터를 담아올 객체입니다. 실질적으로 이게 dto 역할입니다.
  * 하나의 form이지만, 상황에 따라 검증이 필요한 영역이 다르기 때문에
  * 검증을 위한 별도의 그룹을 지정하여 처리합니다.
@@ -20,19 +21,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserRegisterForm {
 
-  @NotBlank(message = "사용자 이름은 필수입니다.", groups = {CheckForDuplicateUsernameGroup.class, SendVerificationCodeGroup.class, CheckVerificationCodeGroup.class})
-  @Size(min = 6, max = 20, message = "사용자 이름은 6자 이상 20자 이하여야 합니다.", groups = {CheckForDuplicateUsernameGroup.class, SendVerificationCodeGroup.class, CheckVerificationCodeGroup.class})
+  @NotBlank(message = "사용자 이름은 필수입니다.", groups = {CheckForDuplicateUsernameGroup.class, SendVerificationCodeGroup.class})
+  @Size(min = 6, max = 20, message = "사용자 이름은 6자 이상 20자 이하여야 합니다.", groups = {CheckForDuplicateUsernameGroup.class, SendVerificationCodeGroup.class})
   private String username;
 
-  @NotBlank(message = "비밀번호는 필수입니다.", groups = {SendVerificationCodeGroup.class, CheckVerificationCodeGroup.class})
-  @Size(min = 8, max = 16, message = "비밀번호는 8자 이상 16자 이하여야 합니다.", groups = {SendVerificationCodeGroup.class, CheckVerificationCodeGroup.class})
+  @NotBlank(message = "비밀번호는 필수입니다.", groups = {SendVerificationCodeGroup.class})
+  @Size(min = 8, max = 16, message = "비밀번호는 8자 이상 16자 이하여야 합니다.", groups = {SendVerificationCodeGroup.class})
   private String password;
 
-  @NotBlank(message = "이메일은 필수입니다.", groups = {SendVerificationCodeGroup.class, CheckVerificationCodeGroup.class})
-  @Email(message = "유효한 이메일 주소를 입력하세요.", groups = {SendVerificationCodeGroup.class, CheckVerificationCodeGroup.class})
+  @NotBlank(message = "이메일은 필수입니다.", groups = {SendVerificationCodeGroup.class})
+  @Email(message = "유효한 이메일 주소를 입력하세요.", groups = {SendVerificationCodeGroup.class})
   private String email;
 
-  @NotBlank(message = "인증코드는 필수입니다.", groups = CheckVerificationCodeGroup.class)
+  @NotBlank(message = "인증코드는 필수입니다.")
   private String verificationCode;
 
   /**
@@ -43,5 +44,4 @@ public class UserRegisterForm {
    */
   public interface CheckForDuplicateUsernameGroup {}
   public interface SendVerificationCodeGroup {}
-  public interface CheckVerificationCodeGroup {}
 }

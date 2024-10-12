@@ -3,7 +3,6 @@ package com.example.actionprice.user;
 import com.example.actionprice.sendEmail.SendEmailService;
 import com.example.actionprice.user.forms.UserRegisterForm;
 import com.example.actionprice.user.forms.UserRegisterForm.CheckForDuplicateUsernameGroup;
-import com.example.actionprice.user.forms.UserRegisterForm.CheckVerificationCodeGroup;
 import com.example.actionprice.user.forms.UserRegisterForm.SendVerificationCodeGroup;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -150,7 +149,7 @@ public class UserController {
    * 검증 그룹으로 CheckVerificationCodeGroup 사용합니다.
    */
   @PostMapping(value = "/checkVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> checkVerificationCode(@Validated(CheckVerificationCodeGroup.class) @RequestBody UserRegisterForm form){
+  public ResponseEntity<String> checkVerificationCode(@Valid @RequestBody UserRegisterForm form){
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
 

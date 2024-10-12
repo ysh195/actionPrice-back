@@ -6,7 +6,6 @@ package com.example.actionprice.scheduler;
  * @created : 2024-10-12 오전 11:45
  * @updated : 2024-10-12 오전 11:45
  * @info : 현재는 사용되지 않습니다.
- * @deprecated
  */
 //@Component
 //@RequiredArgsConstructor
