@@ -30,7 +30,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class TokenCheckFilter extends OncePerRequestFilter {
 
-  private final CustomUserDetailService customUserDetailService;
+  private final CustomUserDetailService userDetailService;
   private final JWTUtil jwtUtil;
 
   // 토큰 검사를 하지 않는 경로
@@ -58,7 +58,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
         String username = (String)payload.get("username");
         log.info("username : " + username);
 
-        UserDetails userDetails = customUserDetailService.loadUserByUsername(username);
+        UserDetails userDetails = userDetailService.loadUserByUsername(username);
         log.info("UserDetails : " + userDetails);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
