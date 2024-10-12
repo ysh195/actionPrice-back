@@ -8,8 +8,8 @@ import com.example.actionprice.security.filter.TokenCheckFilter;
 import com.example.actionprice.user.UserRepository;
 import com.example.actionprice.util.JWTUtil;
 import javax.sql.DataSource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,21 +39,14 @@ import java.util.Arrays;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 @Log4j2
 public class CustomSecurityConfig {
 
-    // field - @Autowired
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
-    private JWTUtil jwtUtil;
-
-    @Autowired
-    private CustomUserDetailService userDetailsService;
-
-    @Autowired
-    private UserRepository userRepository;
+    private final DataSource dataSource;
+    private final JWTUtil jwtUtil;
+    private final CustomUserDetailService userDetailsService;
+    private final UserRepository userRepository;
 
     // method - @Bean
     /**
