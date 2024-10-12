@@ -30,7 +30,8 @@ import org.hibernate.annotations.BatchSize;
  * @author : 연상훈
  * @created : 2024-10-05 오후 10:04
  * @updated : 2024-10-06 오후 12:29
- * @see :
+ * 2024-10-06 오후 12:29 - 간편한 권한 관리를 위해 Set<String> authorities 사용
+ * @info :
  * 1. 순환참조의 문제를 피하기 위해 @ToString(exclude={})와 @JsonManagedReference를 사용했습니다.
  * 2. 원활한 하위 객체 관리를 위해 orphanRemoval = true과 cascade = {CascadeType.ALL}를 사용했습니다.
  * 3. 객체 호출 시의 효율을 위해 fetch = FetchType.LAZY와 @BatchSize(size)를 사용했습니다.
@@ -39,9 +40,7 @@ import org.hibernate.annotations.BatchSize;
  * 6. OneToMany 관계에 있는 객체의 컬렉션 타입은, 해당 객체를 쉽게 찾아낼 수 있도록 set으로 설정했습니다.
  * 7. jwt 토큰은 로그인 시에 발급하는 것이지, 계정 생성 시에 발급하는 것이 아니기 때문에 생성할 당시에는 발급되지 않습니다. 그렇기 때문에 nullable입니다.
  * 8.추후 수정 및 추가가 예고된 항목들의 수정 및 추가를 위해 Builder를 사용하는 것은 불필요한 코드의 증가를 야기하므로, set 메서드를 지정하여 단순화합니다.
- * 9. 간편한 권한 관리를 위해 Set<String> authorities 사용
- * 10. set 객체들에 이미 존재하는 것을 추가하거나 존재하지 않는 것을 삭제할 때의 에러처리를 하느니, 차라리 에러 없이 안정적으로 실행되는 것이 효율적일 것 같아서
- * add/remove 메서드를 좀 더 복잡하게 구성함
+ * 9. set 객체들에 이미 존재하는 것을 추가하거나 존재하지 않는 것을 삭제할 때의 에러처리를 하느니, 차라리 에러 없이 안정적으로 실행되는 것이 효율적일 것 같아서 add/remove 메서드를 좀 더 복잡하게 구성함
  */
 @Entity
 @Table(name="user")
