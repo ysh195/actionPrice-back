@@ -1,6 +1,5 @@
 package com.example.actionprice.config;
 
-import com.example.actionprice.handler.LoginSuccessHandler;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.security.filter.LoginFilter;
 import com.example.actionprice.security.filter.RefreshTokenFilter;
@@ -18,11 +17,14 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -33,9 +35,11 @@ import java.util.Arrays;
 /**
  * @author 연상훈
  * @created 24/10/01 13:46
- * @updated 24/10/05 20:42
- * @info 어느 정도 개발이 완성되기 전까지는 보안을 포괄적으로 다 열어뒀음. 토큰관련 로직이 추가로 더 필요하긴 함.
+ * @updated 24/10/14 05:26
+ * - [24/10/14 05:26] : LoginSuccessHandler가 rememberMe 토큰 생성을 막고 있어서 제거. 그것을 대체하는 LoginFilter - successfulAuthentication 생성함
+ * @info 토큰관련 로직이 추가로 더 필요하긴 함. 필요한 것만 보안을 열어뒀으니 상황에 따라 추가해야 함
  */
+@SuppressWarnings("ALL")
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
@@ -53,7 +57,8 @@ public class CustomSecurityConfig {
      * @author : 연상훈
      * @created : 2024-10-05 오후 9:27
      * @updated : 2024-10-10 오전 9:26
-     * @see : 로직을 일부 개편함.
+     * - [2024-10-14 오전 5:38] : 리멤버미 사용을 위해 일부 수정.
+     * @see :
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -69,15 +74,10 @@ public class CustomSecurityConfig {
 
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        // Login Success Handler
-        LoginSuccessHandler successHandler = new LoginSuccessHandler(jwtUtil, userRepository);
-
         // Login Filter
-        LoginFilter loginFilter = new LoginFilter("/api/user/login");
-        loginFilter.setAuthenticationManager(authenticationManager);
-        loginFilter.setAuthenticationSuccessHandler(successHandler);
+        LoginFilter loginFilter = new LoginFilter("/api/user/login", userDetailsService, rememberMeServices(), jwtUtil, authenticationManager);
 
-        http.cors(httpSecurityCorsConfigurer -> {httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());}) // corsConfigurationSource
+        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
             .csrf((csrfconfig) -> csrfconfig.disable())
             .authorizeHttpRequests((authz) -> authz
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -95,13 +95,10 @@ public class CustomSecurityConfig {
                         ).permitAll()
                         .anyRequest().authenticated())
             .authenticationManager(authenticationManager)
-            .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // LoginFilter가 내가 추가하는 필터고, UsernamePasswordAuthenticationFilter.class는 기본 내장 필터. UsernamePasswordAuthenticationFilter보다 LoginFilter를 먼저 실행시키겠다
+            .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // 필터 순서에 주의
             .addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(new RefreshTokenFilter("/api/user/generate/refreshToken", jwtUtil), TokenCheckFilter.class)
-            .rememberMe(httpSecurityRememberMeConfigurer -> {httpSecurityRememberMeConfigurer.key("REMEMBERME") // 리멤버미 파라미터 이름
-                .rememberMeParameter("rememberMe") // 리멤버미 쿠키 이름
-                .tokenRepository(persistentTokenRepository()) // persistentTokenRepository
-                .tokenValiditySeconds(3600);})
+            .rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer.rememberMeServices(rememberMeServices()))
             .formLogin((formLogin) -> formLogin.loginPage("/api/user/login")
                     .usernameParameter("username")
                     .passwordParameter("password")
@@ -111,6 +108,23 @@ public class CustomSecurityConfig {
             .logout((logout) -> logout.logoutUrl("/api/user/logout").logoutSuccessUrl("/api/user/login"));
         return http.build();
 
+    }
+
+    /**
+     * 리멤버미 사용을 위해 필요한 Service.
+     * @author : 연상훈
+     * @created : 2024-10-14 오전 5:39
+     * @updated : 2024-10-14 오전 5:39
+     * @info : 학원에서 가르쳐준 것과 달리, 진짜 대충 만드는 거 아니면 이게 필요하다고 함
+     */
+    @Bean
+    public RememberMeServices rememberMeServices() {
+        PersistentTokenBasedRememberMeServices rememberMeServices = new PersistentTokenBasedRememberMeServices("rememberMeKey" , userDetailsService, persistentTokenRepository());
+        rememberMeServices.setParameter("rememberMe"); // 리멤버미 파라미터 이름 설정
+        rememberMeServices.setCookieName("REMEMBERME"); // 리멤버미 쿠키 이름 설정
+        rememberMeServices.setTokenValiditySeconds(3600); // 쿠키 유효 시간 설정 (초)
+        rememberMeServices.setAlwaysRemember(true);
+        return rememberMeServices;
     }
 
     /**
@@ -136,7 +150,7 @@ public class CustomSecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() { // corsConfigurationSource
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
 
@@ -151,7 +165,8 @@ public class CustomSecurityConfig {
     }
 
     // TokenCheckFilter 설정을 위한 메서드
-    private TokenCheckFilter tokenCheckFilter(){
+    @Bean
+    public TokenCheckFilter tokenCheckFilter(){
         return new TokenCheckFilter(userDetailsService, jwtUtil);
     }
 
