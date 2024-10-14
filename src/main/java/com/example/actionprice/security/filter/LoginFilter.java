@@ -19,12 +19,15 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+// Todo 로그인 실패 시의 로직 구체화. 그리고 예외처리도 추가할 필요가 있음
 /**
  * 로그인 필터
  * @author : 연상훈
  * @created : 2024-10-06 오후 3:14
  * @updated : 2024-10-14 오후 3:14
  * > [2024-10-14 오전 5:52] : 리멤버미 기능 구현을 위해 대폭 수정
+ * > [2024-10-14 오후 12:08] : 생성자에서 successHandler와 authenticationManager를 입력 받으면서 set 메서드를 사용하여 소유권을 명확히 함
+ * 그리고 로그인 성공 시의 로직을 SuccessHandler로 분리함. 여기에서 다 처리하려니까 로그인에서 에러가 발생함.
  * @see :
  * - 생성자에 super를 써야 해서 @AllArgs 못 씀
  * - 불변객체인 UserDetails를 상속한 CustomUserDetails도 불변 객체임. 따라서 생성된 그 상태를 계속 유지하게 되는데,
@@ -99,7 +102,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
    * @created : 2024-10-14 오전 6:08
    * @updated : 2024-10-14 오전 6:08
    * @info :
-   * authResult에 보관된 rememberMe 값을 userDetails에 넣어줌
    */
   @Override
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
