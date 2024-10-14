@@ -70,7 +70,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     log.info("Login Success Handler : " + jsonStr);
 
     response.setStatus(HttpServletResponse.SC_OK);
-    // SecurityContextHolder.getContext().setAuthentication(authentication);
     response.getWriter().println(jsonStr); // response(json 형태)의 writer에 토큰 정보 추가
     rememberMeServices.loginSuccess(request, response, authentication);
   }
