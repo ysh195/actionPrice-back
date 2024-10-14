@@ -1,5 +1,6 @@
 package com.example.actionprice.config;
 
+import com.example.actionprice.handler.LoginSuccessHandler;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.security.filter.LoginFilter;
 import com.example.actionprice.security.filter.RefreshTokenFilter;
@@ -17,7 +18,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -63,51 +63,60 @@ public class CustomSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        log.info("------------ security configuration --------------");
+      log.info("------------ security configuration --------------");
 
-        // AuthenticationManager 설정. 얘가 일종의 매표소 직원. 출입하는 사람들의 권한 부여 및 확인 역할
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(
-            AuthenticationManagerBuilder.class);
+      AuthenticationManager authenticationManager = getAuthenticationManager(http);
 
-        authenticationManagerBuilder.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder());
+      http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
+          .csrf((csrfconfig) -> csrfconfig.disable())
+          .authorizeHttpRequests((authz) -> authz
+                      .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
+                      .requestMatchers("/admin/**").hasRole("ADMIN")
+                      .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                      .requestMatchers("/api/user/login").anonymous() // 로그인을 안 한 사람만 로그인 창으로 이동 가능
+                      .requestMatchers("/api/user/logout").authenticated() // 로그인을 한 사람만 로그아웃 창으로 이동 가능
+                      .requestMatchers(
+                              "/",
+                              "/api/user/register",
+                              "/api/user/sendVerificationCode",
+                              "/api/user/checkVerificationCode",
+                              "/api/user/generate/refreshToken",
+                              "/api/user/checkForDuplicateUsername"
+                      ).permitAll()
+                      .anyRequest().authenticated())
+          .authenticationManager(authenticationManager)
+          .addFilterBefore(getLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class) // 필터 순서에 주의
+          .addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class)
+          .addFilterBefore(new RefreshTokenFilter("/api/user/generate/refreshToken", jwtUtil), TokenCheckFilter.class)
+          .rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer.rememberMeServices(rememberMeServices()))
+          .formLogin((formLogin) -> formLogin.loginPage("/api/user/login")
+                  .usernameParameter("username")
+                  .passwordParameter("password")
+                  .loginProcessingUrl("/api/user/login")
+                  .failureUrl("/api/user/login") // TODO failureForwardUrl는 기존 url을 유지하면서 이동. 거기에 failureHandler를 쓰면 로그인 실패 횟수를 체크할 수 있을 것 같은데?
+                  .defaultSuccessUrl("/", true))
+          .logout((logout) -> logout.logoutUrl("/api/user/logout").logoutSuccessUrl("/api/user/login"));
+      return http.build();
 
-        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+    }
 
-        // Login Filter
-        LoginFilter loginFilter = new LoginFilter("/api/user/login", userDetailsService, rememberMeServices(), jwtUtil, authenticationManager);
+    @Bean
+    AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
+      AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+      authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 
-        http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
-            .csrf((csrfconfig) -> csrfconfig.disable())
-            .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/user/login").anonymous() // 로그인을 안 한 사람만 로그인 창으로 이동 가능
-                        .requestMatchers("/api/user/logout").authenticated() // 로그인을 한 사람만 로그아웃 창으로 이동 가능
-                        .requestMatchers(
-                                "/",
-                                "/api/user/register",
-                                "/api/user/sendVerificationCode",
-                                "/api/user/checkVerificationCode",
-                                "/api/user/generate/refreshToken",
-                                "/api/user/checkForDuplicateUsername"
-                        ).permitAll()
-                        .anyRequest().authenticated())
-            .authenticationManager(authenticationManager)
-            .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class) // 필터 순서에 주의
-            .addFilterBefore(tokenCheckFilter(), UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(new RefreshTokenFilter("/api/user/generate/refreshToken", jwtUtil), TokenCheckFilter.class)
-            .rememberMe(httpSecurityRememberMeConfigurer -> httpSecurityRememberMeConfigurer.rememberMeServices(rememberMeServices()))
-            .formLogin((formLogin) -> formLogin.loginPage("/api/user/login")
-                    .usernameParameter("username")
-                    .passwordParameter("password")
-                    .failureUrl("/api/user/login") // TODO failureForwardUrl는 기존 url을 유지하면서 이동. 거기에 failureHandler를 쓰면 로그인 실패 횟수를 체크할 수 있을 것 같은데?
-                    .loginProcessingUrl("/api/user/login")
-                    .defaultSuccessUrl("/", true))
-            .logout((logout) -> logout.logoutUrl("/api/user/logout").logoutSuccessUrl("/api/user/login"));
-        return http.build();
+      return authenticationManagerBuilder.build();
+    }
 
+    @Bean
+    LoginFilter getLoginFilter(AuthenticationManager authenticationManager) throws Exception {
+      return new LoginFilter("/api/user/login", userDetailsService, getLoginSuccessHandler(), authenticationManager);
+    }
+
+    @Bean
+    public LoginSuccessHandler getLoginSuccessHandler(){
+      LoginSuccessHandler loginSuccessHandler = new LoginSuccessHandler(jwtUtil, rememberMeServices());
+      return loginSuccessHandler;
     }
 
     /**
