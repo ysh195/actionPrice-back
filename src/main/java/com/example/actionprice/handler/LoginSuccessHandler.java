@@ -16,14 +16,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 
-// TODO admin 페이지 만들고, 블랙리스트 관리하기
-// TODO exception 처리를 구체화할 필요가 있음
 /**
  * 로그인 성공 시 사용되는 핸들러
  * @author : 연상훈
  * @created : 2024-10-06 오후 3:26
- * @updated : 2024-10-06 오후 3:26
- * @see : 책대로 함
+ * @updated : 2024-10-14 오후 12:07
+ * > [2024-10-14 오후 12:07] : 없앴다가 다시 생성함
+ * @see : authentication에는 rememberMe 값이 들어 있으니 절대 다른 값 입력하지 말 것.
  */
 @Log4j2
 @RequiredArgsConstructor

@@ -35,8 +35,9 @@ import java.util.Arrays;
 /**
  * @author 연상훈
  * @created 24/10/01 13:46
- * @updated 24/10/14 05:26
- * - [24/10/14 05:26] : LoginSuccessHandler가 rememberMe 토큰 생성을 막고 있어서 제거. 그것을 대체하는 LoginFilter - successfulAuthentication 생성함
+ * @updated 24/10/14 12:05
+ * > [24/10/14 05:26] : LoginSuccessHandler가 rememberMe 토큰 생성을 막고 있어서 제거. 그것을 대체하는 LoginFilter - successfulAuthentication 생성함
+ * > [2024-10-14 오후 12:05] : LoginSuccessHandler가 없으면 또 로그인에 문제 생겨서 다시 생성함. 그리고 대부분의 객체를 Bean으로 관리하도록 수정
  * @info 토큰관련 로직이 추가로 더 필요하긴 함. 필요한 것만 보안을 열어뒀으니 상황에 따라 추가해야 함
  */
 @SuppressWarnings("ALL")
