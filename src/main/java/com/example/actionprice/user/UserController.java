@@ -97,14 +97,15 @@ public class UserController {
    * src/main/java/com/example/actionprice/advice/CustomRestAdvice.java
    */
   @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public User register(@Valid @RequestBody UserRegisterForm form) {
-
+  public ResponseEntity<Map<String, Map<String, String>>> register(@Valid @RequestBody UserRegisterForm form) {
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
-
-    User user =  userService.createUser(form);
-
-    // 그리고 로그인페이지로 리다이렉트
-    return user;
+    userService.createUser(form);
+    String message = String.format("%s 님의 회원가입이 성공적으로 이루어졌습니다.", form.getUsername());
+    Map<String, Map<String, String>> response = new HashMap<>();
+    Map<String, String> data = new HashMap<>();
+    data.put("message", message);
+    response.put("data", data);
+    return ResponseEntity.ok(response);
   }
 
   /**
