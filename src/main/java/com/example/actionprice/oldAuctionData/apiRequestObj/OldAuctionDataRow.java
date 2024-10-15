@@ -1,4 +1,4 @@
-package com.example.actionprice.originalAuctionData.apiRequestObj;
+package com.example.actionprice.oldAuctionData.apiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuctionDataRow {
+public class OldAuctionDataRow {
 	@JsonProperty("ROW_NUM") // 열 번호
     private int ROW_NUM;
 
