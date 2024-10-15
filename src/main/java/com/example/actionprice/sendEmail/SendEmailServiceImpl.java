@@ -63,7 +63,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @value : email = 전송 받을 이메일(수신자 이메일)
 	 */
 	@Override
-	public boolean sendVerificationEmail(String email) {
+	public boolean sendVerificationEmail(String email) throws Exception {
 
 		// 해당 이메일로 발급 받은 verificationEmail이 있으면 가져오고, 없으면 null 반환
 		VerificationEmail verificationEmail = verificationEmailRepository.findById(email).orElse(null);
@@ -219,6 +219,8 @@ public class SendEmailServiceImpl implements SendEmailService {
 													log.info("반송된 이메일은 삭제합니다.");
 													message.setFlag(Flags.Flag.DELETED, true);
 
+													throw new InvalidEmailAddressException("[" + email + "] does not exist");
+
 												} catch (MessagingException e) {
 													log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
 												}
@@ -245,14 +247,15 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * 단순 이메일 발송 메서드
 	 * @author 연상훈
 	 * @created 24/10/01 22:50
-	 * @updated 24/10/10 오후 4:31
+	 * @updated 24/10/15 오전 09:47
+	 * > [24/10/15 오전 09:47] 에러 코드 단순화
 	 * @param : receiverEmail = 받는 사람의 이메일
 	 * @param : subject = 보낼 이메일의 제목
 	 * @param : content = 보낼 이메일의 내용
 	 * @throw : InvalidEmailAddressException, {MessagingException, Exception >> RuntimeException}
 	 * @info : 이 메서드 실행 중에 오류가 발생하면 자체적으로 InvalidEmailAddressException 등의 예외로 던지기 때문에 별도의 오류 처리가 필요 없음.
 	 */
-	private void sendSimpleMail(String receiverEmail, String subject, String content) {
+	private void sendSimpleMail(String receiverEmail, String subject, String content) throws Exception {
 		log.info("이메일 전송 메서드 시작");
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setFrom(senderEmail);
@@ -260,18 +263,10 @@ public class SendEmailServiceImpl implements SendEmailService {
 		simpleMailMessage.setSubject(subject);
 		simpleMailMessage.setText(content);
 
-    try {
-			javaMailSender.send(simpleMailMessage);
-			log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
+		javaMailSender.send(simpleMailMessage);
+		log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
 
-			if (!isCompleteSentEmail(receiverEmail)) {
-				throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
-			}
-		} catch (MessagingException e) {
-			throw new RuntimeException("이메일 전송 중 오류 발생 - 이메일 전송 오류 - " + e);
-    } catch (Exception e) {
-			throw new RuntimeException("이메일 전송 중 오류 발생 - 기타 오류 - " + e);
-    }
+		isCompleteSentEmail(receiverEmail);
 
 	}
 
