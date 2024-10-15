@@ -1,13 +1,17 @@
 package com.example.actionprice.auctionData;
 
-import com.example.actionprice.AuctionData.AuctionDataRepository;
+import com.example.actionprice.AuctionData.*;
+import com.example.actionprice.oldAuctionData.OldAuctionDataFetcher;
+import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import reactor.core.publisher.Flux;
 
-import java.lang.reflect.Array;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +20,7 @@ import java.util.Map;
 public class AuctionDataTest {
 
     @Autowired
-    private AuctionDataRepository auctionDataRepository;
+    OldAuctionDataFetcher oldAuctionDataFetcher;
 
     private final Map<String, String> market_code_map = Map.ofEntries(
           Map.entry("110001","서울가락"),
@@ -66,7 +70,7 @@ public class AuctionDataTest {
             Map.entry("72",List.of("수산물", "kg")),
             Map.entry("73",List.of("수산물", "ton(M/T)")));
 
-    private final Map<String, List<String>> level_code_mpa = Map.ofEntries(
+    private final Map<String, List<String>> level_code_map = Map.ofEntries(
             Map.entry("10",List.of("농산물", ".")),
             Map.entry("11",List.of("농산물", "특")),
             Map.entry("12",List.of("농산물", "상")),
@@ -102,8 +106,63 @@ public class AuctionDataTest {
             Map.entry("7D",List.of("수산물", "하")),
             Map.entry("7Z",List.of("수산물", "무등급")));
 
+    private final String[] old_market_name_Arr = {"강릉도매시장",  "구리도매시장",  "구미도매시장",  "목포농산시장",  "수원도매시장",  "순천도매시장",  "안동도매시장",  "안산도매시장",  "안양도매시장",  "여수농산시장",  "울산도매시장",  "원주도매시장",  "익산도매시장",  "전주도매시장",  "정읍도매시장",  "진주도매시장",  "천안도매시장",  "청주도매시장",  "춘천도매시장",  "충주도매시장",  "포항도매시장",  "광주각화도매시장",  "광주서부도매시장",  "대구북부도매시장",  "대전노은도매시장",  "대전오정도매시장",  "부산반여도매시장",  "부산엄궁도매시장",  "서울가락도매시장",  "서울강서도매시장",  "인천남촌도매시장",  "인천삼산도매시장",  "창원내서도매시장",  "창원팔용도매시장",  "부산국제수산물도매시장"};
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
     @Test
-    public void auctionDataTest() {
+    @Disabled
+    public void oldAuctionDataTest() throws Exception {
+
+        String year = "2015";
+        String month = "08";
+
+        int endDay = 1; // 각 달의 마지막 날이 언제인지 확인 후 입력
+
+        for (int i=1; i<=endDay; i++){
+            String day = String.valueOf(i);
+            if (day.length() == 1){
+                day = "0"+day;
+            }
+
+            String date = String.format("%s%s%s", year, month, day);
+
+            for(String marketName : old_market_name_Arr){
+
+                Flux<OldAuctionDataRow> auctionDataFlux = oldAuctionDataFetcher.getOriginalAuctionData_Flux(date, marketName);
+
+                auctionDataFlux.toStream().map(row -> {
+                    try{
+
+                        String categoryCode = row.getCATGORY_NEW_CODE();
+                        // String[] detailCategory = detailCategoryRepository.findById(categoryCode);
+                        AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder()
+                                .del_date(LocalDate.parse(row.getDELNG_DE(), formatter))
+                                .large("detailCategory.getLarge()")
+                                .middle("detailCategory.getMiddle()")
+                                .small("detailCategory.getSmall()")
+                                .product_name("detailCategory.getSmall()")
+                                .market_name(market_code_map.get(row.getWHSAL_MRKT_CODE()))
+                                .price(row.getSBID_PRIC())
+                                .del_unit(unit_code_map.get(row.getSTD_UNIT_NEW_CODE()).get(1))
+                                .quantity(row.getDELNG_QY())
+                                .size(row.getSTD_MG_NEW_NM())
+                                .level(level_code_map.get(row.getSTD_QLITY_NEW_CODE()).get(1))
+                                .build();
+
+                        return auctionDataEntity;
+                    } catch (Exception e) {
+                        log.error(e);
+                        return null;
+                    }
+                }).forEach(entity -> {
+                    if(entity != null){
+                        System.out.println(entity);
+                    }
+                });
+            }
+        }
 
     }
+
 }
