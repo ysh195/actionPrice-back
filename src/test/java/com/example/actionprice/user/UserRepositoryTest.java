@@ -25,9 +25,8 @@ public class UserRepositoryTest {
    * @info : 귀찮더라도 이걸로 삭제해야 정상적으로 삭제됨. DB에서 삭제하는 건 되도록 자제
    */
   @Test
-  @Disabled
   public void deleteUserTest(){
-    String username = "ewrqdsq";
+    String username = "userbbbb";
 
     User user = userRepository.findById(username).orElse(null);
     if(user != null){

@@ -214,12 +214,9 @@ public class SendEmailServiceImpl implements SendEmailService {
 												result = false; // 반송된 이메일이므로, 이메일 전송은 실패입니다.
 
 												try {
-
 													// 반송된 이메일을 이메일 수신함에서 삭제
 													log.info("반송된 이메일은 삭제합니다.");
 													message.setFlag(Flags.Flag.DELETED, true);
-
-													throw new InvalidEmailAddressException("[" + email + "] does not exist");
 
 												} catch (MessagingException e) {
 													log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
@@ -266,7 +263,14 @@ public class SendEmailServiceImpl implements SendEmailService {
 		javaMailSender.send(simpleMailMessage);
 		log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
 
-		isCompleteSentEmail(receiverEmail);
+		try{
+			if (isCompleteSentEmail(receiverEmail)){
+				throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
+			}
+
+		} catch(Exception e){
+			throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
+		}
 
 	}
 
