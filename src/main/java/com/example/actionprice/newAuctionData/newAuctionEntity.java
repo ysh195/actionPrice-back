@@ -1,12 +1,7 @@
 package com.example.actionprice.newAuctionData;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
 import lombok.*;
 
-@Table(name = "newAuction_data")
-@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,8 +9,6 @@ import lombok.*;
 @ToString
 public class newAuctionEntity
 {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long rn;
 
     private String saleDate; // 정산일자

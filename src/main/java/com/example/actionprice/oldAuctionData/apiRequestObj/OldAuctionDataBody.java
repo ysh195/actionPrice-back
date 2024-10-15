@@ -1,4 +1,4 @@
-package com.example.actionprice.originalAuctionData.apiRequestObj;
+package com.example.actionprice.oldAuctionData.apiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuctionDataBody {	
+public class OldAuctionDataBody {
 	@JsonProperty("Grid_20151127000000000311_1")
-	private AuctionDataContent content;
+	private OldAuctionDataContent content;
 }

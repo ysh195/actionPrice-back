@@ -1,4 +1,6 @@
-package com.example.actionprice.originalAuctionData.apiRequestObj;
+package com.example.actionprice.oldAuctionData.apiRequestObj;
+
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,11 +18,20 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuctionDataResultOfReq {
+public class OldAuctionDataContent {
 	
-	@JsonProperty("code")
-	private String code;    // 상태 코드
+	@JsonProperty("totalCnt")
+	private int totalCnt;
 	
-	@JsonProperty("message")
-    private String message; // 메시지
+	@JsonProperty("startRow")
+    private int startRow;
+	
+    @JsonProperty("endRow")
+    private int endRow;
+    
+    @JsonProperty("result")
+    private OldAuctionDataResultOfReq result;
+    
+    @JsonProperty("row")
+    private List<OldAuctionDataRow> row;
 }

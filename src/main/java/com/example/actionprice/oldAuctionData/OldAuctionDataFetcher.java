@@ -1,4 +1,4 @@
-package com.example.actionprice.originalAuctionData;
+package com.example.actionprice.oldAuctionData;
 
 import java.net.URLEncoder;
 
@@ -8,12 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataBody;
-import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataRow;
+import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataBody;
+import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
 
-import reactor.core.CoreSubscriber;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -31,7 +29,7 @@ import java.net.URISyntaxException;
 * @info api의 간편한 재사용을 위해 AuctionDataFetcher 클래스를 만들어서 @Component 로 등록하여 중복되는 객체 생성을 피하고, 메모리 사용을 줄임. 그리고 내장된 메서드를 통해 값을 반환함.
 */
 @Component
-public class AuctionDataFetcher {
+public class OldAuctionDataFetcher {
 
 	@Value("${auctionData.url}")
 	String baseAuctionUrl;
@@ -42,7 +40,7 @@ public class AuctionDataFetcher {
 	private final WebClient webClient;
 
 
-	public AuctionDataFetcher() {
+	public OldAuctionDataFetcher() {
 		this.webClient = WebClient.builder().build();
 	}
 
@@ -83,22 +81,22 @@ public class AuctionDataFetcher {
 	 */
 
 
-	public AuctionDataBody getOriginalAuctionData_AuctionDataBody(String date, String marketName) throws Exception {
+	public OldAuctionDataBody getOriginalAuctionData_AuctionDataBody(String date, String marketName) throws Exception {
 
 	    URI uri = composeUri(date, marketName);
 
 	    // 요청을 보내고 응답 받기
-	    AuctionDataBody auctionDataBody = webClient.get()
+	    OldAuctionDataBody oldAuctionDataBody = webClient.get()
 	            .uri(uri)
 	            .accept(MediaType.APPLICATION_JSON)
 	            .retrieve()
-	            .bodyToMono(AuctionDataBody.class)
+	            .bodyToMono(OldAuctionDataBody.class)
 //	            .onErrorResume(e -> {
 //              return Mono.empty();
 //          }) 에러에 대한 대응 로직
 	            .block();
 	    
-	    return auctionDataBody;
+	    return oldAuctionDataBody;
 	}
 	
 	/**
@@ -110,7 +108,7 @@ public class AuctionDataFetcher {
 	 * @throws Exception
 	 * @info api의 반환 데이터 구조에 맞춘 OriginAuctionDataBody 객체를 사용하여 비즈니스에 로직에 활용할 수 있도록 구성. 그리고 Flux를 사용함으로써 웹클라이언트보다도 빠른 비동기적인 로직 수행 구현.
 	 */
-	public Flux<AuctionDataRow> getOriginalAuctionData_Flux(String date, String marketName) throws Exception {
+	public Flux<OldAuctionDataRow> getOriginalAuctionData_Flux(String date, String marketName) throws Exception {
 
 	    URI uri = composeUri(date, marketName);
 
@@ -118,7 +116,7 @@ public class AuctionDataFetcher {
 	            .uri(uri)
 	            .accept(MediaType.APPLICATION_JSON)
 	            .retrieve()
-	            .bodyToMono(AuctionDataBody.class)
+	            .bodyToMono(OldAuctionDataBody.class)
 //	            .onErrorResume(e -> {
 //					e.printStackTrace();
 //                    return Mono.empty();
@@ -149,7 +147,6 @@ public class AuctionDataFetcher {
                 auctionEncodedKey,
                 TYPE,
                 START_INDEX,
-
                 END_INDEX,
                 DELNG_DE,
                 URLEncoder.encode(WHSAL_MRKT_NM,"UTF-8")

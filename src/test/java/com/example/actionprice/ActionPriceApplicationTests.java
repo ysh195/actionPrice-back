@@ -7,8 +7,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import com.example.actionprice.originalAuctionData.AuctionDataEntity;
-import com.example.actionprice.originalAuctionData.AuctionDataRepository;
+import com.example.actionprice.oldAuctionData.OldAuctionDataEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,10 +16,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-import com.example.actionprice.originalAuctionData.AuctionDataFetcher;
-import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataBody;
-import com.example.actionprice.originalAuctionData.apiRequestObj.AuctionDataRow;
-import com.example.actionprice.sendEmail.SendEmailServiceImpl;
+import com.example.actionprice.oldAuctionData.OldAuctionDataFetcher;
+import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataBody;
+import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
 
 import reactor.core.publisher.Flux;
 
@@ -37,10 +35,7 @@ import reactor.core.publisher.Flux;
 class ActionPriceApplicationTests {
 
 	@Autowired
-	AuctionDataFetcher auctionDataFetcher;
-
-	@Autowired
-	AuctionDataRepository auctionDataRepository;
+	OldAuctionDataFetcher oldAuctionDataFetcher;
 
 	@Autowired
 	Pop3Properties pop3Properties;
@@ -68,7 +63,7 @@ class ActionPriceApplicationTests {
 
 	@Test
 	void auctionDataPrintTest() throws Exception {
-		ResponseEntity<String> responseEntity = auctionDataFetcher.getOriginalAuctionData_String("20150801", "서울강서도매시장");
+		ResponseEntity<String> responseEntity = oldAuctionDataFetcher.getOriginalAuctionData_String("20150801", "서울강서도매시장");
 	 
 		System.out.println(responseEntity.toString());	  	  
 	}
@@ -83,8 +78,8 @@ class ActionPriceApplicationTests {
 	@Test
 	@Disabled
 	void auctionDataObjectTest() throws Exception {
-		AuctionDataBody responseEntity = auctionDataFetcher.getOriginalAuctionData_AuctionDataBody("20150801", "서울강서도매시장");
-		List<AuctionDataRow> list =  responseEntity.getContent().getRow();
+		OldAuctionDataBody responseEntity = oldAuctionDataFetcher.getOriginalAuctionData_AuctionDataBody("20150801", "서울강서도매시장");
+		List<OldAuctionDataRow> list =  responseEntity.getContent().getRow();
 				
 		list.stream().forEach(System.out::print);
 	}
@@ -115,7 +110,7 @@ class ActionPriceApplicationTests {
 			String date = String.format("%s%s%s", year, month, day);
 
 			for(String marketName : marketNameArr){
-				Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux(date, marketName);
+				Flux<OldAuctionDataRow> auctionDataFlux = oldAuctionDataFetcher.getOriginalAuctionData_Flux(date, marketName);
 				auctionDataFlux.toStream().forEach(System.out::print);
 			}
 		}
@@ -155,10 +150,10 @@ class ActionPriceApplicationTests {
 
 			for(String marketName : marketNameArr){
 
-				Flux<AuctionDataRow> auctionDataFlux = auctionDataFetcher.getOriginalAuctionData_Flux(date, marketName);
+				Flux<OldAuctionDataRow> auctionDataFlux = oldAuctionDataFetcher.getOriginalAuctionData_Flux(date, marketName);
 
 				auctionDataFlux.toStream().map(row -> {
-					AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder()
+					OldAuctionDataEntity oldAuctionDataEntity = OldAuctionDataEntity.builder()
 							.DELNG_DE(LocalDate.parse(row.getDELNG_DE(), formatter))
 							.WHSAL_MRKT_NEW_CODE(row.getWHSAL_MRKT_NEW_CODE())
 							.WHSAL_MRKT_NEW_NM(row.getWHSAL_MRKT_NEW_NM())
@@ -178,8 +173,8 @@ class ActionPriceApplicationTests {
 							.DELNG_QY(row.getDELNG_QY())
 							.build();
 
-					return auctionDataEntity;
-				}).forEach(entity -> {auctionDataRepository.save(entity);});
+					return oldAuctionDataEntity;
+				}).forEach(entity -> System.out.print(entity.toString()));
 			}
 		}
 
