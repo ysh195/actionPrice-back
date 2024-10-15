@@ -174,24 +174,30 @@ public class SendEmailServiceImpl implements SendEmailService {
 				Message[] messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
 				// 각 메시지의 내용을 뜯어보기
+				log.info("30초 내로 반송된 이메일이 있는지 검색합니다.");
 				for (Message message : messages) {
 
 					// 현재 시간에서 지정된 시간만큼 이전 시간 계산
 					Instant untilTime = Instant.now().minusSeconds(pop3Properties.getUntilTime());
-					log.info("30초 내로 반송된 이메일이 있는지 검색합니다.");
 
 					// 메일의 발송 날짜가 지정된 시간 이내인지 확인
 					if (untilTime.isBefore(message.getSentDate().toInstant())) {
 
+						log.info("30초 내로 반송된 이메일이 존재합니다.");
+
 						// 반송된 이메일 확인
 						Address[] fromAddresses = message.getFrom();
 
+						log.info("이메일이 어디서 왔는지 확인합니다.");
+
 						if(fromAddresses != null || fromAddresses.length > 0){
+							log.info("이메일 발신자 체크");
 							String from = fromAddresses[0].toString();
 							if (from != null || !from.isEmpty()) {
 								// 누구한테서 온 이메일인지 확인하고, 그게 Mail Delivery Subsystem <mailer-daemon@googlemail.com>이라면 반송된 메일이 맞습니다.
 								// X-Failed-Recipients를 사용하면 훨씬 간결하지만 X-Failed-Recipients가 존재하지 않는 경우도 많아서 안정성이 매우 떨어집니다.
 								if (from != null && from.contains("mailer-daemon") || from.contains("postmaster")) {
+									log.info("이메일 발신자 체크 : mailer-daemon");
 
 									// 이번에는 그 이메일의 내용물을 확인합니다.
 									MimeMultipart multipart = (MimeMultipart) message.getContent();
@@ -202,6 +208,8 @@ public class SendEmailServiceImpl implements SendEmailService {
 										// 이메일이 누구한테 보냈다가 반송된 것인지는 message/rfc822 안에만 있습니다.
 										if (bodyPart.isMimeType("message/rfc822")) {
 
+											log.info("이메일 내용 체크");
+
 											MimeMessage originalMessage = (MimeMessage) bodyPart.getContent();
 
 											// 반송된 이메일의 주인을 출력합니다.
@@ -209,6 +217,8 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 											// 방금 보낸 이메일과 반송된 이메일의 주인이 일치하는지 확인합니다.
 											if(originalTo.equals(email)) {
+
+												log.info("이메일의 본래 수신자 : " + originalTo);
 
 												log.info("[{}]로 전송한 이메일이 반송되었습니다.", email);
 												result = false; // 반송된 이메일이므로, 이메일 전송은 실패입니다.
@@ -260,11 +270,11 @@ public class SendEmailServiceImpl implements SendEmailService {
 		simpleMailMessage.setSubject(subject);
 		simpleMailMessage.setText(content);
 
-		javaMailSender.send(simpleMailMessage);
-		log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
 
 		try{
-			if (isCompleteSentEmail(receiverEmail)){
+			javaMailSender.send(simpleMailMessage);
+			log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
+			if (!isCompleteSentEmail(receiverEmail)){
 				throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
 			}
 

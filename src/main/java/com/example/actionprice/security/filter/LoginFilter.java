@@ -1,7 +1,6 @@
 package com.example.actionprice.security.filter;
 
 import com.example.actionprice.security.CustomUserDetailService;
-import com.example.actionprice.security.CustomUserDetails;
 import com.example.actionprice.user.forms.UserLoginForm;
 import com.google.gson.Gson;
 import jakarta.servlet.FilterChain;
@@ -16,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -82,14 +82,16 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     UserLoginForm loginForm = parseRequestJSON(request, UserLoginForm.class);
-    boolean rememberMe = loginForm.isRememberMe();
+//    boolean rememberMe = loginForm.isRememberMe();
+    boolean rememberMe = true;
+
     log.info(loginForm);
 
-    CustomUserDetails customUserDetails = (CustomUserDetails) userDetailService.loadUserByUsername(loginForm.getUsername());
-    log.info("CustomUserDetails : {}", customUserDetails);
+    UserDetails userDetails = userDetailService.loadUserByUsername(loginForm.getUsername());
+    log.info("CustomUserDetails : {}", userDetails);
 
-    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(customUserDetails, loginForm.getPassword(), customUserDetails.getAuthorities());
-    authenticationToken.setDetails(rememberMe);
+    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, loginForm.getPassword(), userDetails.getAuthorities());
+    request.setAttribute("rememberMe", rememberMe);
 
     log.info("[class] LoginFilter - [method] attemptAuthentication > authenticationToken : " + authenticationToken);
 
