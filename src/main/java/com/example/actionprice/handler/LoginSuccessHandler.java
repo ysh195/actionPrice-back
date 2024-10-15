@@ -1,7 +1,5 @@
 package com.example.actionprice.handler;
 
-import com.example.actionprice.security.CustomUserDetails;
-import com.example.actionprice.user.UserRepository;
 import com.example.actionprice.util.JWTUtil;
 import com.google.gson.Gson;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
 
@@ -49,9 +46,6 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
     log.info("----------- Login Success Handler -----------");
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-    userDetails.setRememberMe((Boolean) authentication.getDetails());
 
     log.info(authentication + " : " + authentication.getName());
 
