@@ -65,7 +65,7 @@ class ActionPriceApplicationTests {
 	 * @updated 24/10/01 17:50
 	 * @info api 연결 테스트 성공.
 	 */
-	@Disabled
+
 	@Test
 	void auctionDataPrintTest() throws Exception {
 		ResponseEntity<String> responseEntity = auctionDataFetcher.getOriginalAuctionData_String("20150801", "서울강서도매시장");
@@ -172,18 +172,9 @@ class ActionPriceApplicationTests {
 							.STD_PRDLST_NEW_NM(row.getSTD_PRDLST_NEW_NM())
 							.STD_PRDLST_CODE(row.getSTD_PRDLST_CODE())
 							.STD_PRDLST_NM(row.getSTD_PRDLST_NM())
-							.STD_SPCIES_NEW_CODE(row.getSTD_SPCIES_NEW_CODE())
-							.STD_SPCIES_NEW_NM(row.getSTD_SPCIES_NEW_NM())
-							.STD_SPCIES_CODE(row.getSTD_SPCIES_CODE())
-							.STD_SPCIES_NM(row.getSTD_SPCIES_NM())
 							.DELNG_PRUT(row.getDELNG_PRUT())
-							.STD_UNIT_NEW_CODE(row.getSTD_UNIT_NEW_CODE())
 							.STD_UNIT_NEW_NM(row.getSTD_UNIT_NEW_NM())
 							.SBID_PRIC(row.getSBID_PRIC())
-							.STD_MTC_NEW_CODE(row.getSTD_MTC_NEW_CODE())
-							.STD_MTC_NEW_NM(row.getSTD_MTC_NEW_NM())
-							.CPR_MTC_CODE(row.getCPR_MTC_CODE())
-							.CPR_MTC_NM(row.getCPR_MTC_NM())
 							.DELNG_QY(row.getDELNG_QY())
 							.build();
 

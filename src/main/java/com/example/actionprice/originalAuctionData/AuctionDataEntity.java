@@ -32,8 +32,6 @@ public class AuctionDataEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long dataId;
 
-    private int ROW_NUM; // 열 번호
-
     private LocalDate DELNG_DE;  // 경락일자
 
     private String WHSAL_MRKT_NEW_CODE; // 시장코드
@@ -60,33 +58,15 @@ public class AuctionDataEntity {
 
     private String STD_PRDLST_NM; // 구품목명
 
-    private String STD_SPCIES_NEW_CODE; // 품종코드
-
-    private String STD_SPCIES_NEW_NM; // 품종명
-
-    private String STD_SPCIES_CODE; // 구품종코드
-
-    private String STD_SPCIES_NM; // 구품종명
+    private String STD_MG_NEW_CODE;; //크기명
 
     private int DELNG_PRUT; // 거래단량
-
-    private String STD_UNIT_NEW_CODE; //  단위코드
 
     private String STD_UNIT_NEW_NM; // 단위명
 
     private String STD_QLITY_NEW_CODE; // 등급코드
 
-    private String STD_QLITY_NEW_NM; // 등급명
-
     private int SBID_PRIC; // 거래가격
-
-    private String STD_MTC_NEW_CODE; // 산지코드
-
-    private String STD_MTC_NEW_NM; // 산지명
-
-    private String CPR_MTC_CODE; // 구산지코드
-
-    private String CPR_MTC_NM; // 구산지명
 
     private int DELNG_QY; //거래량
 
