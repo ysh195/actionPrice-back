@@ -111,7 +111,7 @@ public class AuctionDataTest {
             Map.entry("7Z",List.of("수산물", "무등급"))
     );
 
-    private final Map<String, String> detail_category = Map.ofEntries(
+    private final Map<String, String> grand_category_sort = Map.ofEntries(
             Map.entry("미곡류","농산물"),
             Map.entry("맥류","농산물"),
             Map.entry("두류","농산물"),
