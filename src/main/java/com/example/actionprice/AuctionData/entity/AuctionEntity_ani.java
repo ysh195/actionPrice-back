@@ -20,7 +20,7 @@ import lombok.experimental.SuperBuilder;
  */
 @SuperBuilder
 @Entity
-@Table(name = "ani_data")
+@Table(name = "auctionData_ani")
 public class AuctionEntity_ani extends AuctionDataBaseEntity{
     public AuctionEntity_ani() {}
 //  아래의 객체들은 AuctionDataBaseEntity로부터 상속된 것.
