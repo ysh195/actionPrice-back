@@ -1,6 +1,7 @@
 package com.example.actionprice.AuctionData.detailCategory;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.Map;
  */
 @Component
 @Getter
+@Log4j2
 public class AllSortingComponent {
 
     private final Map<String, String> market_code_map = Map.ofEntries(
@@ -193,6 +195,10 @@ public class AllSortingComponent {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
     public LocalDate convertStrToLocalDate(String str) {
+        if (str == null || str.length() == 0) {
+            log.error("[class] AllSortingComponent > [method] convertStrToLocalDate > 입력된 값이 null입니다.");
+            return LocalDate.parse("19991231", formatter);
+        }
         return LocalDate.parse(str, formatter);
     }
 }
