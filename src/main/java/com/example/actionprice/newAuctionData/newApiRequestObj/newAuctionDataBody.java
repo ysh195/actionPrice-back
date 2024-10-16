@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class newAuctionDataBody
 {
-    @JsonProperty("")
-    private OldAuctionDataContent content;
+    @JsonProperty("date")
+    private newAuctionDataContent content;
 }

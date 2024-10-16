@@ -1,5 +1,9 @@
 package com.example.actionprice.newAuctionData;
 
+import com.example.actionprice.newAuctionData.newApiRequestObj.newAuctionDataBody;
+import com.example.actionprice.newAuctionData.newApiRequestObj.newAuctionDataRow;
+import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataBody;
+import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -8,6 +12,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 
 
 import java.io.UnsupportedEncodingException;
@@ -53,6 +58,8 @@ public class newAuctionDataFetcher
         this.webClient = createWebClient();
     }
 
+
+
     /**
      * @author homin
      * @created 2024. 10. 10. 오후 3:54
@@ -71,6 +78,25 @@ public class newAuctionDataFetcher
                 });
     }
 
+    public newAuctionDataBody getNewAuctionData_AuctionDataBody(String date) throws Exception {
+
+        URI uri = composeUri(date);
+
+        // 요청을 보내고 응답 받기
+        newAuctionDataBody newAuctionDataBody = webClient.get()
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(newAuctionDataBody.class)
+//	            .onErrorResume(e -> {
+//              return Mono.empty();
+//          }) 에러에 대한 대응 로직
+                .block();
+
+        return newAuctionDataBody;
+    }
+
+
 
     public ResponseEntity<String> getNewAuctionData_String(String date) throws Exception {
 
@@ -86,6 +112,22 @@ public class newAuctionDataFetcher
         return responseEntity;
     }
 
+
+    public Flux<newAuctionDataRow> getNewAuctionData_Flux(String date) throws Exception {
+
+        URI uri = composeUri(date);
+
+        return webClient.get()
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(newAuctionDataBody.class)
+//	            .onErrorResume(e -> {
+//					e.printStackTrace();
+//                    return Mono.empty();
+//                }) // 에러에 대한 대응 로직
+                .flatMapMany(body -> Flux.fromIterable(body.getContent().getRow()));
+    }
 
 
     private URI composeUri(String date) throws UnsupportedEncodingException, URISyntaxException {
