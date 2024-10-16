@@ -1,18 +1,18 @@
-package com.example.actionprice.AuctionData;
+package com.example.actionprice.AuctionData.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "auction_data")
-@Builder
+@MappedSuperclass
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @ToString
-public class AuctionDataEntity {
+public class AuctionDataBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
