@@ -6,9 +6,9 @@ import com.example.actionprice.AuctionData.detailCategory.DetailCategoryReposito
 import com.example.actionprice.AuctionData.entity.AuctionEntity_ani;
 import com.example.actionprice.AuctionData.entity.AuctionEntity_crops;
 import com.example.actionprice.AuctionData.entity.AuctionEntity_fish;
-import com.example.actionprice.AuctionData.repository.AniEntity_repo;
-import com.example.actionprice.AuctionData.repository.CropsEntity_repo;
-import com.example.actionprice.AuctionData.repository.FishEntity_repo;
+import com.example.actionprice.AuctionData.repository.AuctionRepository_ani;
+import com.example.actionprice.AuctionData.repository.AuctionRepository_crops;
+import com.example.actionprice.AuctionData.repository.AuctionRepository_fish;
 import com.example.actionprice.oldAuctionData.OldAuctionDataFetcher;
 import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
 import lombok.extern.log4j.Log4j2;
@@ -31,13 +31,13 @@ public class AuctionDataTest {
     private DetailCategoryRepository detailCategoryRepository;
 
     @Autowired
-    AniEntity_repo aniEntity_repo;
+    AuctionRepository_ani auctionRepositoryani;
 
     @Autowired
-    CropsEntity_repo cropsEntity_repo;
+    AuctionRepository_crops auctionRepositorycrops;
 
     @Autowired
-    FishEntity_repo fishEntity_repo;
+    AuctionRepository_fish auctionRepositoryfish;
 
     /**
      * 구 API로 메인데이터를 추출하여 저장하기 위한 로직
