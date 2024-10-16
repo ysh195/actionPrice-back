@@ -7,6 +7,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+/**
+ * api로부터 메인데이터를 추출하는 과정에서 변환하는 데에 쓰이는 객체들을 모아둔 컴포넌트
+ * @author 연상훈
+ * @created 2024-10-16 오후 3:01
+ * @updated 2024-10-16 오후 3:01
+ * @info : 추후 라이브서비스 때 scheduler에 넣기 위해 컴포넌트로 만듬
+ * @see :
+ * 표로 정리된 구글 시트 링크
+ * https://docs.google.com/spreadsheets/d/1v83UPPUlm5D36oOcQTuxpi7xn1DBw-OsUCiFhKff2-M/edit?gid=0#gid=0
+ */
 @Component
 @Getter
 public class AllSortingComponent {
