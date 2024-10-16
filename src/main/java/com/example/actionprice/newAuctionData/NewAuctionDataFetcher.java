@@ -75,9 +75,9 @@ public class NewAuctionDataFetcher
 //                });
 //    }
 
-    public NewAuctionDataBody getNewAuctionData_AuctionDataBody(String date) throws Exception {
+    public NewAuctionDataBody getNewAuctionData_AuctionDataBody(String data) throws Exception {
 
-        URI uri = composeUri(date);
+        URI uri = composeUri(data);
 
         // 요청을 보내고 응답 받기
         NewAuctionDataBody newAuctionDataBody = webClient.get()
@@ -95,9 +95,9 @@ public class NewAuctionDataFetcher
 
 
 
-    public ResponseEntity<String> getNewAuctionData_String(String date) throws Exception {
+    public ResponseEntity<String> getNewAuctionData_String(String data) throws Exception {
 
-        URI uri = composeUri(date);
+        URI uri = composeUri(data);
 
         ResponseEntity<String> responseEntity = webClient.get()
                 .uri(uri)
@@ -110,26 +110,29 @@ public class NewAuctionDataFetcher
     }
 
 
-    public Flux<NewAuctionDataRow> getNewAuctionData_Flux(String date) throws Exception {
+    public Flux<NewAuctionDataRow> getNewAuctionData_Flux(String data) throws Exception {
 
-        URI uri = composeUri(date);
+        URI uri = composeUri(data);
 
         return webClient.get()
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(NewAuctionDataBody.class)
-//	            .onErrorResume(e -> {
-//					e.printStackTrace();
-//                    return Mono.empty();
-//                }) // 에러에 대한 대응 로직
-                .flatMapMany(body -> Flux.fromIterable(body.getContent().getRow()));
+                .flatMapMany(body -> Flux.fromIterable(body.getData()));
+//                .flatMapMany(body -> {
+//                    // body 또는 content가 null일 경우 안전하게 처리
+//                    if (body == null || body.getContent() == null) {
+//                        return Flux.empty();  // null인 경우 빈 Flux 반환
+//                    }
+//                    return Flux.fromIterable(body.getContent().getData());
+//                });
     }
 
 
-    private URI composeUri(String date) throws UnsupportedEncodingException, URISyntaxException {
+    private URI composeUri(String data) throws URISyntaxException {
         String apiType = "json"; // json
-        String saleDate = date; // 기록을 검색할 날짜
+        String saleDate = data; // 기록을 검색할 날짜
 
         String url = String.format(
                 "%s?serviceKey=%s&apiType=%s&saleDate=%s",
