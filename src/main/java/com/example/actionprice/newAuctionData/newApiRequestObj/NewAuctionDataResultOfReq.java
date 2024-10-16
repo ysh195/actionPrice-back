@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class newAuctionDataResultOfReq {
+public class NewAuctionDataResultOfReq {
     @JsonProperty("code")
     private String code;    // 상태 코드
 

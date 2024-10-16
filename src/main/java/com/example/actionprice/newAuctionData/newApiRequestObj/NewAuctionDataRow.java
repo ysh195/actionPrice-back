@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
  * @updated 2024. 10. 10. 오전 10:52
  * @info 로우데이터
  */
-public class newAuctionDataRow
+public class NewAuctionDataRow
 {
 
     @JsonProperty("rn")
@@ -82,7 +82,7 @@ public class newAuctionDataRow
     private int qty; // 물량
 
     @JsonProperty("cost")
-    private String cost; // 단가
+    private int cost; // 단가
 
     @JsonProperty("amerCd")
     private String amerCd; // 중도매인코드

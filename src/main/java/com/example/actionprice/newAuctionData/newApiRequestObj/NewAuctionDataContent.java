@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class newAuctionDataContent
+public class NewAuctionDataContent
 {
 
     @JsonProperty("totalCnt")
@@ -24,10 +24,10 @@ public class newAuctionDataContent
     private int endRow;
 
     @JsonProperty("result")
-    private newAuctionDataResultOfReq result;
+    private NewAuctionDataResultOfReq result;
 
     @JsonProperty("row")
-    private List<newAuctionDataRow> row;
+    private List<NewAuctionDataRow> row;
 
 
 }

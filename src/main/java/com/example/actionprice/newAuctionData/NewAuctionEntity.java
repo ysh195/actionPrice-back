@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @Getter
 @ToString
-public class newAuctionEntity
+public class NewAuctionEntity
 {
     private Long rn;
 
@@ -31,6 +31,6 @@ public class newAuctionEntity
 
     private int qty; // 물량
 
-    private String cost; // 단가
+    private int cost; // 단가
 
 }

@@ -1,9 +1,7 @@
 package com.example.actionprice.newAuctionData;
 
-import com.example.actionprice.newAuctionData.newApiRequestObj.newAuctionDataBody;
-import com.example.actionprice.newAuctionData.newApiRequestObj.newAuctionDataRow;
-import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataBody;
-import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
+import com.example.actionprice.newAuctionData.newApiRequestObj.NewAuctionDataBody;
+import com.example.actionprice.newAuctionData.newApiRequestObj.NewAuctionDataRow;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -18,11 +16,10 @@ import reactor.core.publisher.Flux;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 
 @Data
 @Component
-public class newAuctionDataFetcher
+public class NewAuctionDataFetcher
 {
     @Value("${newAuctionData.url}")
     String basenewAuctionUrl;
@@ -54,7 +51,7 @@ public class newAuctionDataFetcher
     }
 
     // 초기화
-    public newAuctionDataFetcher() {
+    public NewAuctionDataFetcher() {
         this.webClient = createWebClient();
     }
 
@@ -66,28 +63,28 @@ public class newAuctionDataFetcher
      * @updated 2024. 10. 10. 오후 3:54
      * @info API 호출 및 응답 처리 메서드
      */
-    public void fetchAuctionData() {
-        webClient.get()
-                .uri("/openApi/price/originSale.do")  // API 엔드포인트 설정
-                .retrieve()
-                .bodyToMono(String.class)  // 응답을 문자열로 변환
-                .doOnError(e -> System.out.println("Error occurred: " + e.getMessage()))  // 에러 처리
-                .subscribe(response -> {
-                    // 응답 데이터를 처리하는 부분
-                    System.out.println("Response: " + response);
-                });
-    }
+//    public void fetchAuctionData() {
+//        webClient.get()
+//                .uri("/openApi/price/originSale.do")  // API 엔드포인트 설정
+//                .retrieve()
+//                .bodyToMono(String.class)  // 응답을 문자열로 변환
+//                .doOnError(e -> System.out.println("Error occurred: " + e.getMessage()))  // 에러 처리
+//                .subscribe(response -> {
+//                    // 응답 데이터를 처리하는 부분
+//                    System.out.println("Response: " + response);
+//                });
+//    }
 
-    public newAuctionDataBody getNewAuctionData_AuctionDataBody(String date) throws Exception {
+    public NewAuctionDataBody getNewAuctionData_AuctionDataBody(String date) throws Exception {
 
         URI uri = composeUri(date);
 
         // 요청을 보내고 응답 받기
-        newAuctionDataBody newAuctionDataBody = webClient.get()
+        NewAuctionDataBody newAuctionDataBody = webClient.get()
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(newAuctionDataBody.class)
+                .bodyToMono(NewAuctionDataBody.class)
 //	            .onErrorResume(e -> {
 //              return Mono.empty();
 //          }) 에러에 대한 대응 로직
@@ -113,7 +110,7 @@ public class newAuctionDataFetcher
     }
 
 
-    public Flux<newAuctionDataRow> getNewAuctionData_Flux(String date) throws Exception {
+    public Flux<NewAuctionDataRow> getNewAuctionData_Flux(String date) throws Exception {
 
         URI uri = composeUri(date);
 
@@ -121,7 +118,7 @@ public class newAuctionDataFetcher
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(newAuctionDataBody.class)
+                .bodyToMono(NewAuctionDataBody.class)
 //	            .onErrorResume(e -> {
 //					e.printStackTrace();
 //                    return Mono.empty();
