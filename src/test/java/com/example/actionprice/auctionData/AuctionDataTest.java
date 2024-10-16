@@ -1,6 +1,9 @@
 package com.example.actionprice.auctionData;
 
-import com.example.actionprice.AuctionData.*;
+import com.example.actionprice.AuctionData.entity.AuctionDataBaseEntity;
+import com.example.actionprice.AuctionData.entity.AuctionEntity_ani;
+import com.example.actionprice.AuctionData.entity.AuctionEntity_crops;
+import com.example.actionprice.AuctionData.entity.AuctionEntity_fish;
 import com.example.actionprice.oldAuctionData.OldAuctionDataFetcher;
 import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
 import lombok.extern.log4j.Log4j2;
@@ -68,7 +71,8 @@ public class AuctionDataTest {
             Map.entry("70",List.of("수산물", ".")),
             Map.entry("71",List.of("수산물", "g")),
             Map.entry("72",List.of("수산물", "kg")),
-            Map.entry("73",List.of("수산물", "ton(M/T)")));
+            Map.entry("73",List.of("수산물", "ton(M/T)"))
+    );
 
     private final Map<String, List<String>> level_code_map = Map.ofEntries(
             Map.entry("10",List.of("농산물", ".")),
@@ -104,7 +108,8 @@ public class AuctionDataTest {
             Map.entry("7B",List.of("수산물", "상")),
             Map.entry("7C",List.of("수산물", "보통")),
             Map.entry("7D",List.of("수산물", "하")),
-            Map.entry("7Z",List.of("수산물", "무등급")));
+            Map.entry("7Z",List.of("수산물", "무등급"))
+    );
 
     private final String[] old_market_name_Arr = {"강릉도매시장",  "구리도매시장",  "구미도매시장",  "목포농산시장",  "수원도매시장",  "순천도매시장",  "안동도매시장",  "안산도매시장",  "안양도매시장",  "여수농산시장",  "울산도매시장",  "원주도매시장",  "익산도매시장",  "전주도매시장",  "정읍도매시장",  "진주도매시장",  "천안도매시장",  "청주도매시장",  "춘천도매시장",  "충주도매시장",  "포항도매시장",  "광주각화도매시장",  "광주서부도매시장",  "대구북부도매시장",  "대전노은도매시장",  "대전오정도매시장",  "부산반여도매시장",  "부산엄궁도매시장",  "서울가락도매시장",  "서울강서도매시장",  "인천남촌도매시장",  "인천삼산도매시장",  "창원내서도매시장",  "창원팔용도매시장",  "부산국제수산물도매시장"};
 
@@ -136,7 +141,7 @@ public class AuctionDataTest {
 
                         String categoryCode = row.getCATGORY_NEW_CODE();
                         // String[] detailCategory = detailCategoryRepository.findById(categoryCode);
-                        AuctionDataEntity auctionDataEntity = AuctionDataEntity.builder()
+                        AuctionDataBaseEntity auctionDataBaseEntity = AuctionDataBaseEntity.builder()
                                 .del_date(LocalDate.parse(row.getDELNG_DE(), formatter))
                                 .large("detailCategory.getLarge()")
                                 .middle("detailCategory.getMiddle()")
@@ -150,7 +155,7 @@ public class AuctionDataTest {
                                 .level(level_code_map.get(row.getSTD_QLITY_NEW_CODE()).get(1))
                                 .build();
 
-                        return auctionDataEntity;
+                        return auctionDataBaseEntity;
                     } catch (Exception e) {
                         log.error(e);
                         return null;
