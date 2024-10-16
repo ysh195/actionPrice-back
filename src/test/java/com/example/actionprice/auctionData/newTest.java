@@ -9,7 +9,6 @@ import com.example.actionprice.AuctionData.repository.CropsEntity_repo;
 import com.example.actionprice.AuctionData.repository.FishEntity_repo;
 import com.example.actionprice.newAuctionData.NewAuctionDataFetcher;
 import com.example.actionprice.newAuctionData.newApiRequestObj.NewAuctionDataRow;
-import com.example.actionprice.oldAuctionData.apiRequestObj.OldAuctionDataRow;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,27 +59,29 @@ public class newTest {
 
             auctionDataFlux.toStream().map(row -> {
                 try{
+                    String str = String.format("%s%s%s",row.getLarge(),row.getMid(),row.getSmall());
 
-                    DetailCategoryEntity detailCategory = detailCategoryRepository.findById(row.getSmall()).orElse(null);
+                    DetailCategoryEntity detailCategory = detailCategoryRepository.findById(str).orElse(null);
                     if(detailCategory != null){
                         String grandSort = allSortingComponent.getGrand_category_map().get(detailCategory.getLarge());
 
-                        switch (grandSort){
-                            case "농산물":
-                                return convertRowToCropsEntity(row, detailCategory);
-                            case "수산물":
-                                return convertRowToFishEntity(row, detailCategory);
-                            case "축산물":
-                                return convertRowToAniEntity(row, detailCategory);
-                            default:
-                                System.out.println(grandSort + "는 존재하지 않는 항목입니다.");
-                                break;
+                        if (grandSort != null) { // Null 체크
+                            switch (grandSort) {
+                                case "농산물":
+                                    return convertRowToCropsEntity(row, detailCategory);
+                                case "수산물":
+                                    return convertRowToFishEntity(row, detailCategory);
+                                case "축산물":
+                                    return convertRowToAniEntity(row, detailCategory);
+                                default:
+                                    System.out.println(grandSort + "는 존재하지 않는 항목입니다.");
+                                    break;
+                            }
+                        } else {
+                            System.out.println("grandSort가 null입니다.");
                         }
-
-                    }
-                    else{
+                    } else {
                         System.out.println("Category not found");
-                        return null;
                     }
                 } catch (Exception e) {
                     log.error(e);
@@ -116,54 +117,55 @@ public class newTest {
 
 
     }
-    private AuctionEntity_crops convertRowToCropsEntity (NewAuctionDataRow row, DetailCategoryEntity
-            detailCategory){
+    private AuctionEntity_crops convertRowToCropsEntity(NewAuctionDataRow row, DetailCategoryEntity detailCategory) {
         return AuctionEntity_crops.builder()
-                .del_date(allSortingComponent.convertStrToLocalDate(row.getSaleDate()))
+                .del_date(allSortingComponent.convertStrToLocalDate(row.getSaledate()))
                 .large(detailCategory.getLarge())
                 .middle(detailCategory.getMiddle())
                 .small(detailCategory.getSmall())
                 .product_name(detailCategory.getSmall())
-                .market_name(allSortingComponent.getMarket_code_map().get(row.getWhsalCd()))
+                .market_name(allSortingComponent.getMarket_code_map().getOrDefault(row.getWhsalCd(), "Unknown Market")) // Null 체크
                 .price(row.getCost())
-                .del_unit(allSortingComponent.getUnit_code_map().get(row.getDanq()))
+                .del_unit(allSortingComponent.getUnit_code_map().get(String.valueOf(row.getDanq())))
                 .quantity(row.getQty())
                 .size(row.getSizeCd())
-                .level(allSortingComponent.getLevel_code_map().get(row.getLvCd()))
+                .level(allSortingComponent.getLevel_code_map().getOrDefault(row.getLvCd(), "Unknown Level")) // Null 체크
                 .build();
     }
 
     private AuctionEntity_crops convertRowToFishEntity (NewAuctionDataRow row, DetailCategoryEntity
             detailCategory){
         return AuctionEntity_crops.builder()
-                .del_date(allSortingComponent.convertStrToLocalDate(row.getSaleDate()))
+                .del_date(allSortingComponent.convertStrToLocalDate(row.getSaledate()))
                 .large(detailCategory.getLarge())
                 .middle(detailCategory.getMiddle())
                 .small(detailCategory.getSmall())
                 .product_name(detailCategory.getSmall())
                 .market_name(allSortingComponent.getMarket_code_map().get(row.getWhsalCd()))
                 .price(row.getCost())
-                .del_unit(allSortingComponent.getUnit_code_map().get(row.getDanq()))
+                .del_unit(allSortingComponent.getUnit_code_map().get(String.valueOf(row.getDanq())))
                 .quantity(row.getQty())
                 .size(row.getSizeCd())
                 .level(allSortingComponent.getLevel_code_map().get(row.getLvCd()))
                 .build();
+
     }
 
     private AuctionEntity_crops convertRowToAniEntity (NewAuctionDataRow row, DetailCategoryEntity
             detailCategory){
         return AuctionEntity_crops.builder()
-                .del_date(allSortingComponent.convertStrToLocalDate(row.getSaleDate()))
+                .del_date(allSortingComponent.convertStrToLocalDate(row.getSaledate()))
                 .large(detailCategory.getLarge())
                 .middle(detailCategory.getMiddle())
                 .small(detailCategory.getSmall())
                 .product_name(detailCategory.getSmall())
                 .market_name(allSortingComponent.getMarket_code_map().get(row.getWhsalCd()))
                 .price(row.getCost())
-                .del_unit(allSortingComponent.getUnit_code_map().get(row.getDanq()))
+                .del_unit(allSortingComponent.getUnit_code_map().get(String.valueOf(row.getDanq())))
                 .quantity(row.getQty())
                 .size(row.getSizeCd())
                 .level(allSortingComponent.getLevel_code_map().get(row.getLvCd()))
                 .build();
+
     }
 }

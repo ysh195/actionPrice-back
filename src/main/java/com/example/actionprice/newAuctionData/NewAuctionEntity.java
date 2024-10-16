@@ -11,7 +11,7 @@ public class NewAuctionEntity
 {
     private Long rn;
 
-    private String saleDate; // 정산일자
+    private String saledate; // 정산일자
 
     private String whsalCd; // 도매시장코드
 

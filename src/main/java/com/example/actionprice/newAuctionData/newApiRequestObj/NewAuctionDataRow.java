@@ -21,8 +21,8 @@ public class NewAuctionDataRow
     @JsonProperty("rn")
     private int rn; // 번호
 
-    @JsonProperty("saleDate")
-    private String saleDate; // 정산일자
+    @JsonProperty("saledate")
+    private String saledate; // 정산일자
 
     @JsonProperty("whsalCd")
     private String whsalCd; // 도매시장코드
