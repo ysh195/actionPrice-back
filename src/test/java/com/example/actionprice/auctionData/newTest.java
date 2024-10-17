@@ -4,9 +4,9 @@ import com.example.actionprice.AuctionData.detailCategory.AllSortingComponent;
 import com.example.actionprice.AuctionData.detailCategory.DetailCategoryEntity;
 import com.example.actionprice.AuctionData.detailCategory.DetailCategoryRepository;
 import com.example.actionprice.AuctionData.entity.AuctionEntity_crops;
-import com.example.actionprice.AuctionData.repository.AniEntity_repo;
-import com.example.actionprice.AuctionData.repository.CropsEntity_repo;
-import com.example.actionprice.AuctionData.repository.FishEntity_repo;
+import com.example.actionprice.AuctionData.repository.AuctionRepository_ani;
+import com.example.actionprice.AuctionData.repository.AuctionRepository_crops;
+import com.example.actionprice.AuctionData.repository.AuctionRepository_fish;
 import com.example.actionprice.newAuctionData.NewAuctionDataFetcher;
 import com.example.actionprice.newAuctionData.newApiRequestObj.NewAuctionDataRow;
 import lombok.extern.log4j.Log4j2;
@@ -29,13 +29,13 @@ public class newTest {
     private DetailCategoryRepository detailCategoryRepository;
 
     @Autowired
-    AniEntity_repo aniEntity_repo;
+    AuctionRepository_ani auctionRepositoryani;
 
     @Autowired
-    CropsEntity_repo cropsEntity_repo;
+    AuctionRepository_crops auctionRepositorycrops;
 
     @Autowired
-    FishEntity_repo fishEntity_repo;
+    AuctionRepository_fish auctionRepositoryfish;
 
 
     @Test
