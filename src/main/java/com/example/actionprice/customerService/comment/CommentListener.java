@@ -13,7 +13,7 @@ import jakarta.persistence.PreRemove;
 public class CommentListener {
 
   @PreRemove
-  public void preRemove(Comment comment) {
+  public void preRemove(Comment comment) { //삭제 되기전에 감지하고 메소드 실행
 
     User user = comment.getUser();
     if (user != null) {

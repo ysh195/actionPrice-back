@@ -39,6 +39,7 @@ public class Pop3Properties {
     return untilTime;
   }
 
+  //이메일 수신함 열어주는거임
   public Store getPop3Store() throws Exception {
     Properties properties = new Properties();
     properties.put("mail.store.protocol", "pop3s");

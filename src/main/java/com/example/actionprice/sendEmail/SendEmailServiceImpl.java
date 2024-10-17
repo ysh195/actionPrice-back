@@ -171,6 +171,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 				log.info("이메일 폴더를 개방합니다. 아직 읽지 않은 메시지를 찾습니다.");
 
 				// 아직 읽지 않은 메시지만 찾기
+				//FlagTerm 메세지 표시 ,
 				Message[] messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
 				// 각 메시지의 내용을 뜯어보기

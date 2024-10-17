@@ -58,13 +58,13 @@ public class Post extends BaseEntity implements Comparable<Post> {
   @Size(min = 1, max = 30)
   private String title;
 
-  @Column(nullable=false, columnDefinition = "TEXT")
+  @Column(nullable=false, columnDefinition = "TEXT") //columnDefinition Text 로하면 줄바꿈도 되면서 긴 글이 가능
   @Size(min = 1)
   private String content;
 
   @Column
   @Builder.Default
-  private boolean published = true;
+  private boolean published = true; //공개글
 
   // LocalDateTime createdAt | from BaseEntity | auto generation
   // LocalDateTime updatedAt | from BaseEntity | auto generation

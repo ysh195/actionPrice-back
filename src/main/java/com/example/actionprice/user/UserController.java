@@ -118,13 +118,14 @@ public class UserController {
    * 내부적으로 InvalidEmailAddressException을 사용합니다. 존재하지 않는 이메일로 발송 시 에러를 일으키니, 그에 대한 처리가 필요합니다.
    * https://www.knotend.com/g/a#N4IgzgpgTglghgGxgLwnARgiAxA9lAWxAC5QA7XAEwjBPIEYAmRgVkYBZ6AOOkBDCAhIhALuOAVLsA+4wAJAOD2BCwZABfADQgy7AJwAGAMwA2DU1790g4SMAf3bLmAcFqniJIqYBcJwDXjAfiWqyAdh1cNDUYfLWMBIWIQAHkvNQ0Weno9PXYfMNMIkHk7QAHJqRZAEN6pHMAKhs8VNXp2FnZgrRZ0s0iADViyYJ16Qy4G0j5w4RiK9RZAxK0ePpMmkFbh0a4fdi4jKYHIwAmBwB0O2UBIOqlAEbX7SWs2vS16H0WORszABjrnKUAHGqlAB5HAH3bAA5qpQAtVtsCND4fIleqBpplACATcikgEZBwCvNeVvPF2OwdEC9LdhAAzRCQNo9apAiaYyJDbxAnSseok2ZtHRsDQpPT0GnwqRiQA7Qzk2okDHpGIyaQ4pIAM8cA3V2ACha2lclnp9OwaQAXKAAVwgdJYWkYXD0aTWGWEEAAHgBjCAAB0VMFwZCkgAyZwA1nUoKhBKABzGgkADaXsqzDYnB43k0ugMRgAuspfeptPpDIwQOT-IE6iBI9GQ3GjN4qjU6g102o-AEgiFE3EEkkUmlC2R4rzq+X2n4utwC1GKw3Uk3qmN6MTa7naiEGt4FksVgnax1Wz0m+PlhGOyM+8TvOdLtcFbWF5OmwCgSC08uNzKbkiaqj0cfowfgfRR2oCSwiTxa3ej+S-FT29Hn6+m3pAUmRZWsKR-JteUZYCbzUIDGXYZkmxlRD5VgsgoP5QVvHpLUdRrcMKjNBAEAAdRgShFQACxIeh6VUYiEAACQgGA3SoxUSGWBjBAQAAFOBKEoGAyDdEh6LUKgICiKBqFgUTvT9VgOG4HtYzDBMkxLVMLy7NIc2qYdqW8GdukfFdDH7IM1F3bM1FPLd90CQ8H33S80R8DFvH-EJrN8b9NXM+CQMgpJoOwotFlQlJAM1bVdTTRQgA
    */
-  @PostMapping(value = "/sendVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping(value = "/sendVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE) //요청을 json 타입으로 받음
   public ResponseEntity<String> sendVerificationCode(@Validated(SendVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm) throws Exception {
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
 
     String email = userRegisterForm.getEmail();
 
+    //이미 사용하고 있는 이메일인지 체크하는 로직
     if(userService.checkUserExistsWithEmail(email)){
       log.info("[class] UserController - [method] sendVerificationCode - email already used");
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already used");
