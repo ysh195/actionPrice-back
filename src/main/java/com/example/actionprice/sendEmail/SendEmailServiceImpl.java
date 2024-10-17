@@ -65,7 +65,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 	@Override
 	public boolean sendVerificationEmail(String email) throws Exception {
 
-		// 해당 이메일로 발급 받은 verificationEmail이 있으면 가져오고, 없으면 null 반환
+		// 해당 이메일로 발급 받은 verificationEmail이 있으면 가져오고, 없으면 null 반환 DB에 있음
 		VerificationEmail verificationEmail = verificationEmailRepository.findById(email).orElse(null);
 
 		if (verificationEmail != null) { // 이미 존재하는지 체크
