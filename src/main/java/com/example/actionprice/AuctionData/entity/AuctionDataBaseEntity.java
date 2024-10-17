@@ -6,6 +6,12 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 
+/**
+ * 메인 데이터 엔티티를 구성하는 base entity
+ * @author 연상훈
+ * @created 2024-10-17 오후 7:58
+ * @info
+ */
 @MappedSuperclass
 @SuperBuilder
 @NoArgsConstructor

@@ -23,12 +23,15 @@ import lombok.NoArgsConstructor;
  * @author : 연상훈
  * @created : 2024-10-05 오후 10:45
  * @updated : 2024-10-06 오후 12:29
- * @see :
- * 1. content는 1자 이상, 300자 이하여야 합니다.
- * 2. @JsonBackReference와 @ToString(exclude = {"user"})로 순환참조의 위험을 경감시켰습니다.
- * 3. createdAt, updatedAt는 BaseEntity를 통해 구현하였습니다.
- * 4. 이걸 참조하는 쪽에서 OneToMany로 불러올 때 순번대로 정렬하기 위해 Comparable을 implements 함
- * 5. user와 post를 부모 클래스로 가지고 있기 때문에 한쪽 부모에서 comment를 지우면, 다른 부모에서 문제가 생깁니다. 그러한 문제를 해결하기 위해 comment가 삭제되기 전에 comment의 삭제 이벤트를 전파하여 모든 부모에서 지웁니다.
+ * @value commentId
+ * @value content
+ * @value user
+ * @value post
+ * @info 1. content는 1자 이상, 300자 이하여야 합니다.
+ * @info 2. @JsonBackReference와 @ToString(exclude = {"user"})로 순환참조의 위험을 경감시켰습니다.
+ * @info 3. createdAt, updatedAt는 BaseEntity를 통해 구현하였습니다.
+ * @info 4. 이걸 참조하는 쪽에서 OneToMany로 불러올 때 순번대로 정렬하기 위해 Comparable을 implements 함
+ * @info 5. user와 post를 부모 클래스로 가지고 있기 때문에 한쪽 부모에서 comment를 지우면, 다른 부모에서 문제가 생깁니다. 그러한 문제를 해결하기 위해 comment가 삭제되기 전에 comment의 삭제 이벤트를 전파하여 모든 부모에서 지웁니다.
  */
 @Entity
 @Table(name = "comment")

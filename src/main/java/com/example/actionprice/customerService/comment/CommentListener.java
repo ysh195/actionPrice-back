@@ -5,6 +5,7 @@ import com.example.actionprice.user.User;
 import jakarta.persistence.PreRemove;
 
 /**
+ * comment의 리스너 클래스
  * @author : 연상훈
  * @created : 2024-10-06 오후 12:02
  * @updated : 2024-10-06 오후 12:02

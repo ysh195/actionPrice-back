@@ -33,9 +33,13 @@ import org.springframework.stereotype.Service;
  * @author 연상훈
  * @created 24/10/01 22:50
  * @updated 24/10/11 20:37
- * @value : senderEmail = 보낼 사람의 이메일. properties에 등록되어 있음. 현재 연상훈 이메일
- * @value : javaMailSender = 자바에서 공식적으로 지원하는 이메일 발송 클래스.
- * @value : pop3Properties = 이메일 발송 후 잘못된 이메일로 보내졌는지 체크하기 위한 일종의 컴포넌트(형식은 config)
+ * @value senderEmail : 보낼 사람의 이메일. properties에 등록되어 있음. 현재 연상훈 이메일
+ * @value javaMailSender : 자바에서 공식적으로 지원하는 이메일 발송 클래스.
+ * @value verificationEmailRepository : 발송된 이메일 정보를 저장하는 레포지토리
+ * @value pop3Properties : 이메일 발송 후 잘못된 이메일로 보내졌는지 체크하기 위한 일종의 컴포넌트(형식은 configuration
+ * @value random : 무작위 문자열을 만들어 주는 클래스
+ * @value CHARACTERS : 인증코드 조합에 쓰일 문자열.
+ * @value CODE_LENGTH : 인증코드의 길이 설정
  */
 @Service
 @RequiredArgsConstructor
@@ -60,7 +64,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @author 연상훈
 	 * @created 2024-10-10 오전 11:13
 	 * @updated 2024-10-11 오후 20:39
-	 * @value : email = 전송 받을 이메일(수신자 이메일)
+	 * @param email 전송 받을 이메일(수신자 이메일)
 	 */
 	@Override
 	public boolean sendVerificationEmail(String email) throws Exception {
@@ -105,11 +109,11 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 	/**
 	 * 인증코드 검증 로직
+	 * @param email 전송 받은 이메일(사용자가 입력한 이메일)
+	 * @param verificationCode 인증코드(사용자가 입력한 인증코드)
 	 * @author : 연상훈
 	 * @created : 2024-10-12 오후 12:10
 	 * @updated : 2024-10-12 오후 12:10
-	 * @value : email = 전송 받은 이메일(사용자가 입력한 이메일)
-	 * @value : verificationCode = 인증코드(사용자가 입력한 인증코드)
 	 */
 	@Override
 	public String checkVerificationCode(String email, String verificationCode) {
@@ -143,14 +147,13 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 	/**
 	 * 이메일 발송이 완료되었는지 확인하는 메서드
+	 * @param email 인증코드가 발송된 이메일 주소
 	 * @author : 연상훈
 	 * @created : 2024-10-10 오후 9:44
-	 * @updated : 2024-10-12 오전 11:39
-	 * 2024-10-12 오전 11:39 > 기능적으로는 차이가 없지만, 읽지 않은 메시지만 검색함으로써 메모리 사용량을 크게 줄임
-	 * @info :
-	 * store와 folder를 try() 안에 넣어서 try가 실패하면 자연스럽게 닫히게 함
-	 * result 변수를 사용하여 folder와 store가 닫히고 나서 메서드가 종료하도록 합니다.
-	 * 너무 길어서 별도의 메서드로 내부 로직을 분리하려다가, 그러면 이게 너무 짧아져서 그대로 둠
+	 * @updated 2024-10-12 오전 11:39 : 기능적으로는 차이가 없지만, 읽지 않은 메시지만 검색함으로써 메모리 사용량을 크게 줄임
+	 * @info store와 folder를 try() 안에 넣어서 try가 실패하면 자연스럽게 닫히게 함
+	 * @info result 변수를 사용하여 folder와 store가 닫히고 나서 메서드가 종료하도록 합니다.
+	 * @info 너무 길어서 별도의 메서드로 내부 로직을 분리하려다가, 그러면 이게 너무 짧아져서 그대로 둠
 	 */
 	private boolean isCompleteSentEmail(String email) throws Exception {
 		boolean result = true;
@@ -252,15 +255,14 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 	/**
 	 * 단순 이메일 발송 메서드
+	 * @param receiverEmail 받는 사람의 이메일
+	 * @param subject 보낼 이메일의 제목
+	 * @param content 보낼 이메일의 내용
 	 * @author 연상훈
 	 * @created 24/10/01 22:50
-	 * @updated 24/10/15 오전 09:47
-	 * > [24/10/15 오전 09:47] 에러 코드 단순화
-	 * @param : receiverEmail = 받는 사람의 이메일
-	 * @param : subject = 보낼 이메일의 제목
-	 * @param : content = 보낼 이메일의 내용
-	 * @throw : InvalidEmailAddressException, {MessagingException, Exception >> RuntimeException}
-	 * @info : 이 메서드 실행 중에 오류가 발생하면 자체적으로 InvalidEmailAddressException 등의 예외로 던지기 때문에 별도의 오류 처리가 필요 없음.
+	 * @updated 24/10/15 오전 09:47 : 에러 코드 단순화
+	 * @throws InvalidEmailAddressException
+	 * @info 이 메서드 실행 중에 오류가 발생하면 자체적으로 InvalidEmailAddressException 등의 예외로 던지기 때문에 별도의 오류 처리가 필요 없음.
 	 */
 	private void sendSimpleMail(String receiverEmail, String subject, String content) throws Exception {
 		log.info("이메일 전송 메서드 시작");
@@ -269,7 +271,6 @@ public class SendEmailServiceImpl implements SendEmailService {
 		simpleMailMessage.setTo(receiverEmail);
 		simpleMailMessage.setSubject(subject);
 		simpleMailMessage.setText(content);
-
 
 		try{
 			javaMailSender.send(simpleMailMessage);
@@ -301,13 +302,12 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 	/**
 	 * @author 연상훈
+	 * @param receiverEmail = 받는 사람의 이메일
+	 * @param subject = 보낼 이메일의 제목
+	 * @param content = 보낼 이메일의 내용
 	 * @created 24/10/01 22:50
-	 * @updated 24/10/02 11:46
-	 * @param : receiverEmail = 받는 사람의 이메일
-	 * @param : subject = 보낼 이메일의 제목
-	 * @param : content = 보낼 이메일의 내용
-	 * @throws : Exception
-	 * @info : 간단 이메일 발송 로직. 오류를 대충 처리했음.
+	 * @throws Exception
+	 * @info 간단 이메일 발송 로직. 오류를 대충 처리했음.
 	 * @deprecated
 	 */
 	private void sendMimeMail(String receiverEmail, String subject, String content) throws Exception{

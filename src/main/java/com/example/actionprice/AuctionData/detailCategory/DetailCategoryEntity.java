@@ -8,6 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/**
+ * 상품의 대/중/소 분류 카테고리 객체
+ * @author 연상훈
+ * @created 2024-10-17 오후 7:57
+ * @value code
+ * @value large
+ * @value middle
+ * @value small
+ */
 @Entity
 @Table(name = "detail_category")
 @Getter

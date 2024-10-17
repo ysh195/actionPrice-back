@@ -12,12 +12,14 @@ import org.springframework.context.annotation.Configuration;
  * @author : 연상훈
  * @created : 2024-10-11 오전 12:16
  * @updated : 2024-10-11 오전 12:16
- * @see : 
- * 원래 컴포넌트로 하려 했는데, 그랬다간 @Value를 엄청 많이 씀
- * config로 하고, @ConfigurationProperties(prefix = "mail.pop3s")을 붙이면 훨씬 간결해져서
- * 컴포넌트 대신 config로 함
- * 다른 건 몰라도 username과 password는 보안이 필요한 사항이기 때문에
- * 외부에서 이 값을 가져다 쓸 수 없도록 @Getter를 쓰지 않고, 필요한 필드값들만 별도의 get 메서드 구현
+ * @value host
+ * @value port
+ * @value folder
+ * @value username
+ * @value password
+ * @value untilTime
+ * @info 원래 컴포넌트로 하려 했는데, 그랬다간 @Value를 엄청 많이 씀. config로 하고, @ConfigurationProperties(prefix = "mail.pop3s")을 붙이면 훨씬 간결해져서 컴포넌트 대신 config로 함
+ * @info 다른 건 몰라도 username과 password는 보안이 필요한 사항이기 때문에 외부에서 이 값을 가져다 쓸 수 없도록 @Getter를 쓰지 않고, 필요한 필드값들만 별도의 get 메서드 구현
  */
 @Configuration
 @ConfigurationProperties(prefix = "mail.pop3s") // 이거 덕에 @Value 안 써도 됨

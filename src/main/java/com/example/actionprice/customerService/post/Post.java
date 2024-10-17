@@ -27,15 +27,19 @@ import lombok.ToString;
 import org.hibernate.annotations.BatchSize;
 
 /**
- * @author : 연상훈
- * @created : 2024-10-05 오후 10:45
- * @updated : 2024-10-06 오후 12:29
- * @see :
- * 1. content는 1자 이상이며, 글자수 무제한, 줄 나눔 가능한 텍스트입니다.
- * 2. @JsonManagedReference, @JsonBackReference와 @ToString(exclude = {"user", "commentSet"})로 순환참조의 위험을 경감시켰습니다.
- * 3. createdAt, updatedAt는 BaseEntity를 통해 구현하였습니다.
- * 4. published로 비공개글을 구현합니다. true = 공개 / false = 비공개
- * 5. 이걸 참조하는 쪽에서 OneToMany로 불러올 때 순번대로 정렬하기 위해 Comparable을 implements 함
+ * @author 연상훈
+ * @created 2024-10-05 오후 10:45
+ * @value postId
+ * @value title
+ * @value content : columnDefinition = "TEXT 설정을 사용하여 줄 나눔 가능한 긴 문자열로 설정합니다.
+ * @value published : 비밀글 설정입니다. [default = true(공개)]
+ * @value user
+ * @value commentSet
+ * @info 1. content는 1자 이상이며, 글자수 무제한, 줄 나눔 가능한 텍스트입니다.
+ * @info 2. @JsonManagedReference, @JsonBackReference와 @ToString(exclude = {"user", "commentSet"})로 순환참조의 위험을 경감시켰습니다.
+ * @info 3. createdAt, updatedAt는 BaseEntity를 통해 구현하였습니다.
+ * @info 4. published로 비공개글을 구현합니다. true = 공개 / false = 비공개
+ * @info 5. 이걸 참조하는 쪽에서 OneToMany로 불러올 때 순번대로 정렬하기 위해 Comparable을 implements 함
  */
 @Entity
 @Table(name = "post")

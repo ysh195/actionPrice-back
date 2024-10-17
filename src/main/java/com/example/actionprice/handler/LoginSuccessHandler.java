@@ -17,16 +17,15 @@ import org.springframework.security.web.authentication.RememberMeServices;
  * 로그인 성공 시 사용되는 핸들러
  * @author : 연상훈
  * @created : 2024-10-06 오후 3:26
- * @updated : 2024-10-14 오후 12:07
- * > [2024-10-14 오후 12:07] : 없앴다가 다시 생성함
- * @see : authentication에는 rememberMe 값이 들어 있으니 절대 다른 값 입력하지 말 것.
+ * @updated 2024-10-14 오후 12:07 : 없앴다가 다시 생성함
+ * @updated 2024-10-17 오후 7:16 : 리멤버미 삭제
+ * @value jwtUtil : 토큰 생성 및 검증용 컴포넌트
  */
 @Log4j2
 @RequiredArgsConstructor
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
   private final JWTUtil jwtUtil;
-  private final RememberMeServices rememberMeServices;
 
   /**
    * 인증이 성공하면 진행되는 절차
@@ -64,6 +63,5 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     response.setStatus(HttpServletResponse.SC_OK);
     response.getWriter().println(jsonStr); // response(json 형태)의 writer에 토큰 정보 추가
-    rememberMeServices.loginSuccess(request, response, authentication);
   }
 }

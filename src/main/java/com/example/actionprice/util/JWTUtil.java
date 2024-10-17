@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 /**
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:12
- * @updated : 2024-10-06 오후 2:12
  * @see : jwt 토큰을 위한 설정
  */
 @Log4j2
@@ -31,13 +30,11 @@ public class JWTUtil {
 
   /**
    * 토큰 생성
+   * @param valueMap payload에 넣을 내용 [Map]
+   * @param time 토큰의 유효시간(분).
    * @author : 연상훈
    * @created : 2024-10-06 오후 2:12
-   * @updated : 2024-10-06 오후 2:12
-   * @param : valueMap = payload에 넣을 내용
-   * @param : time = 토큰의 유효시간(분).
-   * 일단위로 하고 싶으면 60*24*days 또는 plusDays(time).
-   * 되도록 rememberMe 시간하고 맞춰야 함
+   * @info 일단위로 하고 싶으면 60*24*days 또는 plusDays(time).
    */
   public String generateToken(Map<String, Object> valueMap, int time) {
 
@@ -63,9 +60,9 @@ public class JWTUtil {
 
   /**
    * 토큰 검증
+   * @param token : 토큰 내용 [String]
    * @author : 연상훈
    * @created : 2024-10-06 오후 2:35
-   * @updated : 2024-10-06 오후 2:35
    */
   public Map<String, Object> validateToken(String token) throws JwtException {
     Map<String, Object> claims = Jwts.parserBuilder()
@@ -79,9 +76,9 @@ public class JWTUtil {
 
   /**
    * 토큰 내부에 있는 유저네임 읽기
+   * @param token : 토큰 내용 [String]
    * @author : 연상훈
    * @created : 2024-10-06 오후 2:35
-   * @updated : 2024-10-06 오후 2:35
    */
   public String getUsernameFromToken(String token) {
     try {

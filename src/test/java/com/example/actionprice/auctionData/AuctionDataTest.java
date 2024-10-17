@@ -106,15 +106,15 @@ public class AuctionDataTest {
                         switch (grandSort){
                             case "농산물":
                                 System.out.println(entity.toString());
-                                // cropsEntity_repo.save((AuctionEntity_crops)entity);
+                                auctionRepositorycrops.save((AuctionEntity_crops)entity);
                                 break;
                             case "수산물":
                                 System.out.println(entity.toString());
-                                // fishEntity_repo.save((AuctionEntity_fish) entity);
+                                auctionRepositoryfish.save((AuctionEntity_fish) entity);
                                 break;
                             case "축산물":
                                 System.out.println(entity.toString());
-                                // aniEntity_repo.save((AuctionEntity_ani) entity);
+                                auctionRepositoryani.save((AuctionEntity_ani) entity);
                                 break;
                             default:
                                 break;
