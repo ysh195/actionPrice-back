@@ -14,12 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * @author : 연상훈
- * @created : 2024-10-06 오후 1:14
- * @updated : 2024-10-011 오후 11:32
- * - user의 권한 객체를 Set<String>으로 바꾸면서 Set<GrantedAuthority>를 생성하는 로직 추가.
- * - [2024-10-14 오전 5:42] : 리멤버미 필드를 추가한 CustomUserDetails를 리턴하도록 변경
- * @info :
+ * @author 연상훈
+ * @created 2024-10-06 오후 1:14
+ * @updated 2024-10-011 오후 11:32 : user의 권한 객체를 Set<String>으로 바꾸면서 Set<GrantedAuthority>를 생성하는 로직 추가.
+ * @updated 2024-10-14 오전 5:42 : 리멤버미 필드를 추가한 CustomUserDetails를 리턴하도록 변경
+ * @updated 2024-10-17 오후 8:15 : 리멤버미를 사용하지 않기로 하여 이전 상태로 되돌림
  */
 @Service
 @Log4j2

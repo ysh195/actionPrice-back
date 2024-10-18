@@ -8,13 +8,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @author : 연상훈
- * @created : 2024-10-05 오후 10:57
- * @updated : 2024-10-12 오후 1:48
- * 2024-10-12 오후 1:48 - 전체 검증은 그냥 @Valid를 쓰기 때문에 불필요한 검증 그룹인 CheckVerificationCodeGroup 삭제
- * @see : 사용자가 user로 등록할 때 입력한 데이터를 담아올 객체입니다. 실질적으로 이게 dto 역할입니다.
- * 하나의 form이지만, 상황에 따라 검증이 필요한 영역이 다르기 때문에
- * 검증을 위한 별도의 그룹을 지정하여 처리합니다.
+ * @author 연상훈
+ * @group CheckForDuplicateUsernameGroup : username 중복 체크 검증그룹
+ * @group SendVerificationCodeGroup : 인증코드 검증그룹
+ * @created 2024-10-05 오후 10:57
+ * @updated 2024-10-12 오후 1:48 : 전체 검증은 그냥 @Valid를 쓰기 때문에 불필요한 검증 그룹인 CheckVerificationCodeGroup 삭제
+ * @info 사용자가 user로 등록할 때 입력한 데이터를 담아올 객체입니다. 실질적으로 이게 dto 역할입니다.
+ * @info 하나의 form이지만, 상황에 따라 검증이 필요한 영역이 다르기 때문에 검증을 위한 별도의 그룹을 지정하여 처리합니다.
  */
 @Data
 @NoArgsConstructor

@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author : 연상훈
  * @created : 2024-10-06 오후 9:17
  * @updated : 2024-10-10 오전 11:07
- * @see :
  */
 @Service
 @Log4j2
@@ -25,16 +24,15 @@ public class UserServiceImpl implements UserService {
 
   /**
    * 유저 생성 기능. 대체로 회원가입
+   * @param userRegisterForm
    * @author 연상훈
    * @created 2024-10-10 오전 11:05
    * @updated 2024-10-10 오전 11:05
-   * @see :
-   * src/main/java/com/example/actionprice/exception/UsernameAlreadyExistsException.java
-   * src/main/java/com/example/actionprice/advice/CustomRestAdvice.java
+   * @throw UsernameAlreadyExistsException
    */
   @Transactional
   @Override
-  public User createUser(UserRegisterForm userRegisterForm) {
+  public String createUser(UserRegisterForm userRegisterForm) {
     log.info("--------------- [UserService] createUser ----------------");
     log.info("userRegisterForm: " + userRegisterForm);
 
@@ -62,29 +60,30 @@ public class UserServiceImpl implements UserService {
     // 저장
     userRepository.save(newUser);
 
-    log.info(newUser.getUsername() + "register successful");
+    String result_str = newUser.getUsername() + "register successful";
 
-    return newUser;
+    log.info(result_str);
+
+    return result_str;
   }
 
   /**
    * 유저 로그인 기능
-   * @author : 연상훈
-   * @created : 2024-10-06 오후 9:17
-   * @updated : 2024-10-06 오후 9:17
-   * @see : 로그인 기능은 CustomSecurity와 LoginFilter로 처리하기 때문에 별도로 사용할 필요가 없음.
+   * @author 연상훈
+   * @created 2024-10-06 오후 9:17
+   * @info 로그인 기능은 CustomSecurity와 LoginFilter로 처리하기 때문에 별도로 사용할 필요가 없음.
    */
 
   /**
    * 유저 로그아웃 기능
    * @author 연상훈
    * @created 2024-10-10 오전 10:23
-   * @updated 2024-10-10 오전 10:23
    * @see : 로그아웃 기능은 CustomSecurity로 처리하기 때문에 별도로 사용할 필요가 없음.
    */
 
   /**
    * 해당 username을 가진 사용자가 존재하는지 체크하는 메서드.
+   * @param username
    * @author 연상훈
    * @created 2024-10-10 오전 10:25
    * @updated 2024-10-10 오전 10:25
@@ -109,6 +108,7 @@ public class UserServiceImpl implements UserService {
 
   /**
    * 해당 email을 사용 중인 사용자가 존재하는지 체크하는 메서드.
+   * @param email
    * @author 연상훈
    * @created 2024-10-10 오전 10:25
    * @updated 2024-10-10 오전 10:25

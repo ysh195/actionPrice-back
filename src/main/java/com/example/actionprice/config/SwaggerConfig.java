@@ -11,10 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
+ * 스웨거 기본 세팅
  * @author 연상훈
  * @created 24/10/01 13:40
- * @updated 24/10/01 13:40
- * @info 스웨거 기본 세팅
  */
 @Configuration
 public class SwaggerConfig implements WebMvcConfigurer {

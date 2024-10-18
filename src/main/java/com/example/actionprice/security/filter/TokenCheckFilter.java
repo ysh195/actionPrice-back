@@ -23,7 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * 토큰을 검사하는 필터
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:43
- * @updated : 2024-10-08 오후 4:45
+ * @updated 2024-10-17 오후 7:23 : 토큰체크 경로 수정
  * @see : @RequiredArgsConstructor를 사용했기 때문에 나중에 생성할 때 넣어줘야 함
  */
 @Log4j2
@@ -33,16 +33,9 @@ public class TokenCheckFilter extends OncePerRequestFilter {
   private final CustomUserDetailService userDetailService;
   private final JWTUtil jwtUtil;
 
-  // 토큰 검사를 하지 않는 경로
-  // 어쩌면 반대로 토큰의 검사가 필요한 경로를 설정하는 게 더 간결하고 효율적일 수도 있음
-  private final String[] NoTokenCheckPath = {
-          "/",
-          "/api/user/login",
-          "/api/user/logout",
-          "/api/user/register",
-          "/api/user/sendVerificationCode",
-          "/api/user/checkVerificationCode",
-          "/api/user/generate/refreshToken"
+  // 토큰 검사를 실행하는 경로
+  private final String[] tokenCheckPath = {
+    "/api/admin/**"
   };
 
   @Override
@@ -92,6 +85,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
 
 
     if(tokenType.equalsIgnoreCase("Bearer") == false){
+      // 엑세스 토큰에 Bearer가 빠져 있음. 형식이 이상함
       throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.BADTYPE);
     }
 
@@ -104,15 +98,15 @@ public class TokenCheckFilter extends OncePerRequestFilter {
       return values;
     }
     catch(MalformedJwtException e){
-      log.error("-------- MalformedJwtException ------------");
+      log.error("-------- {} ------------", e.getClass().getSimpleName());
       throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.MALFORM);
     }
     catch(SignatureException e){
-      log.error("-------- SignatureException ------------");
+      log.error("-------- {} ------------", e.getClass().getSimpleName());
       throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.BADSIGN);
     }
     catch(ExpiredJwtException e){
-      log.error("-------- ExpiredJwtException ------------");
+      log.error("-------- {} ------------", e.getClass().getSimpleName());
       throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.EXPIRED);
     }
   }
@@ -121,18 +115,19 @@ public class TokenCheckFilter extends OncePerRequestFilter {
    * 인증이 필요한 경로인지 체크하는 메서드
    * @author 연상훈
    * @created 2024-10-08 오후 4:32
-   * @updated 2024-10-08 오후 4:32
+   * @updated 2024-10-17 오후 7:24 : 반환 값 수정. 토큰 체크가 필요한 경로면 true를 반환
    */
   private boolean shouldCheckToken(HttpServletRequest request) {
     String path = request.getRequestURI();
     // 예: 로그인 및 기타 공개 API는 인증 불필요
-    for(String startWord : NoTokenCheckPath){
-      // for문을 돌리면서 NoTokenCheckPath에 포함된 게 하나라도 있으면
+    for(String startWord : tokenCheckPath){
+      // for문을 돌리면서 tokenCheckPath에 포함된 게 하나라도 있으면 = 토큰 체크를 해야 하는 경로에 해당하면
       if(path.startsWith(startWord)){
-        return false; // false를 반환
+        //
+        return true; // true를 반환
       }
     }
-    // 포함된 게 아니었으니 for문 돌리면서 안 걸러지고 여까지 옴.
-    return true; // 그러니 true를 반환
+    // 포함된 게 아니었으니 for문 돌리면서 안 걸러지고 여기까지 옴.
+    return false; // 그러니 false를 반환
   }
 }

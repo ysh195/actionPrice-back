@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 /**
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:58
- * @updated : 2024-10-06 오후 2:58
  */
 public class RefreshTokenException extends RuntimeException {
 

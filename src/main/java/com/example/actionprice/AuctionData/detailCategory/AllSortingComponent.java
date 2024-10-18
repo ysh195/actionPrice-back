@@ -23,6 +23,11 @@ import java.util.Map;
 @Log4j2
 public class AllSortingComponent {
 
+    /**
+     * 시장코드 모음집
+     * @author 연상훈
+     * @created 2024-10-17 오후 1:34
+     */
     private final Map<String, String> market_code_map = Map.ofEntries(
             Map.entry("110001","서울가락"),
             Map.entry("110008","서울강서"),
@@ -59,6 +64,11 @@ public class AllSortingComponent {
             Map.entry("380401","진주")
     );
 
+    /**
+     * 단위(g, kg, ton 등)코드 모음집
+     * @author 연상훈
+     * @created 2024-10-17 오후 1:34
+     */
     private final Map<String, String> unit_code_map = Map.ofEntries(
             Map.entry("10","."),
             Map.entry("11","g"),
@@ -72,6 +82,11 @@ public class AllSortingComponent {
             Map.entry("73","ton(M/T)")
     );
 
+    /**
+     * 상품 등급(quality) 모음집
+     * @author 연상훈
+     * @created 2024-10-17 오후 1:34
+     */
     private final Map<String, String> level_code_map = Map.ofEntries(
             Map.entry("10","."),
             Map.entry("11","특"),
@@ -109,6 +124,11 @@ public class AllSortingComponent {
             Map.entry("7Z","무등급")
     );
 
+    /**
+     * 농산, 수산, 축산 분류 코드 모음집
+     * @author 연상훈
+     * @created 2024-10-17 오후 1:34
+     */
     private final Map<String, String> grand_category_map = Map.ofEntries(
             Map.entry("미곡류","농산물"),
             Map.entry("맥류","농산물"),
@@ -190,6 +210,11 @@ public class AllSortingComponent {
             Map.entry("GMO농산물","농산물")
     );
 
+    /**
+     * 옛날 시장코드 모음집
+     * @author 연상훈
+     * @created 2024-10-17 오후 1:34
+     */
     private final String[] old_market_name_Arr = {"강릉도매시장",  "구리도매시장",  "구미도매시장",  "목포농산시장",  "수원도매시장",  "순천도매시장",  "안동도매시장",  "안산도매시장",  "안양도매시장",  "여수농산시장",  "울산도매시장",  "원주도매시장",  "익산도매시장",  "전주도매시장",  "정읍도매시장",  "진주도매시장",  "천안도매시장",  "청주도매시장",  "춘천도매시장",  "충주도매시장",  "포항도매시장",  "광주각화도매시장",  "광주서부도매시장",  "대구북부도매시장",  "대전노은도매시장",  "대전오정도매시장",  "부산반여도매시장",  "부산엄궁도매시장",  "서울가락도매시장",  "서울강서도매시장",  "인천남촌도매시장",  "인천삼산도매시장",  "창원내서도매시장",  "창원팔용도매시장",  "부산국제수산물도매시장"};
 
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
