@@ -43,7 +43,7 @@ import org.hibernate.annotations.BatchSize;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"postSet", "commentSet", "favoriteSet"})
+@ToString(exclude = {"postSet", "commentSet", "favoriteSet"}) //exclude : 제외시킨다
 public class User {
 
   // field
@@ -61,8 +61,8 @@ public class User {
   @Email
   private String email;
 
-  @Column(nullable=true)
-  private String refreshToken;
+  @Column(nullable=true) //유저 생성당시는 null일 수 밖에 없음 로그인시 생성되기에
+  private String refreshToken; //블랙리스트를 사용
 
   /**
    * 유저 권한
@@ -78,21 +78,22 @@ public class User {
   // field - relationship
   @JsonManagedReference //부모객체에서 자식객체 관리 json형태로 반환될때 이게 부모라는것을 알려줌
   @OneToMany(mappedBy = "user",
-      orphanRemoval = true,
-      cascade = {CascadeType.ALL},
+      orphanRemoval = true, //유저에게서 나가면 삭제가 됨
+      cascade = {CascadeType.ALL}, //유저객체에서 포스트를 불러옴 ,포스트 내용을 수정 그것을 세이브 (전체반영)
       fetch = FetchType.LAZY)
-  @BatchSize(size = 10)
-  @Builder.Default
-  private Set<Post> postSet = new HashSet<>();
+  @BatchSize(size = 10) //한번에 불러오는 양
+  @Builder.Default //만들때 빌더를 사용해 자신의 필드를 다 설정해야하지만 안하면 null 이기에 dafault는 new HashSet<>() 이다
+  private Set<Post> postSet = new HashSet<>(); //게시글 (유저 참조중)
 
   @JsonManagedReference
   @OneToMany(mappedBy = "user",
       orphanRemoval = true,
-      cascade = {CascadeType.ALL},
-      fetch = FetchType.LAZY)
+      cascade = {CascadeType.ALL}, //변환할떄
+      fetch = FetchType.LAZY) //유저를 불러올떄 포스트는 나중에 불러오게 함
   @BatchSize(size = 10)
   @Builder.Default
-  private Set<Comment> commentSet = new HashSet<>();
+
+  private Set<Comment> commentSet = new HashSet<>(); //댓글
 
   @JsonManagedReference
   @OneToMany(mappedBy = "user",
@@ -121,9 +122,11 @@ public class User {
    * @see : 절대 UserRole.ROLE_USER.name()까지 하면 안 됨. 그건 메서드 내부에서 알아서 함.
    */
   public void addAuthorities(UserRole role) {
+    // 이렇게 쓰게함 UserRole.ROLE_USER
     // 없으면 추가
+    //authorities 셋 스트림가능 ,noneMatch 이용해 입력받는것의 조건을 보고 다 안맞으면 true
     if (this.authorities.stream().noneMatch(authority -> authority.equals(role.name()))) {
-      this.authorities.add(role.name());
+      this.authorities.add(role.name()); //없으면 추가
     }
   }
 

@@ -69,7 +69,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 	@Override
 	public boolean sendVerificationEmail(String email) throws Exception {
 
-		// 해당 이메일로 발급 받은 verificationEmail이 있으면 가져오고, 없으면 null 반환
+		// 해당 이메일로 발급 받은 verificationEmail이 있으면 가져오고, 없으면 null 반환 DB에 있음
 		VerificationEmail verificationEmail = verificationEmailRepository.findById(email).orElse(null);
 
 		if (verificationEmail != null) { // 이미 존재하는지 체크
@@ -174,6 +174,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 				log.info("이메일 폴더를 개방합니다. 아직 읽지 않은 메시지를 찾습니다.");
 
 				// 아직 읽지 않은 메시지만 찾기
+				//FlagTerm 메세지 표시 ,
 				Message[] messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
 				// 각 메시지의 내용을 뜯어보기

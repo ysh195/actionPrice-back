@@ -42,6 +42,7 @@ import lombok.NoArgsConstructor;
 @EntityListeners(CommentListener.class)
 public class Comment extends BaseEntity implements Comparable<Comment> {
 
+  //implements Comparable<Comment> 이것은 set으로 가져올떄 순서를 정함
   // field
 
   // field - basic
@@ -65,14 +66,14 @@ public class Comment extends BaseEntity implements Comparable<Comment> {
 
   @JsonBackReference
   @ManyToOne
-  @JoinColumn(name = "postId", nullable = true)  // 엔티티의 생명 주기상 null인 경우가 발생할 수 있습니다.
+  @JoinColumn(name = "postId", nullable = true)  // 엔티티의 생명 주기상 null인 경우가 발생할 수 있습니다. 그래서 null설정 가능
   private Post post;
 
   // method
   @Override
   public int compareTo(Comment o) {
     return this.commentId - o.commentId;
-  }
+  } //최신글인지 판별
 
   public void setUser(User user) {
     this.user = user;

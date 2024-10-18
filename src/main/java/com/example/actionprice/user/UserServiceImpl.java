@@ -121,6 +121,7 @@ public class UserServiceImpl implements UserService {
     log.info("--------------- [UserService] check User Exists With Email ----------------");
 
     log.info("inputed_email: " + email);
+    // DB에서 이메일로 유저 검색
     User existing_user = userRepository.findByEmail(email).orElse(null);
 
     if(existing_user != null) {
