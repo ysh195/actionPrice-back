@@ -2,7 +2,7 @@ package com.example.actionprice.security.filter;
 
 import com.example.actionprice.exception.AccessTokenException;
 import com.example.actionprice.security.CustomUserDetailService;
-import com.example.actionprice.util.JWTUtil;
+import com.example.actionprice.security.jwt.RefreshTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
@@ -21,17 +21,20 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
  * 토큰을 검사하는 필터
+ * @value tokenCheckPath : 토큰 검사가 필요한 url 경로들의 배열.
+ * @value userDetailService
+ * @value refreshTokenService
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:43
  * @updated 2024-10-17 오후 7:23 : 토큰체크 경로 수정
- * @see : @RequiredArgsConstructor를 사용했기 때문에 나중에 생성할 때 넣어줘야 함
+ * @updated 2024-10-19 오후 5:33 : jwtUtil을 refreshTokenService로 교체
  */
 @Log4j2
 @RequiredArgsConstructor
 public class TokenCheckFilter extends OncePerRequestFilter {
 
   private final CustomUserDetailService userDetailService;
-  private final JWTUtil jwtUtil;
+  private final RefreshTokenService refreshTokenService;
 
   // 토큰 검사를 실행하는 경로
   private final String[] tokenCheckPath = {
@@ -92,7 +95,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
     log.info("this is bearer : " + tokenType);
 
     try{
-      Map<String,Object> values = jwtUtil.validateToken(tokenStr);
+      Map<String,Object> values = refreshTokenService.validateJwtToken(tokenStr);
       log.info("values : " + values);
 
       return values;

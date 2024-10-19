@@ -11,13 +11,14 @@ import org.springframework.http.MediaType;
 /**
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:58
+ * @updated 2024-10-19 오후 5:17 : 블랙리스트 기능 구현을 위해 TOKEN_ERROR에 BLOCKED 추가
  */
 public class RefreshTokenException extends RuntimeException {
 
   private ErrorCase errorCase;
 
   public enum ErrorCase {
-    NO_ACCESS, BAD_ACCESS, NO_REFRESH, OLD_REFRESH, BAD_REFRESH
+    NO_ACCESS, BAD_ACCESS, NO_REFRESH, OLD_REFRESH, BAD_REFRESH, BLOCKED
   }
 
   public RefreshTokenException(ErrorCase errorCase) {
