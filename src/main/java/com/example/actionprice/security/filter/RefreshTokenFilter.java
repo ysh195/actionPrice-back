@@ -1,9 +1,8 @@
 package com.example.actionprice.security.filter;
 
 import com.example.actionprice.exception.RefreshTokenException;
-import com.example.actionprice.security.jwt.RefreshTokenService;
+import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
 import com.google.gson.Gson;
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,14 +31,14 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
 
   // SecurityConfig에서 생성하면서 주입 받을 것들
   private final String refreshPath;
-  private final RefreshTokenService refreshTokenService;
+  private final AccessTokenService accessTokenService;
 
   /**
    * 필터링 로직
    * @author : 연상훈
    * @created : 2024-10-06 오후 3:10
    * @updated : 2024-10-06 오후 3:10
-   * @see : 책대로 함 
+   * @see : 책대로 함
    */
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -68,9 +67,9 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     log.info("access_token : " + access_token);
 
     try {
-      checkAccessToken(access_token);
+      accessTokenService.checkAccessToken(access_token);
 
-      String jsonStr = refreshTokenService.issueAccessToken(username);
+      String jsonStr = accessTokenService.issueAccessToken(username);
 
       response.setStatus(HttpServletResponse.SC_OK);
       response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -98,19 +97,6 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
     }
 
     return null;
-  }
-
-  private void checkAccessToken(String accessToken) throws RefreshTokenException {
-
-    try{
-      refreshTokenService.validateJwtToken(accessToken);
-    }
-    catch(ExpiredJwtException e){
-      log.info("엑세스 토큰이 만료되었습니다.");
-    }
-    catch(Exception e){
-      throw new RefreshTokenException(RefreshTokenException.ErrorCase.NO_ACCESS);
-    }
   }
 
 }

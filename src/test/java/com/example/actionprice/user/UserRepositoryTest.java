@@ -1,6 +1,7 @@
 package com.example.actionprice.user;
 
-import com.example.actionprice.security.jwt.RefreshTokenRepository;
+import com.example.actionprice.security.jwt.refreshToken.RefreshTokenEntity;
+import com.example.actionprice.security.jwt.refreshToken.RefreshTokenRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,9 @@ public class UserRepositoryTest {
     User user = userRepository.findById(username).orElse(null);
     if(user != null){
       System.out.println("the user exists. and we delete the user");
-      refreshTokenRepository.deleteByUsername(username);
+      RefreshTokenEntity refreshToken = user.getRefreshToken();
+      refreshToken.setUser(null);
+      refreshTokenRepository.delete(refreshToken);
       userRepository.delete(user);
       return;
     }

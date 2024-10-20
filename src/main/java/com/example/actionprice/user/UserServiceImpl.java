@@ -2,6 +2,8 @@ package com.example.actionprice.user;
 
 import com.example.actionprice.exception.UsernameAlreadyExistsException;
 import com.example.actionprice.user.forms.UserRegisterForm;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -129,5 +131,14 @@ public class UserServiceImpl implements UserService {
     }
 
     return false;
+  }
+
+
+  public boolean checkValidityOfPassword(String password) {
+    Pattern passwordPattern = Pattern.compile("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,20}$"); // 8~20자, 영어+숫자+특수문자
+    Matcher passwordMatcher = passwordPattern.matcher(password);
+
+    return passwordMatcher.find() ? true : false;
+
   }
 }

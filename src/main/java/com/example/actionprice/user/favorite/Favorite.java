@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,5 +57,22 @@ public class Favorite implements Comparable<Favorite> {
   @Override
   public int compareTo(Favorite o) {
     return this.favoriteId - o.favoriteId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Favorite favorite = (Favorite) o;
+    return favoriteId == favorite.favoriteId;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(favoriteId);
   }
 }

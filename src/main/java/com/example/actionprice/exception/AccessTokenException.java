@@ -22,8 +22,8 @@ public class AccessTokenException extends RuntimeException {
     BADTYPE(HttpStatus.UNAUTHORIZED, "Token type must be Bearer"),
     EXPIRED(HttpStatus.UNAUTHORIZED, "Expired Token"),
     MALFORM(HttpStatus.FORBIDDEN, "Malformed Token"),
-    BADSIGN(HttpStatus.FORBIDDEN, "Bad Signature Token"),
-    BLOCKED(HttpStatus.FORBIDDEN, "Blocked");
+    UNEXPECTED(HttpStatus.FORBIDDEN, "Unexpected claim"),
+    BADSIGN(HttpStatus.FORBIDDEN, "Bad Signature Token");
 
     private HttpStatus status;
     private String msg;

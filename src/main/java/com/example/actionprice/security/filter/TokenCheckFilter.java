@@ -2,10 +2,7 @@ package com.example.actionprice.security.filter;
 
 import com.example.actionprice.exception.AccessTokenException;
 import com.example.actionprice.security.CustomUserDetailService;
-import com.example.actionprice.security.jwt.RefreshTokenService;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.security.SignatureException;
+import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +31,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class TokenCheckFilter extends OncePerRequestFilter {
 
   private final CustomUserDetailService userDetailService;
-  private final RefreshTokenService refreshTokenService;
+  private final AccessTokenService accessTokenService;
 
   // 토큰 검사를 실행하는 경로
   private final String[] tokenCheckPath = {
@@ -48,7 +45,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
 
     if(shouldCheckToken(request)) {
       try{
-        Map<String, Object> payload = validateAccessToken(request);
+        Map<String, Object> payload = accessTokenService.validateAccessTokenInReqeust(request);
         log.info("Payload : " + payload);
 
         String username = (String)payload.get("username");
@@ -71,47 +68,6 @@ public class TokenCheckFilter extends OncePerRequestFilter {
     }
 
     filterChain.doFilter(request, response);
-  }
-
-  private Map<String, Object> validateAccessToken(HttpServletRequest request) throws AccessTokenException {
-    String headerStr = request.getHeader("Authorization");
-    log.info("headerStr : " + headerStr);
-
-    if(headerStr == null || headerStr.length() < 8){
-      throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.UNACCEPT);
-    }
-
-    String tokenType = headerStr.substring(0,6);
-    String tokenStr = headerStr.substring(7);
-    log.info("tokenType : " + tokenType);
-    log.info("tokenStr : " + tokenStr);
-
-
-    if(tokenType.equalsIgnoreCase("Bearer") == false){
-      // 엑세스 토큰에 Bearer가 빠져 있음. 형식이 이상함
-      throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.BADTYPE);
-    }
-
-    log.info("this is bearer : " + tokenType);
-
-    try{
-      Map<String,Object> values = refreshTokenService.validateJwtToken(tokenStr);
-      log.info("values : " + values);
-
-      return values;
-    }
-    catch(MalformedJwtException e){
-      log.error("-------- {} ------------", e.getClass().getSimpleName());
-      throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.MALFORM);
-    }
-    catch(SignatureException e){
-      log.error("-------- {} ------------", e.getClass().getSimpleName());
-      throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.BADSIGN);
-    }
-    catch(ExpiredJwtException e){
-      log.error("-------- {} ------------", e.getClass().getSimpleName());
-      throw new AccessTokenException(AccessTokenException.TOKEN_ERROR.EXPIRED);
-    }
   }
 
   /**

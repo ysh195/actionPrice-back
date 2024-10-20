@@ -1,6 +1,6 @@
 package com.example.actionprice.handler;
 
-import com.example.actionprice.security.jwt.RefreshTokenService;
+import com.example.actionprice.security.jwt.refreshToken.RefreshTokenService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +32,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
   {
     String username = authentication.getName();
 
-    refreshTokenService.discardJwt(username);
+    refreshTokenService.discardRefreshToken(username);
 
     response.setStatus(HttpServletResponse.SC_OK);
     response.getWriter().write("Logout successful");

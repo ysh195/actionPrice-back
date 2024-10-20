@@ -18,7 +18,29 @@ public class RefreshTokenException extends RuntimeException {
   private ErrorCase errorCase;
 
   public enum ErrorCase {
-    NO_ACCESS, BAD_ACCESS, NO_REFRESH, OLD_REFRESH, BAD_REFRESH, BLOCKED
+    NO_ACCESS(HttpStatus.UNAUTHORIZED, "No access with refresh token"),
+    NO_REFRESH(HttpStatus.BAD_REQUEST, "No refresh token"),
+    UNEXPECTED_REFRESH(HttpStatus.FORBIDDEN, "Unexpected refresh token"),
+    BADSIGN_REFRESH(HttpStatus.FORBIDDEN, "Bad sign refresh token"),
+    BLOCKED_REFRESH(HttpStatus.FORBIDDEN, "Blocked refresh token"),
+    EXPIRED_REFRESH(HttpStatus.UNAUTHORIZED, "Expired refresh token"),
+    INVALID_REFRESH(HttpStatus.FORBIDDEN, "Invalid refresh token format");
+
+    private final HttpStatus status;
+    private final String message;
+
+    ErrorCase(HttpStatus status, String message) {
+      this.status = status;
+      this.message = message;
+    }
+
+    public HttpStatus getStatus() {
+      return status;
+    }
+
+    public String getMessage() {
+      return message;
+    }
   }
 
   public RefreshTokenException(ErrorCase errorCase) {

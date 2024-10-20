@@ -6,7 +6,8 @@ import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.security.filter.LoginFilter;
 import com.example.actionprice.security.filter.RefreshTokenFilter;
 import com.example.actionprice.security.filter.TokenCheckFilter;
-import com.example.actionprice.security.jwt.RefreshTokenService;
+import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
+import com.example.actionprice.security.jwt.refreshToken.RefreshTokenService;
 import com.example.actionprice.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -49,6 +50,7 @@ public class CustomSecurityConfig {
 
     private final CustomUserDetailService userDetailsService;
     private final UserRepository userRepository;
+    private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
 
     // method - @Bean
@@ -117,7 +119,7 @@ public class CustomSecurityConfig {
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler(){
-      LoginSuccessHandler loginSuccessHandler = new LoginSuccessHandler(refreshTokenService);
+      LoginSuccessHandler loginSuccessHandler = new LoginSuccessHandler(accessTokenService);
       return loginSuccessHandler;
     }
 
@@ -128,7 +130,7 @@ public class CustomSecurityConfig {
 
     @Bean
     public RefreshTokenFilter refreshTokenFilter() {
-      return new RefreshTokenFilter("/api/user/generate/refreshToken", refreshTokenService);
+      return new RefreshTokenFilter("/api/user/generate/refreshToken", accessTokenService);
     }
 
     /**
@@ -158,7 +160,7 @@ public class CustomSecurityConfig {
     // TokenCheckFilter 설정을 위한 메서드
     @Bean
     public TokenCheckFilter tokenCheckFilter(){
-        return new TokenCheckFilter(userDetailsService, refreshTokenService);
+        return new TokenCheckFilter(userDetailsService, accessTokenService);
     }
 
 }
