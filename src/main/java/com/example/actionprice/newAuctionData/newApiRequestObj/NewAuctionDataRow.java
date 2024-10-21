@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
  */
 public class NewAuctionDataRow
 {
-
     @JsonProperty("rn")
     private int rn; // 번호
 

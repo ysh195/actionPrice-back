@@ -2,7 +2,10 @@ package com.example.actionprice.customerService.post;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -20,6 +23,8 @@ import java.util.Map;
 public class PostController {
 
     private final PostService postService;
+
+
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<Map<String, Map<String,String>>> goDetailPost(@PathVariable Integer postId) {
@@ -61,5 +66,25 @@ public class PostController {
         response.put("data", Collections.singletonMap("message", message));
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/list")
+    public ResponseEntity<Page<Post>> getPostList(@RequestParam(defaultValue = "0") int page,
+                                                  @RequestParam(required = false) String keyword) {
+        Page<Post> postList = postService.getPostList(page, keyword);
+        return ResponseEntity.ok(postList);
+    }
+
+    //@RequestParam(required = false)를 사용하여 keyword가 없을 때는 전체 게시글을, 있을 때는 키워드를 통한 검색 결과를 반환
+//    @GetMapping("/list")
+//    public ResponseEntity<Page<Post>> getPosts(
+//            @RequestParam(required = false) String keyword,
+//            @PageableDefault(size = 10) Pageable pageable)  {
+//        Page<Post> posts = postService.findPosts(keyword, pageable);
+//        return ResponseEntity.ok(posts);
+//    }
+    //direction=Sort.Direction.DESC,sort="bno",size=10,page=0 이런식 가능
+
+
 
 }

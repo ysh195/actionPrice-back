@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @created 2024-10-19 오후 5:24
  */
 public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity, Long> {
+
+
 }
