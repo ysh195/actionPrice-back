@@ -106,35 +106,6 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     checkRefreshToken_all(refreshTokenEntity);
   }
 
-  /**
-   * 로그아웃 토큰 필터에서 로그아웃 성공 후 기존 토큰 삭제에 사용되는 메서드
-   * @param username
-   * @author 연상훈
-   * @created 2024-10-20 오후 1:08
-   * @info 어차피 리프레시 토큰을 삭제할 것이기 때문에 토큰이 존재하는지와 block 된 사용자가 토큰 삭제 시도 하는 게 아닌지만 확인하면 됨.
-   * @info 로그인 중 리프레시 토큰 유효시간이 끝난 상태에서 로그아웃 하려는데, 토큰 만료라고 오류 떠서 로그아웃 못하면 안 되니까
-   * @info block 된 사용자가 임의로 토큰을 삭제할 수 있으면 블랙리스트는 없는 거나 마찬가지니까 함부러 못 지우게 해야 함
-   */
-  @Override
-  public void discardRefreshToken(String username) {
-    User user = userRepository.findById(username).orElseThrow(() -> new UsernameNotFoundException("유저[" + username + "]가 존재하지 않습니다."));
-    RefreshTokenEntity refreshTokenEntity = user.getRefreshToken();
-
-    // 토큰이 존재하는지 체크
-    if(refreshTokenEntity == null) {
-      throw new RefreshTokenException(ErrorCase.NO_REFRESH);
-    }
-
-    // 리프레시 토큰 재발급 받으려고 하거나 아직 발급 받은 적 없는 사람일 수 있으니,
-    // 블록 여부와 위변조 여부만 확인.
-    checkRefreshToken_partially(refreshTokenEntity);
-
-    // 리프레시 토큰 삭제를 각 레포지토리와 user 객체에 반영
-    user.setRefreshToken(null);
-    refreshTokenRepository.delete(refreshTokenEntity);
-    userRepository.save(user);
-  }
-
   // private method
   /**
    * 입력 받은 리프레시 토큰에 대해 토큰 관련 모든 유효성 검사를 진행하는 메서드

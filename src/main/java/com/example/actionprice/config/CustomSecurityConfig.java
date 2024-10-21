@@ -1,6 +1,5 @@
 package com.example.actionprice.config;
 
-import com.example.actionprice.handler.CustomLogoutSuccessHandler;
 import com.example.actionprice.handler.LoginSuccessHandler;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.security.filter.LoginFilter;
@@ -19,11 +18,11 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -69,7 +68,8 @@ public class CustomSecurityConfig {
       //유저 권한 password 검증
       AuthenticationManager authenticationManager = authenticationManager(http);
 
-      http.cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
+      http.sessionManagement(sessionPolicy -> sessionPolicy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+          .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
           .csrf((csrfconfig) -> csrfconfig.disable())
           .authorizeHttpRequests((authz) -> authz
                       .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
@@ -96,10 +96,8 @@ public class CustomSecurityConfig {
                   .loginProcessingUrl("/api/user/login")
                   .failureUrl("/api/user/login") // TODO failureForwardUrl는 기존 url을 유지하면서 이동. 거기에 failureHandler를 쓰면 로그인 실패 횟수를 체크할 수 있을 것 같은데?
                   .defaultSuccessUrl("/", true))
-          .logout((logout) -> logout.logoutSuccessHandler(logoutSuccessHandler())
-              .logoutUrl("/api/user/logout")
-              .logoutSuccessUrl("/api/user/login")
-              .deleteCookies("JSESSIONID"));
+          .logout((logout) -> logout.logoutUrl("/api/user/logout")
+              .logoutSuccessUrl("/api/user/login"));
       return http.build();
 
     }
@@ -121,11 +119,6 @@ public class CustomSecurityConfig {
     public LoginSuccessHandler loginSuccessHandler(){
       LoginSuccessHandler loginSuccessHandler = new LoginSuccessHandler(accessTokenService);
       return loginSuccessHandler;
-    }
-
-    @Bean
-    public LogoutSuccessHandler logoutSuccessHandler(){
-      return new CustomLogoutSuccessHandler(refreshTokenService);
     }
 
     @Bean

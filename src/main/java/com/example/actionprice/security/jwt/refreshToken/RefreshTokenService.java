@@ -8,6 +8,5 @@ import java.util.Map;
  */
 public interface RefreshTokenService {
   void issueRefreshToken(String username, Map<String, Object> claim);
-  void discardRefreshToken(String username);
   void checkRefreshFirst(String username);
 }
