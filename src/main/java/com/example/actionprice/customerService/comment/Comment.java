@@ -50,7 +50,7 @@ public class Comment extends BaseEntity implements Comparable<Comment> {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "commentId")
-  private int commentId;
+  private Integer commentId;
 
   @Column(nullable = false)
   @Size(min = 1, max = 300)

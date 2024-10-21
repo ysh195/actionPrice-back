@@ -41,7 +41,7 @@ public class Favorite implements Comparable<Favorite> {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "favoriteId")
-  private int favoriteId;
+  private Integer favoriteId;
 
   @Column(nullable = false)
   @Size(min = 1)

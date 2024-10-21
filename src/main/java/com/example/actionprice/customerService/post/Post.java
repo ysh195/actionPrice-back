@@ -57,7 +57,7 @@ public class Post extends BaseEntity implements Comparable<Post> {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "postId")
-  private int postId;
+  private Integer postId;
 
   @Column(nullable=false)
   @Size(min = 1, max = 30)
