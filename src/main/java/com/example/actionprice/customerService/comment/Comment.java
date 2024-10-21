@@ -14,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,11 +71,6 @@ public class Comment extends BaseEntity implements Comparable<Comment> {
   private Post post;
 
   // method
-  @Override
-  public int compareTo(Comment o) {
-    return this.commentId - o.commentId;
-  } //최신글인지 판별
-
   public void setUser(User user) {
     this.user = user;
   }
@@ -82,4 +78,27 @@ public class Comment extends BaseEntity implements Comparable<Comment> {
   public void setPost(Post post) {
     this.post = post;
   }
+
+  @Override
+  public int compareTo(Comment o) {
+    return this.commentId - o.commentId;
+  } //최신글인지 판별
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Comment comment = (Comment) o;
+    return commentId == comment.commentId;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(commentId);
+  }
+
 }

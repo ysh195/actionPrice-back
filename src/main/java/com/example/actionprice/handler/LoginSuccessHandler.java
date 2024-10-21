@@ -1,17 +1,14 @@
 package com.example.actionprice.handler;
 
-import com.example.actionprice.util.JWTUtil;
-import com.google.gson.Gson;
+import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.RememberMeServices;
 
 /**
  * 로그인 성공 시 사용되는 핸들러
@@ -25,7 +22,7 @@ import org.springframework.security.web.authentication.RememberMeServices;
 @RequiredArgsConstructor
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-  private final JWTUtil jwtUtil;
+  private final AccessTokenService accessTokenService;
 
   /**
    * 인증이 성공하면 진행되는 절차
@@ -48,16 +45,9 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     log.info(authentication + " : " + authentication.getName());
 
-    Map<String, Object> claim = Map.of("username", authentication.getName()); // 키 : username, 밸류 : 인증된 사용자 네임
-    log.info("claim : " + claim);
-    String accessToken = jwtUtil.generateToken(claim, 60); // 생성한 클레임(맵)으로 엑세스토큰 발행
-    String refreshToken = jwtUtil.generateToken(claim, 60 * 3); // 리프레쉬 토큰 발행
-
-    Gson gson = new Gson();
-
-    Map<String, String> keyMap = Map.of("access_token", accessToken,"refresh_token", refreshToken, "username", authentication.getName()); // map 형태로 토큰 정보를 저장
-
-    String jsonStr = gson.toJson(keyMap); // json에 토큰 정보를 전달
+    // 토큰(엑세스 토큰 + 리프레시 토큰) 발급
+    // 하지만 리프레시 토큰은 내부적으로만 관리하고, 반환되는 것은 엑세스 토큰만
+    String jsonStr = accessTokenService.issueJwt(authentication.getName());
 
     log.info("Login Success Handler : " + jsonStr);
 

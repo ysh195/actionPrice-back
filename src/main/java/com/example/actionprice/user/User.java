@@ -1,6 +1,7 @@
 package com.example.actionprice.user;
 
 import com.example.actionprice.customerService.comment.Comment;
+import com.example.actionprice.security.jwt.refreshToken.RefreshTokenEntity;
 import com.example.actionprice.user.favorite.Favorite;
 import com.example.actionprice.customerService.post.Post;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -10,7 +11,9 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -27,6 +30,10 @@ import org.hibernate.annotations.BatchSize;
  * @author 연상훈
  * @created 2024-10-05 오후 10:04
  * @updated 2024-10-06 오후 12:29 : 간편한 권한 관리를 위해 Set<String> authorities 사용
+ * @updated 2024-10-20 오전 10:16 : set 객체들의 add와 remove 로직 간략화.
+ * @updated 2024-10-20 오후 12:33 : RefreshTokenEntity 객체와 연결함
+ * 중복된 것을 추가하거나 없는 것을 삭제하면 오류가 난다고 알고 있었는데, 다시 조사해 보니 그냥 true/false만 반환함.
+ * 그러면 검사 로직이 따로 필요가 없으니 다 빼버림
  * @info 1. 순환참조의 문제를 피하기 위해 @ToString(exclude={})와 @JsonManagedReference를 사용했습니다.
  * @info 2. 원활한 하위 객체 관리를 위해 orphanRemoval = true과 cascade = {CascadeType.ALL}를 사용했습니다.
  * @info 3. 객체 호출 시의 효율을 위해 fetch = FetchType.LAZY와 @BatchSize(size)를 사용했습니다.
@@ -34,8 +41,7 @@ import org.hibernate.annotations.BatchSize;
  * @info 5. 즐겨찾기가 과도하게 늘어나는 것을 막기 위해 10개로 제한했습니다.
  * @info 6. OneToMany 관계에 있는 객체의 컬렉션 타입은, 해당 객체를 쉽게 찾아낼 수 있도록 set으로 설정했습니다.
  * @info 7. jwt 토큰은 로그인 시에 발급하는 것이지, 계정 생성 시에 발급하는 것이 아니기 때문에 생성할 당시에는 발급되지 않습니다. 그렇기 때문에 nullable입니다.
- * @info 8.추후 수정 및 추가가 예고된 항목들의 수정 및 추가를 위해 Builder를 사용하는 것은 불필요한 코드의 증가를 야기하므로, set 메서드를 지정하여 단순화합니다.
- * @info 9. set 객체들에 이미 존재하는 것을 추가하거나 존재하지 않는 것을 삭제할 때의 에러처리를 하느니, 차라리 에러 없이 안정적으로 실행되는 것이 효율적일 것 같아서 add/remove 메서드를 좀 더 복잡하게 구성함
+ * @info 8. 추후 수정 및 추가가 예고된 항목들의 수정 및 추가를 위해 Builder를 사용하는 것은 불필요한 코드의 증가를 야기하므로, set 메서드를 지정하여 단순화합니다.
  */
 @Entity
 @Table(name="user")
@@ -61,8 +67,12 @@ public class User {
   @Email
   private String email;
 
-  @Column(nullable=true) //유저 생성당시는 null일 수 밖에 없음 로그인시 생성되기에
-  private String refreshToken; //블랙리스트를 사용
+  @OneToOne(mappedBy = "user",
+      orphanRemoval = true,
+      cascade = {CascadeType.ALL},
+      fetch = FetchType.LAZY)
+  @JoinColumn(name = "refresh_token_id", nullable = true) //유저 생성당시는 null일 수 밖에 없음 로그인시 생성되기에
+  private RefreshTokenEntity refreshToken;
 
   /**
    * 유저 권한
@@ -106,11 +116,11 @@ public class User {
   private Set<Favorite> favoriteSet = new HashSet<>();
 
   // method
-  public void setRefreshToken(String refreshToken) {
+  public void setRefreshToken(RefreshTokenEntity refreshToken) {
     this.refreshToken = refreshToken;
   }
 
-  public void setPassword(@Size(min = 8, max = 16) String password) {
+  public void setPassword(String password) {
     this.password = password;
   }
 
@@ -121,13 +131,8 @@ public class User {
    * @updated : 2024-10-11 오후 11:36
    * @see : 절대 UserRole.ROLE_USER.name()까지 하면 안 됨. 그건 메서드 내부에서 알아서 함.
    */
-  public void addAuthorities(UserRole role) {
-    // 이렇게 쓰게함 UserRole.ROLE_USER
-    // 없으면 추가
-    //authorities 셋 스트림가능 ,noneMatch 이용해 입력받는것의 조건을 보고 다 안맞으면 true
-    if (this.authorities.stream().noneMatch(authority -> authority.equals(role.name()))) {
-      this.authorities.add(role.name()); //없으면 추가
-    }
+  public boolean addAuthorities(UserRole role) {
+    return this.authorities.add(role.name());
   }
 
   /**
@@ -137,28 +142,20 @@ public class User {
    * @updated : 2024-10-11 오후 11:36
    * @see : 절대 UserRole.ROLE_USER.name()까지 하면 안 됨. 그건 메서드 내부에서 알아서 함.
    */
-  public void removeAuthorities(UserRole role) {
-    // 있으면 삭제
-    this.authorities.removeIf(authority -> authority.equals(role.name()));
+  public boolean removeAuthorities(UserRole role) {
+    return this.authorities.remove(role.name());
   }
 
-  public void addPost(Post post) {
-    // 없으면 추가
-    if(this.postSet.stream().noneMatch(p -> p.getPostId() == post.getPostId())){
-      this.postSet.add(post);
-    }
+  public boolean addPost(Post post) {
+    return this.postSet.add(post);
   }
 
-  public void removePost(Post post) {
-    // 있으면 삭제
-    this.postSet.removeIf(p -> p.getPostId() == post.getPostId());
+  public boolean removePost(Post post) {
+    return this.postSet.remove(post);
   }
 
-  public void addComment(Comment comment) {
-    // 없으면 추가
-    if(this.commentSet.stream().noneMatch(c -> c.getCommentId() == comment.getCommentId())){
-      this.commentSet.add(comment);
-    }
+  public boolean addComment(Comment comment) {
+    return this.commentSet.add(comment);
   }
 
   /**
@@ -169,22 +166,16 @@ public class User {
    * @info 2. orphanRemoval = true, cascade = {CascadeType.ALL}로, 부모와의 연결 끊어지면 지워짐
    * @info 3. 근데 지워진다는 신호를 받으면 지워지기 전에 @EntityListeners(CommentListener.class) 내부의 comment 객체 제거 로직이 발동
    * @info 4. 양쪽 부모에서 안전하게 지워짐.
-   * @info 5. if-contains로 간단하게 하려면 commentSet에 equals를 오버라이드 해야 하는데, 거기에 엮인 게 많아서 생각보다 귀찮음
    */
-  public void removeComment(Comment comment) {
-    // 있으면 삭제
-    this.commentSet.removeIf(c -> c.getCommentId() == comment.getCommentId());
+  public boolean removeComment(Comment comment) {
+    return this.commentSet.remove(comment);
   }
 
-  public void addFavorite(Favorite favorite) {
-    // 없으면 추가
-    if (this.favoriteSet.stream().noneMatch(f -> f.getFavoriteId() == favorite.getFavoriteId())){
-      this.favoriteSet.add(favorite);
-    }
+  public boolean addFavorite(Favorite favorite) {
+    return this.favoriteSet.add(favorite);
   }
 
-  public void removeFavorite(Favorite favorite) {
-    // 있으면 삭제
-    this.commentSet.removeIf(c -> c.getCommentId() == favorite.getFavoriteId());
+  public boolean removeFavorite(Favorite favorite) {
+    return this.favoriteSet.remove(favorite);
   }
 }

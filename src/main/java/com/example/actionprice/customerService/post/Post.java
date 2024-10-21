@@ -18,6 +18,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -89,15 +90,8 @@ public class Post extends BaseEntity implements Comparable<Post> {
   private Set<Comment> commentSet = new HashSet<>();
 
   // method
-  @Override
-  public int compareTo(Post o) {
-    return this.postId - o.postId;
-  }
-
-  public void addComment(Comment comment) {
-    if(this.commentSet.stream().noneMatch(c -> c.getCommentId() == comment.getCommentId())){
-      this.commentSet.add(comment);
-    }
+  public boolean addComment(Comment comment) {
+    return this.commentSet.add(comment);
   }
 
   /**
@@ -111,7 +105,30 @@ public class Post extends BaseEntity implements Comparable<Post> {
    * 4. 양쪽 부모에서 안전하게 지워짐.
    * 5. if-contains로 간단하게 하려면 commentSet에 equals를 오버라이드 해야 하는데, 거기에 엮인 게 많아서 생각보다 귀찮음
    */
-  public void removeComment(Comment comment) {
-    this.commentSet.removeIf(c -> c.getCommentId() == comment.getCommentId());
+  public boolean removeComment(Comment comment) {
+    return this.commentSet.remove(comment);
   }
+
+  @Override
+  public int compareTo(Post o) {
+    return this.postId - o.postId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Post post = (Post) o;
+    return postId == post.postId;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(postId);
+  }
+
 }

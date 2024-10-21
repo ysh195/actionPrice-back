@@ -3,6 +3,7 @@ package com.example.actionprice.user;
 import com.example.actionprice.sendEmail.SendEmailService;
 import com.example.actionprice.user.forms.UserRegisterForm;
 import com.example.actionprice.user.forms.UserRegisterForm.CheckForDuplicateUsernameGroup;
+import com.example.actionprice.user.forms.UserRegisterForm.CheckValidityOfPasswordGroup;
 import com.example.actionprice.user.forms.UserRegisterForm.SendVerificationCodeGroup;
 import jakarta.validation.Valid;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -169,6 +171,31 @@ public class UserController {
 
     log.info("[class] UserController - [method] checkForDuplicateUsername - new username");
     return ResponseEntity.ok("Username is available");
+  }
+
+  /**
+   * 비밀번호 검사만 진행하는 요청
+   * @author 연상훈
+   * @created 2024-10-20 오전 10:53
+   * @see : 사용하기 전에 SecurityConfig에 등록해야 함. 아직 어떻게 사용할 지 협의가 안 되어서 등록 안 함
+   */
+  @PostMapping(value = "/checkValidityOfPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Map<String, Map<String, String>>> checkValidityOfPassword(
+      @Validated(CheckValidityOfPasswordGroup.class) @RequestBody UserRegisterForm userRegisterForm,
+      BindingResult bindingResult)
+  {
+    String message = "OK";
+
+    // TODO 이걸 별도의 에러로 처리할 지에 대해서는 프론트와 협의 필요
+    if(bindingResult.hasErrors()){
+      message = "비밀번호는 8~20자로 구성되며, 문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.";
+    }
+
+    Map<String, Map<String, String>> response = new HashMap<>();
+    Map<String, String> data = new HashMap<>();
+    data.put("message", message);
+    response.put("data", data);
+    return ResponseEntity.ok(response);
   }
 
 }

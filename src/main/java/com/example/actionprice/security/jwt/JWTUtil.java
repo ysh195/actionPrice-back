@@ -1,4 +1,4 @@
-package com.example.actionprice.util;
+package com.example.actionprice.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:12
- * @see : jwt 토큰을 위한 설정
+ * @info : jwt 토큰을 위한 설정
  */
 @Log4j2
 @Component

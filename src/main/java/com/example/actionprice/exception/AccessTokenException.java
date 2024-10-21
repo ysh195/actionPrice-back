@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
  * @author : 연상훈
  * @created : 2024-10-06 오후 2:57
  * @updated 2024-10-17 오후 7:42 : 상태코드 숫자 수정
+ * @updated 2024-10-19 오후 5:17 : 블랙리스트 기능 구현을 위해 TOKEN_ERROR에 BLOCKED 추가
  */
 public class AccessTokenException extends RuntimeException {
 
@@ -21,6 +22,7 @@ public class AccessTokenException extends RuntimeException {
     BADTYPE(HttpStatus.UNAUTHORIZED, "Token type must be Bearer"),
     EXPIRED(HttpStatus.UNAUTHORIZED, "Expired Token"),
     MALFORM(HttpStatus.FORBIDDEN, "Malformed Token"),
+    UNEXPECTED(HttpStatus.FORBIDDEN, "Unexpected claim"),
     BADSIGN(HttpStatus.FORBIDDEN, "Bad Signature Token");
 
     private HttpStatus status;
