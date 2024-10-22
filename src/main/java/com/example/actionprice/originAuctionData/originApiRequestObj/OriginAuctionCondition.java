@@ -1,4 +1,4 @@
-package com.example.actionprice.originalAuctionData.originalApiRequestObj;
+package com.example.actionprice.originAuctionData.originApiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LastAuctionCondition {
+public class OriginAuctionCondition {
 
     @JsonProperty("LastAuctionItem")
-    private LastAuctionItem item;
+    private OriginAuctionItem item;
 }

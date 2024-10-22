@@ -1,7 +1,7 @@
-package com.example.actionprice.originalAuctionData;
+package com.example.actionprice.originAuctionData;
 
-import com.example.actionprice.originalAuctionData.originalApiRequestObj.LastAuctionDataRow;
-import com.example.actionprice.originalAuctionData.originalApiRequestObj.LastAuctionDocument;
+import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
+import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 
 
 @Component
-public class LastAuctionDataFetcher {
+public class OriginAuctionDataFetcher {
 
     @Value("${lastAuctionData.url}")
     String lastAuctionUrl;
@@ -25,7 +25,7 @@ public class LastAuctionDataFetcher {
 
     private final WebClient webClient;
 
-    public LastAuctionDataFetcher() {
+    public OriginAuctionDataFetcher() {
         this.webClient = WebClient.builder().build();
     }
 
@@ -44,27 +44,27 @@ public class LastAuctionDataFetcher {
         return responseEntity;
     }
 
-    public LastAuctionDocument getLastAuctionData_LastDocument(String regday) throws Exception {
+    public OriginAuctionDocument getLastAuctionData_LastDocument(String regday) throws Exception {
 
         URI uri = composeUri(regday);
 
         // 요청을 보내고 응답 받기
-        LastAuctionDocument lastAuctionDocument = webClient.get()
+        OriginAuctionDocument originAuctionDocument = webClient.get()
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(LastAuctionDocument.class)
+                .bodyToMono(OriginAuctionDocument.class)
 //	            .onErrorResume(e -> {
 //              return Mono.empty();
 //          }) 에러에 대한 대응 로직
                 .block();
 
-        return lastAuctionDocument;
+        return originAuctionDocument;
     }
 
 
 
-    public Flux<LastAuctionDataRow> getLastAuctionData_Flux(String regday) throws Exception {
+    public Flux<OriginAuctionDataRow> getLastAuctionData_Flux(String regday) throws Exception {
 
         URI uri = composeUri(regday);
 
@@ -72,7 +72,7 @@ public class LastAuctionDataFetcher {
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(LastAuctionDocument.class)
+                .bodyToMono(OriginAuctionDocument.class)
                 .flatMapMany(body -> Flux.fromIterable(body.getData().getItem()));
     }
 
