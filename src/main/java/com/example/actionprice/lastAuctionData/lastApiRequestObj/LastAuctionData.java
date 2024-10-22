@@ -15,6 +15,6 @@ public class LastAuctionData {
     @JsonProperty("error_code")
     private String error_code;
 
-    @JsonProperty("row")
-    private List<LastAuctionDataRow> row;
+    @JsonProperty("item")
+    private List<LastAuctionDataRow> item;
 }
