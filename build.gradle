@@ -35,14 +35,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-mail' // email
+    implementation 'org.springframework.boot:spring-boot-starter-webflux' // webclient
     implementation 'org.hibernate:hibernate-core:6.1.7.Final'
-    implementation 'jakarta.annotation:jakarta.annotation-api'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2' // jtw
-    implementation 'org.springframework.boot:spring-boot-starter-webflux' // webclient
     implementation 'io.projectreactor:reactor-core:3.4.18' // flux
-    implementation 'org.springframework.boot:spring-boot-starter-mail' // email
     implementation 'com.google.code.gson:gson:2.10.1' // gson
+    implementation 'jakarta.annotation:jakarta.annotation-api'
 
     runtimeOnly 'mysql:mysql-connector-java:8.0.30'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2' // jwt
@@ -57,7 +57,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'mysql:mysql-connector-java:8.0.30'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
