@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.example.actionprice.exception.InvalidEmailAddressException;
-import com.example.actionprice.exception.UsernameAlreadyExistsException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -79,14 +78,6 @@ public class CustomRestAdvice {
     errorMap.put("message", "No Such element Exception");
 
     return ResponseEntity.badRequest().body(errorMap);
-  }
-
-  // username 중복 체크 중 이미 사용 중인 username일 때
-  @ExceptionHandler(UsernameAlreadyExistsException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
-  public ResponseEntity<String> handlerUsernameAlreadyExistsException(UsernameAlreadyExistsException e) {
-    log.error(e);
-    return ResponseEntity.badRequest().body(e.getMessage());
   }
 
   // 인증코드 발송에 실패했을 때

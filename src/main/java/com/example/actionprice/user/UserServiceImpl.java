@@ -1,9 +1,6 @@
 package com.example.actionprice.user;
 
-import com.example.actionprice.exception.UsernameAlreadyExistsException;
 import com.example.actionprice.user.forms.UserRegisterForm;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,12 +26,12 @@ public class UserServiceImpl implements UserService {
    * @param userRegisterForm
    * @author 연상훈
    * @created 2024-10-10 오전 11:05
-   * @updated 2024-10-10 오전 11:05
+   * @updated 2024-10-22 오후 2:13 : 반환 타입을 boolean으로 변경
    * @throw UsernameAlreadyExistsException
    */
   @Transactional
   @Override
-  public String createUser(UserRegisterForm userRegisterForm) {
+  public boolean createUser(UserRegisterForm userRegisterForm) {
     log.info("--------------- [UserService] createUser ----------------");
     log.info("userRegisterForm: " + userRegisterForm);
 
@@ -45,7 +42,7 @@ public class UserServiceImpl implements UserService {
     // 이미 존재하는 유저라면
     if(existing_user != null) {
       log.info(inputed_username + " already exists");
-      throw new UsernameAlreadyExistsException("[username : " + inputed_username + "] already exists");
+      return false;
     }
 
     log.info(userRegisterForm.getUsername() + " is new user");
@@ -66,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     log.info(result_str);
 
-    return result_str;
+    return true;
   }
 
   /**
@@ -133,12 +130,4 @@ public class UserServiceImpl implements UserService {
     return false;
   }
 
-
-  public boolean checkValidityOfPassword(String password) {
-    Pattern passwordPattern = Pattern.compile("^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,20}$"); // 8~20자, 영어+숫자+특수문자
-    Matcher passwordMatcher = passwordPattern.matcher(password);
-
-    return passwordMatcher.find() ? true : false;
-
-  }
 }

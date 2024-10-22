@@ -3,17 +3,14 @@ package com.example.actionprice.user;
 import com.example.actionprice.sendEmail.SendEmailService;
 import com.example.actionprice.user.forms.UserRegisterForm;
 import com.example.actionprice.user.forms.UserRegisterForm.CheckForDuplicateUsernameGroup;
-import com.example.actionprice.user.forms.UserRegisterForm.CheckValidityOfPasswordGroup;
 import com.example.actionprice.user.forms.UserRegisterForm.SendVerificationCodeGroup;
 import jakarta.validation.Valid;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// TODO exception 처리를 구체화할 필요가 있음
 /**
  * @author : 연상훈
  * @created : 2024-10-05 오후 10:52
@@ -45,10 +41,8 @@ public class UserController {
    * @see : 단순한 이동이기에 별도의 로직이 필요 없지만, 페이지 간 이동의 요청을 명확히 하기 위해 구현
    */
   @GetMapping("/login")
-  public ResponseEntity<Map<String, String>> goLogin(){
-    Map<String, String> response = new HashMap<>();
-    response.put("url", "/user/login");
-    return ResponseEntity.ok(response);
+  public Map<String, String> goLogin(){
+    return Map.of("url", "/api/user/login");
   }
 
   /**
@@ -75,10 +69,8 @@ public class UserController {
    * @see : 단순한 이동이기에 별도의 로직이 필요 없지만, 페이지 간 이동의 요청을 명확히 하기 위해 구현
    */
   @GetMapping("/register")
-  public ResponseEntity<Map<String, String>> goRegister(){
-    Map<String, String> response = new HashMap<>();
-    response.put("url", "/user/register");
-    return ResponseEntity.ok(response);
+  public Map<String, String> goRegister(){
+    return Map.of("url", "/api/user/register");
   }
 
   /**
@@ -86,18 +78,18 @@ public class UserController {
    * @param userRegisterForm : UserRegisterForm을 사용해야 함
    * @author : 연상훈
    * @created : 2024-10-06 오후 8:26
+   * @updated 2024-10-22 오후 2:14 : 불필요한 예외 처리를 CONFLICT 응답으로 대체함
    * @throw UsernameAlreadyExistsException
    */
   @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Map<String, Map<String, String>>> register(@Valid @RequestBody UserRegisterForm userRegisterForm) {
+  public ResponseEntity<String> register(@Valid @RequestBody UserRegisterForm userRegisterForm) {
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
-    userService.createUser(userRegisterForm);
-    String message = String.format("%s 님의 회원가입이 성공적으로 이루어졌습니다.", userRegisterForm.getUsername());
-    Map<String, Map<String, String>> response = new HashMap<>();
-    Map<String, String> data = new HashMap<>();
-    data.put("message", message);
-    response.put("data", data);
-    return ResponseEntity.ok(response);
+    boolean isUserAlreadyExists = userService.createUser(userRegisterForm);
+    if(isUserAlreadyExists){
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("Register failed. User already exists");
+    }
+    String message = String.format("Register success. Welcome, %s", userRegisterForm.getUsername());
+    return ResponseEntity.ok(message);
   }
 
   /**
@@ -107,6 +99,9 @@ public class UserController {
    * @author : 연상훈
    * @created : 2024-10-06 오후 8:24
    * @throw InvalidEmailAddressException
+   * @info sendVerificationEmail 같은 경우에는 워낙 여러 가지 동작을 함께 수행해야 하고, 결과값을 전달하는 과정도 복잡해서 그냥 예외처리 해준 것
+   * @info 응답 방식을 통일하고 싶었으나, 이 로직은 HttpStatus가 중요하고, 그걸 수정하려면 따로 예외 처리를 해야 함.
+   * 근데 고작 컨트롤러 하나에서 딱 한 번 쓰이는 예외를 위해 따로 만들어주기에는 낭비라서 이건 그냥 통합하지 않고 그대로 두기로 함
    * @see : https://www.knotend.com/g/a#N4IgzgpgTglghgGxgLwnARgiAxA9lAWxAC5QA7XAEwjBPIEYAmRgVkYBZ6AOOkBDCAhIhALuOAVLsA+4wAJAOD2BCwZABfADQgy7AJwAGAMwA2DU1790g4SMAf3bLmAcFqniJIqYBcJwDXjAfiWqyAdh1cNDUYfLWMBIWIQAHkvNQ0Weno9PXYfMNMIkHk7QAHJqRZAEN6pHMAKhs8VNXp2FnZgrRZ0s0iADViyYJ16Qy4G0j5w4RiK9RZAxK0ePpMmkFbh0a4fdi4jKYHIwAmBwB0O2UBIOqlAEbX7SWs2vS16H0WORszABjrnKUAHGqlAB5HAH3bAA5qpQAtVtsCND4fIleqBpplACATcikgEZBwCvNeVvPF2OwdEC9LdhAAzRCQNo9apAiaYyJDbxAnSseok2ZtHRsDQpPT0GnwqRiQA7Qzk2okDHpGIyaQ4pIAM8cA3V2ACha2lclnp9OwaQAXKAAVwgdJYWkYXD0aTWGWEEAAHgBjCAAB0VMFwZCkgAyZwA1nUoKhBKABzGgkADaXsqzDYnB43k0ugMRgAuspfeptPpDIwQOT-IE6iBI9GQ3GjN4qjU6g102o-AEgiFE3EEkkUmlC2R4rzq+X2n4utwC1GKw3Uk3qmN6MTa7naiEGt4FksVgnax1Wz0m+PlhGOyM+8TvOdLtcFbWF5OmwCgSC08uNzKbkiaqj0cfowfgfRR2oCSwiTxa3ej+S-FT29Hn6+m3pAUmRZWsKR-JteUZYCbzUIDGXYZkmxlRD5VgsgoP5QVvHpLUdRrcMKjNBAEAAdRgShFQACxIeh6VUYiEAACQgGA3SoxUSGWBjBAQAAFOBKEoGAyDdEh6LUKgICiKBqFgUTvT9VgOG4HtYzDBMkxLVMLy7NIc2qYdqW8GdukfFdDH7IM1F3bM1FPLd90CQ8H33S80R8DFvH-EJrN8b9NXM+CQMgpJoOwotFlQlJAM1bVdTTRQgA
    */
   @PostMapping(value = "/sendVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE) //요청을 json 타입으로 받음
@@ -138,12 +133,10 @@ public class UserController {
    * @created : 2024-10-06 오후 8:24
    */
   @PostMapping(value = "/checkVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> checkVerificationCode(@Valid @RequestBody UserRegisterForm userRegisterForm){
-
+  public Map<String, String> checkVerificationCode(@Valid @RequestBody UserRegisterForm userRegisterForm){
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
-
     String resultOfVerification = sendEmailService.checkVerificationCode(userRegisterForm.getEmail(), userRegisterForm.getVerificationCode());
-    return ResponseEntity.ok(resultOfVerification);
+    return Map.of("resultOfVerification", resultOfVerification);
   }
 
   /**
@@ -153,12 +146,13 @@ public class UserController {
    * @created 2024-10-10 오전 11:16
    * @updated 2024-10-10 오후 16:31
    * @group CheckForDuplicateUsernameGroup
+   * @info 응답 방식을 통일하고 싶었으나, 이 로직은 HttpStatus가 중요하고, 그걸 수정하려면 따로 예외 처리를 해야 함.
+   * 근데 고작 컨트롤러 하나에서 딱 한 번 쓰이는 예외를 위해 따로 만들어주기에는 낭비라서 이건 그냥 통합하지 않고 그대로 두기로 함
    */
   @PostMapping(value = "/checkForDuplicateUsername", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> checkForDuplicateUsername(@Validated(CheckForDuplicateUsernameGroup.class) @RequestBody UserRegisterForm userRegisterForm){
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
-
     log.info("[class] UserController - [method] checkForDuplicateUsername - operate");
 
     boolean useranme_already_exist = userService.checkUserExistsWithUsername(userRegisterForm.getUsername());
@@ -171,31 +165,6 @@ public class UserController {
 
     log.info("[class] UserController - [method] checkForDuplicateUsername - new username");
     return ResponseEntity.ok("Username is available");
-  }
-
-  /**
-   * 비밀번호 검사만 진행하는 요청
-   * @author 연상훈
-   * @created 2024-10-20 오전 10:53
-   * @see : 사용하기 전에 SecurityConfig에 등록해야 함. 아직 어떻게 사용할 지 협의가 안 되어서 등록 안 함
-   */
-  @PostMapping(value = "/checkValidityOfPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<Map<String, Map<String, String>>> checkValidityOfPassword(
-      @Validated(CheckValidityOfPasswordGroup.class) @RequestBody UserRegisterForm userRegisterForm,
-      BindingResult bindingResult)
-  {
-    String message = "OK";
-
-    // TODO 이걸 별도의 에러로 처리할 지에 대해서는 프론트와 협의 필요
-    if(bindingResult.hasErrors()){
-      message = "비밀번호는 8~20자로 구성되며, 문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다.";
-    }
-
-    Map<String, Map<String, String>> response = new HashMap<>();
-    Map<String, String> data = new HashMap<>();
-    data.put("message", message);
-    response.put("data", data);
-    return ResponseEntity.ok(response);
   }
 
 }
