@@ -40,7 +40,6 @@ public class PostServiceImpl implements PostService{
         user.addPost(post);
 
         userRepository.save(user);
-        postRepository.save(post);
         return "";
 
 
