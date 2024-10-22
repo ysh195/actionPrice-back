@@ -1,4 +1,4 @@
-package com.example.actionprice.originalAuctionData.originalApiRequestObj;
+package com.example.actionprice.originAuctionData.originApiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LastAuctionItem {
+public class OriginAuctionItem {
 
     @JsonProperty("p_product_cls_code")
     private String productClsCode;// 구분 ( 01:소매, 02:도매, default:02 )

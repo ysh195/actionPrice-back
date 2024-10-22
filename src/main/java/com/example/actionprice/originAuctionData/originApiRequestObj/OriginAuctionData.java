@@ -1,4 +1,4 @@
-package com.example.actionprice.originalAuctionData.originalApiRequestObj;
+package com.example.actionprice.originAuctionData.originApiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,11 +10,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LastAuctionData {
+public class OriginAuctionData {
 
     @JsonProperty("error_code")
     private String error_code;
 
     @JsonProperty("item")
-    private List<LastAuctionDataRow> item;
+    private List<OriginAuctionDataRow> item;
 }
