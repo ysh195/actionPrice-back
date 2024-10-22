@@ -1,7 +1,7 @@
-package com.example.actionprice.lastAuctionData;
+package com.example.actionprice.originalAuctionData;
 
-import com.example.actionprice.lastAuctionData.lastApiRequestObj.LastAuctionDataRow;
-import com.example.actionprice.lastAuctionData.lastApiRequestObj.LastAuctionDocument;
+import com.example.actionprice.originalAuctionData.originalApiRequestObj.LastAuctionDataRow;
+import com.example.actionprice.originalAuctionData.originalApiRequestObj.LastAuctionDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

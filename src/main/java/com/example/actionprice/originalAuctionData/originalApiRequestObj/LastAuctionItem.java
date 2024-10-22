@@ -1,11 +1,9 @@
-package com.example.actionprice.lastAuctionData.lastApiRequestObj;
+package com.example.actionprice.originalAuctionData.originalApiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor

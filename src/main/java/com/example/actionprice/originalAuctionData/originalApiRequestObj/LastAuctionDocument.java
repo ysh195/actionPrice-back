@@ -1,4 +1,4 @@
-package com.example.actionprice.lastAuctionData.lastApiRequestObj;
+package com.example.actionprice.originalAuctionData.originalApiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

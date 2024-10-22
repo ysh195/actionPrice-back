@@ -1,11 +1,6 @@
 package com.example.actionprice.auctionData;
 
 import com.example.actionprice.AuctionData.detailCategory.AllSortingComponent;
-import com.example.actionprice.AuctionData.detailCategory.DetailCategoryEntity;
-import com.example.actionprice.AuctionData.detailCategory.DetailCategoryRepository;
-import com.example.actionprice.AuctionData.entity.AuctionEntity_ani;
-import com.example.actionprice.AuctionData.entity.AuctionEntity_crops;
-import com.example.actionprice.AuctionData.entity.AuctionEntity_fish;
 import com.example.actionprice.AuctionData.repository.AuctionRepository_ani;
 import com.example.actionprice.AuctionData.repository.AuctionRepository_crops;
 import com.example.actionprice.AuctionData.repository.AuctionRepository_fish;

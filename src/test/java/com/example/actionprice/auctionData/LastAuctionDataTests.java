@@ -1,16 +1,10 @@
 package com.example.actionprice.auctionData;
 
-import com.example.actionprice.lastAuctionData.LastAuctionDataFetcher;
-import com.example.actionprice.lastAuctionData.lastApiRequestObj.LastAuctionDataRow;
-import com.example.actionprice.lastAuctionData.lastApiRequestObj.LastAuctionDocument;
+import com.example.actionprice.originalAuctionData.LastAuctionDataFetcher;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import reactor.core.publisher.Flux;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @SpringBootTest
 public class LastAuctionDataTests {
