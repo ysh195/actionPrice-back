@@ -21,15 +21,15 @@ public class LastAuctionDataTests {
 
     @Test
     void lastAuctionDataPrintTest() throws Exception {
-        ResponseEntity<String> responseEntity = lastAuctionDataFetcher.getNewAuctionData_String("20241010");
+        ResponseEntity<String> responseEntity = lastAuctionDataFetcher.getNewAuctionData_String("2024-10-10");
         System.out.println(responseEntity.toString());
     }
 
-//
+
 //    @Test
 //    void lastAuctionDataTest() throws Exception {
-//        LastAuctionDocument responseEntity = lastAuctionDataFetcher.getNewAuctionData_String("20241010");
-//        List<LastAuctionDataRow> list =  responseEntity.getData().getRow();
+//        LastAuctionDocument responseEntity = lastAuctionDataFetcher.getLastAuctionData_LastDocument("2024-10-10");
+//        List<LastAuctionDataRow> list =  responseEntity.getData().getItem();
 //        list.stream().forEach(System.out::print);
 //    }
 

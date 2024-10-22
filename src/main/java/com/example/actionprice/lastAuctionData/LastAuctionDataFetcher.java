@@ -44,6 +44,24 @@ public class LastAuctionDataFetcher {
         return responseEntity;
     }
 
+    public LastAuctionDocument getLastAuctionData_LastDocument(String regday) throws Exception {
+
+        URI uri = composeUri(regday);
+
+        // 요청을 보내고 응답 받기
+        LastAuctionDocument lastAuctionDocument = webClient.get()
+                .uri(uri)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToMono(LastAuctionDocument.class)
+//	            .onErrorResume(e -> {
+//              return Mono.empty();
+//          }) 에러에 대한 대응 로직
+                .block();
+
+        return lastAuctionDocument;
+    }
+
 
 
     public Flux<LastAuctionDataRow> getLastAuctionData_Flux(String regday) throws Exception {
@@ -55,7 +73,7 @@ public class LastAuctionDataFetcher {
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToMono(LastAuctionDocument.class)
-                .flatMapMany(body -> Flux.fromIterable(body.getData().getRow()));
+                .flatMapMany(body -> Flux.fromIterable(body.getData().getItem()));
     }
 
 
