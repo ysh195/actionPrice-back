@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,18 +33,6 @@ public class UserController {
   private final SendEmailService sendEmailService;
 
   /**
-   * 로그인 페이지로 이동
-   * @author : 연상훈
-   * @created : 2024-10-06 오후 6:33
-   * @updated : 2024-10-06 오후 6:33
-   * @see : 단순한 이동이기에 별도의 로직이 필요 없지만, 페이지 간 이동의 요청을 명확히 하기 위해 구현
-   */
-  @GetMapping("/login")
-  public Map<String, String> goLogin(){
-    return Map.of("url", "/api/user/login");
-  }
-
-  /**
    * 로그인 기능 @PostMapping("/login")
    * @author : 연상훈
    * @created : 2024-10-06 오후 6:35
@@ -60,18 +47,6 @@ public class UserController {
    * @created 2024-10-10 오전 9:30
    * @see CustomSecurityConfig에서 처리하기 때문에 별도의 메서드가 필요 없음.
    */
-
-  /**
-   * 회원가입 페이지로 이동
-   * @author : 연상훈
-   * @created : 2024-10-06 오후 6:33
-   * @updated : 2024-10-06 오후 6:33
-   * @see : 단순한 이동이기에 별도의 로직이 필요 없지만, 페이지 간 이동의 요청을 명확히 하기 위해 구현
-   */
-  @GetMapping("/register")
-  public Map<String, String> goRegister(){
-    return Map.of("url", "/api/user/register");
-  }
 
   /**
    * 회원가입 기능

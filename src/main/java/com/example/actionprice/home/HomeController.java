@@ -1,10 +1,9 @@
-package com.example.actionprice.common;
+package com.example.actionprice.home;
 
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -17,17 +16,17 @@ import java.util.Map;
 @RestController
 @Log4j2
 @RequiredArgsConstructor
-@RequestMapping
-public class CommonController {
+public class HomeController {
 
-    private final CommonService commonService;
+    private final HomeService homeService;
 
     @GetMapping("/")
-    public Map<String, Object> goHome() {
+    public Map<String, Object> fetchHomeImages() {
+        log.info("fetch images");
         Map<String, String> images = null;
 
         try {
-            images = commonService.fetchImages();
+            images = homeService.fetchImages();
         } catch (IOException e) {
             throw new RuntimeException("Failed to load images");
         }
