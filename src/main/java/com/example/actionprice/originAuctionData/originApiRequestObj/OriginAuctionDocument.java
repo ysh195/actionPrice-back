@@ -1,6 +1,7 @@
 package com.example.actionprice.originAuctionData.originApiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class OriginAuctionDocument {
 
     @JsonProperty("condition")
-    private OriginAuctionCondition condition;
+    private List<OriginAuctionCondition> condition;
 
     @JsonProperty("data")
     private OriginAuctionData data;

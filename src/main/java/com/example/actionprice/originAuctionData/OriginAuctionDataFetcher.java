@@ -2,7 +2,7 @@ package com.example.actionprice.originAuctionData;
 
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDocument;
-import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionItem;
+import com.google.gson.Gson;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -26,10 +26,12 @@ public class OriginAuctionDataFetcher {
     String lastAuctionEncodedKey;
 
     private final WebClient webClient;
+    private final Gson gson;
 
 
     public OriginAuctionDataFetcher() {
         this.webClient = WebClient.builder().build();
+        this.gson = new Gson();
     }
 
 
@@ -49,21 +51,20 @@ public class OriginAuctionDataFetcher {
 
     public OriginAuctionDocument getLastAuctionData_LastDocument(String regday) throws Exception {
         URI uri = composeUri(regday);
+
+        System.out.println(uri);
         // 요청을 보내고 응답 받기
-        OriginAuctionDocument originAuctionDocument = webClient.get()
+        String responseBody = webClient.get()
                 .uri(uri)
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(OriginAuctionDocument.class)
-//	            .onErrorResume(e -> {
-//              return Mono.empty();
-//          }) 에러에 대한 대응 로직
+                .bodyToMono(String.class)
                 .block();
+
+        OriginAuctionDocument originAuctionDocument = gson.fromJson(responseBody, OriginAuctionDocument.class);
 
         return originAuctionDocument;
     }
-
-
 
     public Flux<OriginAuctionDataRow> getLastAuctionData_Flux(String regday) throws Exception {
 
