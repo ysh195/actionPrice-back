@@ -55,27 +55,27 @@ public class OriginAuctionDataTests {
         System.out.println(responseEntity.toString());
     }
 
+    @Disabled
+    @Test
+    void auctionDataBodyTest() throws Exception {
+        // API 호출로부터 데이터를 받아옴
+        OriginAuctionDocument responseEntity = originAuctionDataFetcher.getLastAuctionData_LastDocument("2024-10-10");
+        // Null 체크 및 데이터 확인
+        if (responseEntity == null) {
+            System.out.println("API 응답이 없습니다.");
+            return;
+        }
 
-@Test
-void auctionDataBodyTest() throws Exception {
-    // API 호출로부터 데이터를 받아옴
-    OriginAuctionDocument responseEntity = originAuctionDataFetcher.getLastAuctionData_LastDocument("2024-10-10");
-    // Null 체크 및 데이터 확인
-    if (responseEntity == null) {
-        System.out.println("API 응답이 없습니다.");
-        return;
+        // 응답에서 데이터 추출
+        if (responseEntity.getData() == null || responseEntity.getData().getItem() == null) {
+            System.out.println("API 응답에 데이터가 없습니다.");
+            return;
+        }
+
+        // 데이터를 출력
+        List<OriginAuctionDataRow> list = responseEntity.getData().getItem();
+        list.stream().forEach(System.out::println);
     }
-
-    // 응답에서 데이터 추출
-    if (responseEntity.getData() == null || responseEntity.getData().getItem() == null) {
-        System.out.println("API 응답에 데이터가 없습니다.");
-        return;
-    }
-
-    // 데이터를 출력
-    List<OriginAuctionDataRow> list = responseEntity.getData().getItem();
-    list.stream().forEach(System.out::println);
-}
 
     @Disabled
     @Test
@@ -100,7 +100,6 @@ void auctionDataBodyTest() throws Exception {
 
     }
 
-
     @Disabled
     @Test
     void originalAuctionDataTest() throws Exception {
@@ -109,8 +108,6 @@ void auctionDataBodyTest() throws Exception {
         String month = "02";
 
         int endDay = 1; //각 달의 마지막 적기
-
-
 
         for(int i=1; i<=endDay; i++) {
             String day = String.valueOf(i);
