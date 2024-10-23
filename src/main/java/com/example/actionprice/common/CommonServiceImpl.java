@@ -16,8 +16,11 @@ public class CommonServiceImpl implements CommonService {
 
   // 이미지들을 static에 다 저장하고 경로를 입력해야 함
   private final String[] imagePaths = {
+      "static/image/cookie.jpg",
+      "static/image/egg.jpg",
       "static/image/meat.jpg",
-      "static/image/fish.jpg"
+      "static/image/veggie.jpg",
+      "static/image/salted.jpg",
   };
 
   @Override
