@@ -2,6 +2,8 @@ package com.example.actionprice.originAuctionData;
 
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDocument;
+import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionItem;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +15,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 
-
+@Data
 @Component
 public class OriginAuctionDataFetcher {
 
@@ -24,6 +26,7 @@ public class OriginAuctionDataFetcher {
     String lastAuctionEncodedKey;
 
     private final WebClient webClient;
+
 
     public OriginAuctionDataFetcher() {
         this.webClient = WebClient.builder().build();
@@ -45,9 +48,7 @@ public class OriginAuctionDataFetcher {
     }
 
     public OriginAuctionDocument getLastAuctionData_LastDocument(String regday) throws Exception {
-
         URI uri = composeUri(regday);
-
         // 요청을 보내고 응답 받기
         OriginAuctionDocument originAuctionDocument = webClient.get()
                 .uri(uri)
@@ -81,8 +82,8 @@ public class OriginAuctionDataFetcher {
 
         String p_regday = regday; // 디폴트 값은 현재 날짜
         String p_product_cls_code = "02"; // 구분
-        String p_country_code = "1101"; // 지역
-        String p_item_category_code = "500"; // 부류코드
+        String p_country_code=""; // 지역
+        String p_item_category_code=""; // 부류코드
         String p_cert_id = "lhm3052@naver.com"; // 요청자 id
         String apiType = "json"; // 반환 형식
         String p_convert_kg_yn = "N"; // 중량 변환 여부

@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OriginAuctionDocument {
 
-    @JsonProperty("LastAuctionCondition")
+    @JsonProperty("condition")
     private OriginAuctionCondition condition;
 
-    @JsonProperty("LastAuctionData")
+    @JsonProperty("data")
     private OriginAuctionData data;
 }
