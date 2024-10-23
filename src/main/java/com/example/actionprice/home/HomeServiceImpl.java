@@ -1,18 +1,18 @@
-package com.example.actionprice.common;
+package com.example.actionprice.home;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 @Service
-@Log4j
 @RequiredArgsConstructor
-public class CommonServiceImpl implements CommonService {
+@Log4j2
+public class HomeServiceImpl implements HomeService {
 
   // 이미지들을 static에 다 저장하고 경로를 입력해야 함
   private final String[] imagePaths = {
@@ -28,6 +28,7 @@ public class CommonServiceImpl implements CommonService {
     Map<String, String> images = new HashMap<>();
 
     for (String imagePath : imagePaths) {
+      log.info("image path: " + imagePath);
       ClassPathResource image = new ClassPathResource(imagePath);
       byte[] imageBytes = Files.readAllBytes(image.getFile().toPath());
       String base64Image = java.util.Base64.getEncoder().encodeToString(imageBytes);
