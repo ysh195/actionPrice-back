@@ -12,6 +12,7 @@ import jakarta.mail.Store;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.search.FlagTerm;
 import jakarta.transaction.Transactional;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -155,7 +156,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @info result 변수를 사용하여 folder와 store가 닫히고 나서 메서드가 종료하도록 합니다.
 	 * @info 너무 길어서 별도의 메서드로 내부 로직을 분리하려다가, 그러면 이게 너무 짧아져서 그대로 둠
 	 */
-	private boolean isCompleteSentEmail(String email) throws Exception {
+	private boolean isCompleteSentEmail(String email) throws MessagingException, IOException {
 		boolean result = true;
 		log.info("이메일 발송이 완료되었는지 확인을 시작합니다.");
 
@@ -265,7 +266,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @throws InvalidEmailAddressException
 	 * @info 이 메서드 실행 중에 오류가 발생하면 자체적으로 InvalidEmailAddressException 등의 예외로 던지기 때문에 별도의 오류 처리가 필요 없음.
 	 */
-	private void sendSimpleMail(String receiverEmail, String subject, String content) throws Exception {
+	private void sendSimpleMail(String receiverEmail, String subject, String content) throws MessagingException, IOException {
 		log.info("이메일 전송 메서드 시작");
 		SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
 		simpleMailMessage.setFrom(senderEmail);
@@ -273,17 +274,11 @@ public class SendEmailServiceImpl implements SendEmailService {
 		simpleMailMessage.setSubject(subject);
 		simpleMailMessage.setText(content);
 
-		try{
-			javaMailSender.send(simpleMailMessage);
-			log.info("[{}]로 인증코드를 발송합니다.", receiverEmail);
-			if (!isCompleteSentEmail(receiverEmail)){
-				throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
-			}
+		javaMailSender.send(simpleMailMessage);
 
-		} catch(Exception e){
+		if (!isCompleteSentEmail(receiverEmail)){
 			throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
 		}
-
 	}
 
 	/**
