@@ -42,7 +42,6 @@ public class OriginAuctionDataFetcher {
 
     private final WebClient webClient;
     private final Gson gson;
-    private OriginAuctionItem originAuctionItem;
 
 
     public OriginAuctionDataFetcher() {
@@ -112,8 +111,6 @@ public class OriginAuctionDataFetcher {
                     }
                 });
     }
-
-
 
     private URI composeUri(String regday) throws URISyntaxException {
 

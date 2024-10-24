@@ -61,22 +61,21 @@ public class OriginAuctionDataTests {
 
 
 
-    @Disabled
-    @Test
-    void auctionDataBodyTest() throws Exception {
-        // API 호출로부터 데이터를 받아옴
-        OriginAuctionDocument responseEntity = originAuctionDataFetcher.getLastAuctionData_LastDocument("2024-10-01");
-        // Null 체크 및 데이터 확인
-        if (responseEntity == null) {
-            System.out.println("API 응답이 없습니다.");
-            return;
-        }
-
-        // 데이터를 출력
-        List<OriginAuctionDataRow> list = responseEntity.getData().getItem();
-        list.stream().forEach(System.out::println);
-    }
-
+//    @Disabled
+//    @Test
+//    void auctionDataBodyTest() throws Exception {
+//        // API 호출로부터 데이터를 받아옴
+//        OriginAuctionDocument responseEntity = originAuctionDataFetcher.getLastAuctionData_LastDocument("2024-10-01");
+//        // Null 체크 및 데이터 확인
+//        if (responseEntity == null) {
+//            System.out.println("API 응답이 없습니다.");
+//            return;
+//        }
+//
+//        // 데이터를 출력
+//        List<OriginAuctionDataRow> list = responseEntity.getData().getItem();
+//        list.stream().forEach(System.out::println);
+//    }
 
 
     @Disabled
@@ -109,34 +108,45 @@ public class OriginAuctionDataTests {
         }
     }
 
+
+
+
+
     @Test
     void originalAuctionDataTest() throws Exception {
         String year = "2024";
-        String month = "10";
+        String month = "09";
         int endDay = 5; // 각 달의 마지막 적기
+        String category = "100";
 
+        // 각 테스트 루프마다 item 객체 초기화
         for (int i = 1; i <= endDay; i++) {
             String day = String.format("%02d", i);
-            OriginAuctionItem category = new OriginAuctionItem();
-
-            category.setP_category_code("100"); // 실제 카테고리 코드로 초기화
-
             String date = String.format("%s-%s-%s", year, month, day);
+
+            // item 객체 생성
+            OriginAuctionItem item = new OriginAuctionItem();
+
             Flux<OriginAuctionDataRow> auctionDataRowFlux = originAuctionDataFetcher.getLastAuctionData_Flux(date);
+
+            item.setP_category_code(category); // item에 부류코드 설정
+            System.out.println("P_category_code for item: " + item.getP_category_code()); // 확인용 로그
 
             auctionDataRowFlux.toStream().map(row -> {
                 try {
-                    String categoryCode = category.getP_category_code();  // 카테고리 코드 가져오기
-                    String grandSort = allSortingComponent.getGrand_sort().get(categoryCode);  // 부류코드 가져오기
+
+                    // OriginAuctionDataRow에서 부류코드 가져오기
+                    String grandSort = allSortingComponent.getGrand_sort().get(row.getP_category());
 
                     if (grandSort != null) {
                         System.out.println("Processing grandSort: " + grandSort); // grandSort 로그 추가
-                        return createEntityBasedOnGrandSort(grandSort, row, category);
+                        return createEntityBasedOnGrandSort(grandSort, row, item);
                     } else {
-                        System.out.println("카테고리 not found: " + categoryCode);
+                        System.out.println("카테고리 not found: " + row.getP_category());
                     }
                 } catch (Exception e) {
-                    log.error(e);
+                    System.out.println("Error processing row: " + row);
+                    e.printStackTrace(); // 예외 로그 추가
                     return null;
                 }
                 return null;
@@ -147,6 +157,9 @@ public class OriginAuctionDataTests {
             });
         }
     }
+
+
+
 
     private AuctionBaseEntity createEntityBasedOnGrandSort(String grandSort, OriginAuctionDataRow row, OriginAuctionItem item) {
         System.out.println("Processing grandSort: " + grandSort); // grandSort 값 확인 로그 추가
@@ -172,7 +185,7 @@ public class OriginAuctionDataTests {
     private void saveEntityBasedOnGrandSort(AuctionBaseEntity entity) {
         if (entity instanceof AuctionEntity_foodCrops) {
             AuctionEntity_foodCrops savedEntity = foodCropsEntity_repo.save((AuctionEntity_foodCrops) entity);
-            System.out.println("Saved FoodCrops Entity ID: " + savedEntity.getDel_id()); //pk 확인 로그 추가
+            System.out.println("Saved FoodCrops Entity ID: " + savedEntity.getDel_id());
         } else if (entity instanceof AuctionEntity_produce) {
             AuctionEntity_produce savedEntity = produceEntity_repo.save((AuctionEntity_produce) entity);
             System.out.println("Saved Produce Entity ID: " + savedEntity.getDel_id());
@@ -196,15 +209,17 @@ public class OriginAuctionDataTests {
     // 엔티티 생성을 위한 공통 메소드
     private AuctionBaseEntity createAuctionEntity(AuctionBaseEntity.AuctionBaseEntityBuilder<?, ?> builder, OriginAuctionDataRow row, OriginAuctionItem item) {
         System.out.println("Creating entity with item_name: " + row.getItem_name()); // 생성 로그 추가
-        Map<String,String> grand_sort = allSortingComponent.getGrand_sort();
-        Map<String,String> market_code_map = allSortingComponent.getMarket_code_map();
+
+        Map<String, String> grand_sort = allSortingComponent.getGrand_sort();
+        Map<String, String> market_code_map = allSortingComponent.getMarket_code_map();
+
         AuctionBaseEntity entity = builder
                 .product_name(grand_sort.get(item.getP_category_code()))
                 .large(row.getItem_name())
                 .middle(row.getKind_name())
                 .market_name(market_code_map.get(item.getP_country_code()))
                 .del_date(allSortingComponent.convertStrToLocalDate(item.getP_regday()))
-                .price(Integer.parseInt(row.getDpr1()))
+                .price(Integer.parseInt(row.getDpr1().replace(",", "")))
                 .build();
         System.out.println("Entity created: " + entity); // 엔티티 생성 확인 로그 추가
         return entity;

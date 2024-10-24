@@ -34,4 +34,6 @@ public class OriginAuctionItem {
 
     @JsonProperty("p_returntype")
     private String p_returntype; // 리턴타입
+
+
 }
