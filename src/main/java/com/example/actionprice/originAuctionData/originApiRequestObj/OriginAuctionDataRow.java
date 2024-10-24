@@ -74,12 +74,4 @@ public class OriginAuctionDataRow {
     @JsonProperty("dpr7")
     private String dpr7; // 평년가격
 
-    @JsonProperty("p_category")
-    private String p_category ="100"; // 카테고리 추가
-
-
-
-
-
-
 }

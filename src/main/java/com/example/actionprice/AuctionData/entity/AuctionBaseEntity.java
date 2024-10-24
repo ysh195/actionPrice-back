@@ -26,6 +26,7 @@ public class AuctionBaseEntity {
     private String large; //대분류
     private String middle; //중분류
     private String product_name; //상품명
+    private String rank; // 등급(상품, 중품)
     private int price; // 가격
     private String market_name; //거래장 이름
 
