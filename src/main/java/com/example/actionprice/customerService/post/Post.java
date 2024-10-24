@@ -84,7 +84,7 @@ public class Post extends BaseEntity implements Comparable<Post> {
   @OneToMany(mappedBy = "post",
       orphanRemoval = true,
       cascade = {CascadeType.ALL},
-      fetch = FetchType.LAZY)
+      fetch = FetchType.EAGER)
   @BatchSize(size = 10)
   @Builder.Default
   private Set<Comment> commentSet = new HashSet<>();

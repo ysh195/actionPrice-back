@@ -2,14 +2,11 @@ package com.example.actionprice.customerService.post;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +21,13 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping(value = "/{id}/detail")
-    public PostDetailDTO goDetailPost(@PathVariable Integer postId) {
+    public PostDetailDTO goDetailPost(@PathVariable("id") Integer postId) {
+        log.info("goDetailPost");
         return postService.getDetailPost(postId);
     }
 
     @GetMapping(value = "/{id}/update")
-    public ResponseEntity<Map<String, Map<String, String>>> goUpdatePost(@PathVariable Integer postId) {
+    public ResponseEntity<Map<String, Map<String, String>>> goUpdatePost(@PathVariable("id") Integer postId) {
         PostDetailDTO postDetailDTO = postService.getDetailPost(postId);
         Map<String, String> data = new HashMap<>();
         data.put("title", postDetailDTO.getTitle());
@@ -63,8 +61,7 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public List<PostDetailDTO> getPostList(@RequestParam(defaultValue = "0") int page,
-                                                  @RequestParam(required = false) String keyword) {
+    public List<PostDetailDTO> getPostList(@RequestParam(defaultValue = "0") int page, @RequestParam(required = false) String keyword) {
         log.info("[class] PostController - [method] getPostList - page : {} | keyword : {}", page, keyword);
         List<PostDetailDTO> postList = postService.getPostList(page, keyword);
         return postList;
