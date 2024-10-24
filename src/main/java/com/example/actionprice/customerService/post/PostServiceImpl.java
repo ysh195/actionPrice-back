@@ -9,12 +9,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -26,7 +24,7 @@ public class PostServiceImpl implements PostService{
     private final UserRepository userRepository;
 
     @Override
-    public String createPost(PostForm form) {
+    public Integer createPost(PostForm form) {
         User user = userRepository.findById(form.getUsername()).orElse(null);
         if(user == null) {
             throw new RuntimeException();
@@ -37,11 +35,12 @@ public class PostServiceImpl implements PostService{
                 .content(form.getContent())
                 .published(form.isPublished())
                 .build();
-        postRepository.save(post);
+        post = postRepository.save(post);
 
         user.addPost(post);
         userRepository.save(user);
-        return "";
+
+        return post.getPostId();
 
     }
 
@@ -72,20 +71,35 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public Page<Post> getPostList(int page, String keyword) {
+    public List<PostDetailDTO> getPostList(int page, String keyword) {
+        log.info("[class] PostServiceImpl - [method] getPostList -  - page : {} | keyword : {}", page, keyword);
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("postId")));
-        // 키워드가 없을 경우 전체 목록 반환
+        Page<Post> postPage = null;
+
         if (keyword == null || keyword.isEmpty()) {
-            return postRepository.findAll(pageable);
+            // 키워드가 없을 경우 전체 목록 반환
+            postPage = postRepository.findAll(pageable);
+        } else {
+            // 키워드가 있을 경우 제목에서 키워드를 검색
+            postPage = postRepository.findByKeywordContaining(keyword, pageable);
         }
-        // 키워드가 있을 경우 제목에서 키워드를 검색
-        return postRepository.findByKeywordContaining(keyword, pageable);
+
+        List<PostDetailDTO> postList = postPage.getContent()
+                .stream()
+                .map(post -> convertPostToPostDetailDTO(post))
+                .collect(Collectors.toList());
+
+        return postList;
     }
 
     @Override
     public PostDetailDTO getDetailPost(Integer postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> {throw new RuntimeException("the post does not exist");});
 
+        return convertPostToPostDetailDTO(post);
+    }
+
+    private PostDetailDTO convertPostToPostDetailDTO(Post post) {
         return PostDetailDTO.builder()
                 .postId(post.getPostId())
                 .username(post.getUser().getUsername())
