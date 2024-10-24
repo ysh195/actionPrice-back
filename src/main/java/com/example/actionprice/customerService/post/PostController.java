@@ -39,14 +39,11 @@ public class PostController {
     }
 
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
+    public Integer createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
         log.info("[class] PostController - [method] createPost - username : {}", form.getUsername());
-        int postId = postService.createPost(form); // postid를 반환하도록 수정
-        String url  = String.format("http://localhost:8080/post/%d/detail", postId);
+        Integer postId = postService.createPost(form); // postid를 반환하도록 수정
         log.info("[class] PostController - [method] createPost - Success");
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(url))
-                .build();
+        return postId;
     }
 
     @PostMapping(value = "/{id}/update", consumes = MediaType.APPLICATION_JSON_VALUE)
