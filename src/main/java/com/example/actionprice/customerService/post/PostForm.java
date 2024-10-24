@@ -15,7 +15,7 @@ public class PostForm {
     @NotBlank(groups = {PostCreateGroup.class, PostUpdateGroup.class})
     private String content;
 
-    @NotBlank(groups = {PostCreateGroup.class})
+//    @NotBlank(groups = {PostCreateGroup.class})
     private boolean published;
 
     public interface PostCreateGroup{}

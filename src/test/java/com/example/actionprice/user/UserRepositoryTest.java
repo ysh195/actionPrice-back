@@ -37,8 +37,10 @@ public class UserRepositoryTest {
     if(user != null){
       System.out.println("the user exists. and we delete the user");
       RefreshTokenEntity refreshToken = user.getRefreshToken();
-      refreshToken.setUser(null);
-      refreshTokenRepository.delete(refreshToken);
+      if(refreshToken != null){
+        refreshToken.setUser(null);
+        refreshTokenRepository.delete(refreshToken);
+      }
       userRepository.delete(user);
       return;
     }
