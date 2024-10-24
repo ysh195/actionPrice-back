@@ -42,7 +42,6 @@ public class PostServiceImpl implements PostService{
         userRepository.save(user);
         return "";
 
-
     }
 
     @Override
@@ -71,7 +70,6 @@ public class PostServiceImpl implements PostService{
         return "";
     }
 
-
     @Override
     public Page<Post> getPostList(int page, String keyword) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("postId")));
@@ -80,20 +78,23 @@ public class PostServiceImpl implements PostService{
             return postRepository.findAll(pageable);
         }
         // 키워드가 있을 경우 제목에서 키워드를 검색
-        return postRepository.findByTitleContaining(keyword, pageable);
+        return postRepository.findByKeywordContaining(keyword, pageable);
     }
 
-//        public Page<Post> findPosts(String keyword, Pageable pageable) {
-//        // keyword가 null이 아니고 빈 문자열이 아닌 경우에만 검색 조건을 추가
-//        Specification<Post> spec = (root, query, cb) -> cb.conjunction(); // 기본적인 조건 (항상 true)
-//
-//        //keyword가 null이거나 공백 문자열일 경우 Specification 조건이 추가되지 않음 즉, 조건 없이 모든 게시물이 페이징된 형태로 반환
-//        if (keyword != null && !keyword.trim().isEmpty()) {
-//            spec = spec.and(PostSpecifications.hasTitle(keyword)
-//                    .or(PostSpecifications.hasUserName(keyword)));
-//        }
-//        return postRepository.findAll(spec, pageable);
-//    }
+    @Override
+    public PostDetailDTO getDetailPost(Integer postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> {throw new RuntimeException("the post does not exist");});
 
+        return PostDetailDTO.builder()
+                .postId(post.getPostId())
+                .username(post.getUser().getUsername())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .published(post.isPublished())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .commentSet(post.getCommentSet())
+                .build();
+    }
 
 }

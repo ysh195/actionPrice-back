@@ -9,11 +9,8 @@ public interface PostService {
     String updatePost(Integer postId,PostForm form);
     String deletePost(Integer postId);
 
+    PostDetailDTO getDetailPost(Integer postId);
 
     Page<Post> getPostList(int page, String keyword);
-//    Page<Post> findPosts(String keyword, Pageable pageable);
-
-
-
 
 }
