@@ -7,6 +7,9 @@ import lombok.Getter;
 public class PostForm {
 
     @NotBlank(groups = PostUpdateGroup.class)
+    private String username;
+
+    @NotBlank(groups = PostUpdateGroup.class)
     private Integer postId;
 
     @NotBlank(groups = {PostCreateGroup.class, PostUpdateGroup.class})

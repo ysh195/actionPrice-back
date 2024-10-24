@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface PostService {
 
-    String createPost(String username,PostForm form);
+    String createPost(PostForm form);
     String updatePost(Integer postId,PostForm form);
     String deletePost(Integer postId);
 

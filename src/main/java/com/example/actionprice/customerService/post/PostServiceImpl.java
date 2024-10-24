@@ -26,8 +26,8 @@ public class PostServiceImpl implements PostService{
     private final UserRepository userRepository;
 
     @Override
-    public String createPost(String username,PostForm form) {
-        User user = userRepository.findById(username).orElse(null);
+    public String createPost(PostForm form) {
+        User user = userRepository.findById(form.getUsername()).orElse(null);
         if(user == null) {
             throw new RuntimeException();
         }
@@ -37,8 +37,9 @@ public class PostServiceImpl implements PostService{
                 .content(form.getContent())
                 .published(form.isPublished())
                 .build();
-        user.addPost(post);
+        postRepository.save(post);
 
+        user.addPost(post);
         userRepository.save(user);
         return "";
 
