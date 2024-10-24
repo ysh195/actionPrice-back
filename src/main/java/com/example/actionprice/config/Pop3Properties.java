@@ -1,5 +1,7 @@
 package com.example.actionprice.config;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.NoSuchProviderException;
 import jakarta.mail.Session;
 import jakarta.mail.Store;
 import java.util.Properties;
@@ -42,7 +44,7 @@ public class Pop3Properties {
   }
 
   //이메일 수신함 열어주는거임
-  public Store getPop3Store() throws Exception {
+  public Store getPop3Store() throws MessagingException {
     Properties properties = new Properties();
     properties.put("mail.store.protocol", "pop3s");
     properties.put("mail.pop3s.host", host);
