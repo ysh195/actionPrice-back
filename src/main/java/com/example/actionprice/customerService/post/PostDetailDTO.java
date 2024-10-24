@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Setter
 @Builder
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PostDetailDTO {
