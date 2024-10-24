@@ -51,7 +51,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
    * @info 토큰이 없으면(refreshToken = null) 새로 발급해주고, 만약 이미 있는 게 블록된 것인지만 체크하면 됨
    */
   @Override
-  public void issueRefreshToken(String username, Map<String, Object> claim) {
+  public void issueRefreshToken(String username) {
 
     // 해당 사용자에게 이미 리프레시 토큰이 있는지 체크하고 없으면 새로 생성
     User user = userRepository.findById(username).orElseThrow(() -> new UsernameNotFoundException("유저[" + username + "]가 존재하지 않습니다."));
@@ -61,7 +61,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     if(refreshTokenEntity == null) {
       // 로그인 로직이기 때문에 없으면 새로 발급해줘야 함
       refreshTokenEntity = RefreshTokenEntity.builder()
-          .refreshToken(jwtUtil.generateToken(claim, refreshTokenValidityInMinutes))
+          .refreshToken(jwtUtil.generateToken(username, refreshTokenValidityInMinutes))
           .expiresAt(LocalDateTime.now().plusMinutes(refreshTokenValidityInMinutes))
           .build();
     }
@@ -72,14 +72,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     // 토큰이 만료되기 60분 전이면 리프레시 토큰 재발급
     if (refreshTokenEntity.getExpiresAt().isBefore(LocalDateTime.now().plusMinutes(60))) {
-      refreshTokenEntity.setRefreshToken(jwtUtil.generateToken(Map.of("username", username), refreshTokenValidityInMinutes));
+      refreshTokenEntity.setRefreshToken(jwtUtil.generateToken(username, refreshTokenValidityInMinutes));
       refreshTokenEntity.setExpiresAt(LocalDateTime.now().plusMinutes(refreshTokenValidityInMinutes));
     }
 
     // 모든 작업이 완료됐으니 서로 연결 시켜주고, 레포지토리에 반영
     user.setRefreshToken(refreshTokenEntity);
     refreshTokenEntity.setUser(user);
-    refreshTokenRepository.save(refreshTokenEntity);
     userRepository.save(user);
   }
 
@@ -94,8 +93,11 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
    */
   public void checkRefreshFirst(String username) {
 
+    log.info("username : " + username);
+
     User user = userRepository.findById(username).orElseThrow(() -> new UsernameNotFoundException("유저[" + username + "]가 존재하지 않습니다."));
     RefreshTokenEntity refreshTokenEntity = user.getRefreshToken();
+    log.info("refresh_token : " + refreshTokenEntity.toString());
 
     // 토큰이 존재하는지 체크
     if(refreshTokenEntity == null) {
@@ -153,6 +155,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
    */
   public void checkRefreshToken_partially(RefreshTokenEntity refreshTokenEntity) {
 
+    log.info("checkRefreshToken_partially - refresh token : " + refreshTokenEntity.toString());
     if (refreshTokenEntity.isBlocked()) {
       throw new RefreshTokenException(ErrorCase.BLOCKED_REFRESH);
     }

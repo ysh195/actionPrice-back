@@ -7,6 +7,6 @@ import java.util.Map;
  * @created 2024-10-19 오후 5:24
  */
 public interface RefreshTokenService {
-  void issueRefreshToken(String username, Map<String, Object> claim);
+  void issueRefreshToken(String username);
   void checkRefreshFirst(String username);
 }
