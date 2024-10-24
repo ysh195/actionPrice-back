@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     // 이미 존재하는 유저라면
     if(existing_user != null) {
       log.info(inputed_username + " already exists");
-      return false;
+      return true;
     }
 
     log.info(userRegisterForm.getUsername() + " is new user");
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     log.info(result_str);
 
-    return true;
+    return false;
   }
 
   /**
