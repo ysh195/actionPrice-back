@@ -37,11 +37,13 @@ public class PostController {
     }
 
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Map<String,String>>> createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form, Principal principal){
-       String message = postService.createPost(principal.getName(), form);
-       Map<String,String> data = Map.of("message", message);
-       Map<String, Map<String,String>> response = Map.of("data", data);
-       return ResponseEntity.ok(response);
+    public ResponseEntity<Map<String, Map<String,String>>> createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
+        log.info("[class] PostController - [method] createPost - username : {}", form.getUsername());
+        String message = postService.createPost(form);
+        Map<String,String> data = Map.of("message", message);
+        Map<String, Map<String,String>> response = Map.of("data", data);
+        log.info("[class] PostController - [method] createPost - Success");
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping(value = "/{id}/update", consumes = MediaType.APPLICATION_JSON_VALUE)
