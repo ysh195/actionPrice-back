@@ -3,14 +3,16 @@ package com.example.actionprice.customerService.post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
+import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,13 +39,14 @@ public class PostController {
     }
 
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Map<String,String>>> createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
+    public ResponseEntity<Void> createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
         log.info("[class] PostController - [method] createPost - username : {}", form.getUsername());
-        String message = postService.createPost(form);
-        Map<String,String> data = Map.of("message", message);
-        Map<String, Map<String,String>> response = Map.of("data", data);
+        int postId = postService.createPost(form); // postid를 반환하도록 수정
+        String url  = String.format("http://localhost:8080/post/%d/detail", postId);
         log.info("[class] PostController - [method] createPost - Success");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(url))
+                .build();
     }
 
     @PostMapping(value = "/{id}/update", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -63,9 +66,10 @@ public class PostController {
     }
 
     @GetMapping("/list")
-    public Page<Post> getPostList(@RequestParam(defaultValue = "0") int page,
+    public List<PostDetailDTO> getPostList(@RequestParam(defaultValue = "0") int page,
                                                   @RequestParam(required = false) String keyword) {
-        Page<Post> postList = postService.getPostList(page, keyword);
+        log.info("[class] PostController - [method] getPostList - page : {} | keyword : {}", page, keyword);
+        List<PostDetailDTO> postList = postService.getPostList(page, keyword);
         return postList;
     }
 
