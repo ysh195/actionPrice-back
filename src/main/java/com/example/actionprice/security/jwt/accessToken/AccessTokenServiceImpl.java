@@ -4,6 +4,7 @@ import com.example.actionprice.exception.AccessTokenException;
 import com.example.actionprice.exception.AccessTokenException.TOKEN_ERROR;
 import com.example.actionprice.security.jwt.JWTUtil;
 import com.example.actionprice.security.jwt.refreshToken.RefreshTokenService;
+import com.example.actionprice.user.User;
 import com.google.gson.Gson;
 import io.jsonwebtoken.ClaimJwtException;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -47,10 +48,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
   public String issueJwt(String username) {
 
     // 리프레시 토큰 관련 검증 및 객체 관리를 처리함.
-    refreshTokenService.issueRefreshToken(username);
+    User user = refreshTokenService.issueRefreshToken(username);
 
     // issueRefreshToken에서 문제 없었으니 엑세스 토큰 발급
-    String accessToken = jwtUtil.generateToken(username, accessTokenValidityInMinutes);
+    String accessToken = jwtUtil.generateToken(user, accessTokenValidityInMinutes);
     return returnWithJson(accessToken, username);
   }
 
@@ -65,10 +66,10 @@ public class AccessTokenServiceImpl implements AccessTokenService {
   @Override
   public String issueAccessToken(String username) {
     // 리프레시 토큰 관련 검증 및 객체 관리를 처리함.
-    refreshTokenService.checkRefreshFirst(username);
+    User user = refreshTokenService.checkRefreshFirst(username);
 
     // checkRefreshFirst에서 문제 없었으니 엑세스 토큰 발급
-    String accessToken = jwtUtil.generateToken(username, accessTokenValidityInMinutes);
+    String accessToken = jwtUtil.generateToken(user, accessTokenValidityInMinutes);
 
     return returnWithJson(accessToken, username);
   }

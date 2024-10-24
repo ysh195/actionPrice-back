@@ -1,5 +1,6 @@
 package com.example.actionprice.customerService.post;
 
+import com.example.actionprice.exception.UserNotFoundException;
 import com.example.actionprice.user.User;
 import com.example.actionprice.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -25,10 +26,9 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public Integer createPost(PostForm form) {
-        User user = userRepository.findById(form.getUsername()).orElse(null);
-        if(user == null) {
-            throw new RuntimeException();
-        }
+        User user = userRepository.findById(form.getUsername())
+            .orElseThrow(() -> new UserNotFoundException("user(" + form.getUsername() + ") does not exist"));
+
         Post post = Post.builder()
                 .user(user)
                 .title(form.getTitle())

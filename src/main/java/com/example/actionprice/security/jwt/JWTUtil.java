@@ -1,5 +1,6 @@
 package com.example.actionprice.security.jwt;
 
+import com.example.actionprice.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -30,13 +31,13 @@ public class JWTUtil {
 
   /**
    * 토큰 생성
-   * @param username
+   * @param user
    * @param time 토큰의 유효시간(분).
    * @author : 연상훈
    * @created : 2024-10-06 오후 2:12
    * @info 일단위로 하고 싶으면 60*24*days 또는 plusDays(time).
    */
-  public String generateToken(String username, int time) {
+  public String generateToken(User user, int time) {
 
     // 헤더
     Map<String, Object> headers = new HashMap<>();
@@ -45,7 +46,8 @@ public class JWTUtil {
 
     String jwtStr = Jwts.builder()
         .setHeader(headers)
-        .setSubject(username)
+        .setSubject(user.getUsername())
+        .setClaims(Map.of("username", user.getUsername(), "role", user.getAuthorities()))
         .setIssuedAt(Date.from(ZonedDateTime.now().toInstant()))
         .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(time).toInstant()))
         .signWith(SIGNATURE_ALGORITHM, secretKey.getBytes(StandardCharsets.UTF_8))
