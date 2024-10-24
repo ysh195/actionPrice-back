@@ -18,7 +18,4 @@ public class OriginAuctionData {
     @JsonProperty("item")
     private List<OriginAuctionDataRow> item;
 
-
-
-
 }

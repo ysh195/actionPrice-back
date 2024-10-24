@@ -63,15 +63,4 @@ public class AllSortingComponent {
         "500", "축산물",
         "600", "수산물"
     );
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-    public LocalDate convertStrToLocalDate(String str) {
-        if (str == null || str.length() == 0) {
-            log.error("[class] AllSortingComponent > [method] convertStrToLocalDate > 입력된 값이 null입니다.");
-            return LocalDate.parse("20241010", formatter);
-        }
-        str = str.replace("-", "");
-        return LocalDate.parse(str, formatter);
-    }
 }

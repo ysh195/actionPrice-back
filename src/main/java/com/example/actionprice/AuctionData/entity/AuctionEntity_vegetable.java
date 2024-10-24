@@ -6,7 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @Entity
-@Table(name = "auctionData_produce")
-public class AuctionEntity_produce extends AuctionBaseEntity{
-    public AuctionEntity_produce() {}
+@Table(name = "auctionData_vegetable")
+public class AuctionEntity_vegetable extends AuctionBaseEntity{
+    public AuctionEntity_vegetable() {}
 }
