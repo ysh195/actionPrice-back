@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 @Log4j2
@@ -78,7 +79,7 @@ public class OriginAuctionDataTests {
 
 
 
-
+    @Disabled
     @Test
     void auctionDataFluxTest() throws Exception {
         String year = "2024";
@@ -108,7 +109,6 @@ public class OriginAuctionDataTests {
         }
     }
 
-    @Disabled
     @Test
     void originalAuctionDataTest() throws Exception {
         String year = "2024";
@@ -196,12 +196,15 @@ public class OriginAuctionDataTests {
     // 엔티티 생성을 위한 공통 메소드
     private AuctionBaseEntity createAuctionEntity(AuctionBaseEntity.AuctionBaseEntityBuilder<?, ?> builder, OriginAuctionDataRow row, OriginAuctionItem item) {
         System.out.println("Creating entity with item_name: " + row.getItem_name()); // 생성 로그 추가
+        Map<String,String> grand_sort = allSortingComponent.getGrand_sort();
+        Map<String,String> market_code_map = allSortingComponent.getMarket_code_map();
         AuctionBaseEntity entity = builder
+                .product_name(grand_sort.get(item.getP_category_code()))
                 .large(row.getItem_name())
                 .middle(row.getKind_name())
-                .product_name(allSortingComponent.getMarket_code_map().get(item.getP_country_code()))
+                .market_name(market_code_map.get(item.getP_country_code()))
                 .del_date(allSortingComponent.convertStrToLocalDate(item.getP_regday()))
-                .price(row.getDpr1())
+                .price(Integer.parseInt(row.getDpr1()))
                 .build();
         System.out.println("Entity created: " + entity); // 엔티티 생성 확인 로그 추가
         return entity;

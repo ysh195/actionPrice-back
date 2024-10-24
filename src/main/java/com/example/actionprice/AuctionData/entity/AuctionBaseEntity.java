@@ -1,5 +1,6 @@
 package com.example.actionprice.AuctionData.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,8 +26,10 @@ public class AuctionBaseEntity {
     private String large; //대분류
     private String middle; //중분류
     private String product_name; //상품명
-    private String price; // 가격
+    private int price; // 가격
     private String market_name; //거래장 이름
+
+    @Column(nullable = false)
     private String del_unit; // 단위(중량 : kg 등)
 
 
