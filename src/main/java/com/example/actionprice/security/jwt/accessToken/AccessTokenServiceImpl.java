@@ -45,14 +45,12 @@ public class AccessTokenServiceImpl implements AccessTokenService {
    */
   @Override
   public String issueJwt(String username) {
-    Map<String, Object> claim = Map.of("username", username);
 
     // 리프레시 토큰 관련 검증 및 객체 관리를 처리함.
-    // 자원을 아끼기 위해 클레임은 깨알 같이 돌려 씀
-    refreshTokenService.issueRefreshToken(username, claim);
+    refreshTokenService.issueRefreshToken(username);
 
     // issueRefreshToken에서 문제 없었으니 엑세스 토큰 발급
-    String accessToken = jwtUtil.generateToken(claim, accessTokenValidityInMinutes);
+    String accessToken = jwtUtil.generateToken(username, accessTokenValidityInMinutes);
     return returnWithJson(accessToken, username);
   }
 
@@ -70,7 +68,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     refreshTokenService.checkRefreshFirst(username);
 
     // checkRefreshFirst에서 문제 없었으니 엑세스 토큰 발급
-    String accessToken = jwtUtil.generateToken(Map.of("username", username), accessTokenValidityInMinutes);
+    String accessToken = jwtUtil.generateToken(username, accessTokenValidityInMinutes);
 
     return returnWithJson(accessToken, username);
   }
