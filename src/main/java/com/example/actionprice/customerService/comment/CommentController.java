@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 public class CommentController {
 
+    private final CommentService commentService;
+
     @PostMapping("/{postId}/detail")
     public String createComment(
             @PathVariable("postId") int postId,

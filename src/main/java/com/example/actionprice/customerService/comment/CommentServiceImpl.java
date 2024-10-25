@@ -10,4 +10,6 @@ import org.springframework.stereotype.Service;
 @Transactional
 @Log4j2
 public class CommentServiceImpl implements CommentService {
+
+
 }

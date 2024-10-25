@@ -27,7 +27,7 @@ public class MyPageController {
     public List<PostDetailDTO> goMyPosts(
              @PathVariable("username") String username,
              @RequestParam(required = false, name = "keyword") String keyword,
-             @RequestParam(name = "pageNum") int pageNum,
+             @RequestParam(required = false, name = "pageNum", defaultValue = "0") int pageNum,
              HttpServletRequest request)
     {
         return myPageService.getMyPosts(username, keyword, pageNum, request);
