@@ -3,16 +3,11 @@ package com.example.actionprice.customerService.post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-// TODO PostNotFoundException 추가
 @RestController
 @RequiredArgsConstructor
 @Log4j2

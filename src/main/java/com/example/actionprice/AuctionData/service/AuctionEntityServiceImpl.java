@@ -13,7 +13,7 @@ import com.example.actionprice.AuctionData.repository.FoodCropsEntity_repo;
 import com.example.actionprice.AuctionData.repository.FruitEntity_repo;
 import com.example.actionprice.AuctionData.repository.VegetableEntity_repo;
 import com.example.actionprice.AuctionData.repository.SpecialCropsEntity_repo;
-import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
+import com.example.actionprice.AuctionData.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;

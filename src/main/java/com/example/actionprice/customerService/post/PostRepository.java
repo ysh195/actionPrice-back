@@ -10,12 +10,8 @@ import org.springframework.data.repository.query.Param;
 public interface PostRepository extends JpaRepository<Post, Integer>{
 
     //Containing 키워드는 SQL에서 LIKE '%keyword%'와 동일하게 동작하여 부분 검색
-    @Query("SELECT p " +
-            "FROM Post p " +
-            "LEFT JOIN p.user u " +
-            "WHERE p.title " +
-            "LIKE %:keyword% " +
-            "OR u.username " +
-            "LIKE %:keyword%")
-    Page<Post> findByKeywordContaining(@Param("keyword") String keyword, Pageable pageable);
+    Page<Post> findByTitleContainingOrUser_UsernameContaining(String titleKeyword, String usernameKeyword, Pageable pageable);
+
+    Page<Post> findByUser_UsernameAndTitleContaining(String username, String keyword, Pageable pageable);
+    Page<Post> findByUser_Username(String username, Pageable pageable);
 }

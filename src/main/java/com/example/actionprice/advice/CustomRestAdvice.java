@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import com.example.actionprice.exception.InvalidEmailAddressException;
+import com.example.actionprice.exception.PostNotFoundException;
 import com.example.actionprice.exception.UserNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -93,6 +94,13 @@ public class CustomRestAdvice {
   @ExceptionHandler(UserNotFoundException.class)
   @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerUserNotFoundException(UserNotFoundException e) {
+    return ResponseEntity.badRequest().body(e.getMessage());
+  }
+
+  //post 가 없을 시
+  @ExceptionHandler(PostNotFoundException.class)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  public ResponseEntity<String> handlerPostNotFoundException(PostNotFoundException e) {
     return ResponseEntity.badRequest().body(e.getMessage());
   }
 

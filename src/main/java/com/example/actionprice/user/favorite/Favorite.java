@@ -44,6 +44,9 @@ public class Favorite implements Comparable<Favorite> {
   private Integer favoriteId;
 
   @Column(nullable = false)
+  private String favoriteName;
+
+  @Column(nullable = false)
   @Size(min = 1)
   private String favoriteURL;
 

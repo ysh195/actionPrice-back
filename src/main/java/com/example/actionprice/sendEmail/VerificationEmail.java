@@ -1,7 +1,7 @@
 package com.example.actionprice.sendEmail;
 
 
-import com.example.actionprice.common.BaseEntity;
+import com.example.actionprice.customerService.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
