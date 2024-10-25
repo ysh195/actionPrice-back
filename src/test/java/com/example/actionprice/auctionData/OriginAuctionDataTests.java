@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import reactor.core.publisher.Flux;
 
+import java.util.concurrent.CountDownLatch;
+
 @SpringBootTest
 @Log4j2
 public class OriginAuctionDataTests {
@@ -32,12 +34,12 @@ public class OriginAuctionDataTests {
         System.out.println(reponseBody);
     }
 
+
     @Test
     void auctionDataFluxTest() throws Exception {
-
         String year = "2024";
         String month = "01";
-        int endDay = 31;
+        int endDay = 1;
 
         for (int i = 1; i <= endDay; i++) {
             // 날짜 형식 맞추기
@@ -52,21 +54,30 @@ public class OriginAuctionDataTests {
                 allSortingComponent.getGrand_sort().entrySet().stream().forEach(grandSortEntry -> {
                     // key : 대분류 코드, value : 대분류 이름
                     log.info("grandSort : " + grandSortEntry.getValue());
-                  try {
-                      log.info("flux");
-                    Flux<OriginAuctionDataRow> flux = originAuctionDataFetcher.getAuctionData_Flux(marketCodeEntry.getKey(), date, grandSortEntry.getKey());
-                    flux.subscribe(row -> {
-                        log.info("flux - row");
-                        log.info("row : " + row.toString());
-                        auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
-                    }, error -> {log.error("no data day");});
-                  } catch (Exception e) {
-                    throw new RuntimeException(e);
-                  }
+
+                    CountDownLatch latch = new CountDownLatch(1); // 이 객체는 비동기 작업이 완료될 때까지 메인 스레드를 차단
+
+                    try {
+                        log.info("flux");
+                        Flux<OriginAuctionDataRow> flux = originAuctionDataFetcher.getAuctionData_Flux(marketCodeEntry.getKey(), date, grandSortEntry.getKey());
+                        flux.subscribe(row -> {
+                            log.info("flux - row");
+                            log.info("row : " + row.toString());
+                            auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
+                        }, error -> {
+                            log.error("Error retrieving auction data: {}", error.getMessage());
+                            latch.countDown(); // 에러 발생 시 감소
+                        }, latch::countDown); // 완료 시 감소
+
+                        latch.await(); // 비동기 작업이 완료될 때까지 메인 스레드를 대기
+                    } catch (Exception e) {
+                        log.error("Exception occurred: {}", e.getMessage());
+                        throw new RuntimeException(e);
+                    }
                 });
             });
-
         }
     }
+
 
 }

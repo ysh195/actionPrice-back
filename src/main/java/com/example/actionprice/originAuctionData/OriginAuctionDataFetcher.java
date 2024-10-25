@@ -53,22 +53,6 @@ public class OriginAuctionDataFetcher {
         this.gson = new Gson();
     }
 
-    private URI composeUri(String countryCode, String regday, String category_code) throws URISyntaxException {
-
-        String p_cert_id = "lhm3052@naver.com"; // 요청자 id
-        String apiType = "json"; // 반환 형식
-        String p_convert_kg_yn = "Y"; // 중량 변환 여부
-
-        String url = String.format("%s&p_country_code=%s&p_regday=%s&p_convert_kg_yn=Y&p_item_category_code=%s&p_cert_key=%s&p_cert_id=lhm3052@naver.com&p_returntype=json",
-                lastAuctionUrl,
-                countryCode,
-                regday,
-                category_code,
-                lastAuctionEncodedKey
-        );
-
-        return new URI(url);
-    }
 
     public String getAuctionData_String(String countryCode, String regday, String category_code) throws Exception {
 
@@ -116,6 +100,23 @@ public class OriginAuctionDataFetcher {
                 OriginAuctionDocument document = gson.fromJson(str, OriginAuctionDocument.class);
                 return Flux.fromIterable(document.getData().getItem());
             });
+    }
+
+    private URI composeUri(String countryCode, String regday, String category_code) throws URISyntaxException {
+
+        String p_cert_id = "lhm3052@naver.com"; // 요청자 id
+        String apiType = "json"; // 반환 형식
+        String p_convert_kg_yn = "Y"; // 중량 변환 여부
+
+        String url = String.format("%s&p_country_code=%s&p_regday=%s&p_convert_kg_yn=Y&p_item_category_code=%s&p_cert_key=%s&p_cert_id=lhm3052@naver.com&p_returntype=json",
+                lastAuctionUrl,
+                countryCode,
+                regday,
+                category_code,
+                lastAuctionEncodedKey
+        );
+
+        return new URI(url);
     }
 
 }
