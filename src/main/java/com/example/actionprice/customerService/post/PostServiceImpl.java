@@ -49,8 +49,16 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostDetailDTO updatePost(Integer postId, PostForm form) {
 
+        String username = form.getUsername();
+        User user = userRepository.findById(username)
+                .orElseThrow(() -> new UserNotFoundException("user(" + form.getUsername() + ") does not exist"));
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+
+        if(!username.equals(post.getUser().getUsername())) {
+            return null;
+        }
 
         post.setTitle(form.getTitle());
         post.setContent(form.getContent());
@@ -62,10 +70,14 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public void deletePost(Integer postId, String logined_username) {
+
+        User user = userRepository.findById(logined_username)
+                .orElseThrow(() -> new UserNotFoundException("user(" + logined_username + ") does not exist"));
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
-        if(logined_username.equals(post.getUser().getUsername())) {
+        if(!logined_username.equals(post.getUser().getUsername())) {
             log.info("you are not the writer");
             return;
         }

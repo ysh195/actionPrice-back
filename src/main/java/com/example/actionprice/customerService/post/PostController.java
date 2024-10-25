@@ -17,9 +17,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public PostDetailDTO createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
+    public Integer createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
         log.info("[class] PostController - [method] createPost - username : {}", form.getUsername());
-        return postService.createPost(form);
+        return postService.createPost(form).getPostId();
     }
 
     @GetMapping(value = "/{id}/detail")
