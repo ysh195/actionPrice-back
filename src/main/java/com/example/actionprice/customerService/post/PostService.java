@@ -7,8 +7,8 @@ import java.util.List;
 public interface PostService {
 
     Integer createPost(PostForm form);
-    String updatePost(Integer postId,PostForm form);
-    String deletePost(Integer postId);
+    PostDetailDTO updatePost(Integer postId,PostForm form);
+    void deletePost(Integer postId);
 
     PostDetailDTO getDetailPost(Integer postId);
 
