@@ -61,9 +61,15 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void deletePost(Integer postId) {
+    public void deletePost(Integer postId, String logined_username) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+
+        if(logined_username.equals(post.getUser().getUsername())) {
+            log.info("you are not the writer");
+            return;
+        }
+
         postRepository.delete(post);
     }
 
@@ -95,6 +101,28 @@ public class PostServiceImpl implements PostService{
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
         return convertPostToPostDetailDTO(post);
+    }
+
+    @Override
+    public List<PostDetailDTO> getPostListForMyPage(String username, String keyword, int pageNumber) {
+        log.info("[class] PostServiceImpl - [method] getPostList -  - page : {} | keyword : {}", pageNumber, keyword);
+        Pageable pageable = PageRequest.of(pageNumber, 10, Sort.by(Sort.Order.desc("postId")));
+        Page<Post> postPage = null;
+
+        if (keyword == null || keyword.isEmpty()) {
+            // 키워드가 없을 경우 전체 목록 반환
+            postPage = postRepository.findByUser_Username(username, pageable);
+        } else {
+            // 키워드가 있을 경우 제목에서 키워드를 검색
+            postPage = postRepository.findByUser_UsernameAndTitleContaining(username, keyword, pageable);
+        }
+
+        List<PostDetailDTO> postList = postPage.getContent()
+                .stream()
+                .map(post -> convertPostToPostDetailDTO(post))
+                .collect(Collectors.toList());
+
+        return postList;
     }
 
     private PostDetailDTO convertPostToPostDetailDTO(Post post) {

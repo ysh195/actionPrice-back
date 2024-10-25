@@ -40,8 +40,8 @@ public class PostController {
     }
 
     @PostMapping(value = "/{id}/delete" ,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String deletePost(@PathVariable("id") Integer id) {
-        postService.deletePost(id);
+    public String deletePost(@PathVariable("id") Integer id, String logined_username) {
+        postService.deletePost(id, logined_username);
         return "delete successful";
     }
 

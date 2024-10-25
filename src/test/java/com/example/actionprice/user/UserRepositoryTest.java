@@ -30,6 +30,7 @@ public class UserRepositoryTest {
    * @info : 귀찮더라도 이걸로 삭제해야 정상적으로 삭제됨. DB에서 삭제하는 건 되도록 자제
    */
   @Test
+  @Disabled
   public void deleteUserTest(){
     String username = "userbbbb";
 
@@ -48,12 +49,11 @@ public class UserRepositoryTest {
   }
 
   @Test
-  @Disabled
   public void userCreateTest() {
     User user = User.builder()
-        .username("useraaaa")
+        .username("useruser")
         .password(passwordEncoder.encode("11111111"))
-        .email("bscom129@naver.com")
+        .email("abc@naver.com")
         .build();
 
     user.addAuthorities(UserRole.ROLE_USER);

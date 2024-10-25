@@ -8,8 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PostRepository extends JpaRepository<Post, Integer>{
-
-    //Containing 키워드는 SQL에서 LIKE '%keyword%'와 동일하게 동작하여 부분 검색
+    
     Page<Post> findByTitleContainingOrUser_UsernameContaining(String titleKeyword, String usernameKeyword, Pageable pageable);
 
     Page<Post> findByUser_UsernameAndTitleContaining(String username, String keyword, Pageable pageable);
