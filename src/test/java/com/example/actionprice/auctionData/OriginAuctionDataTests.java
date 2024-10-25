@@ -64,34 +64,4 @@ public class OriginAuctionDataTests {
         }
     }
 
-//    @Disabled
-//    @Test
-//    void auctionDataFluxTest() throws Exception {
-//        String year = "2024";
-//        String month = "10";
-//        int endDay = 20;
-//
-//        for (int i = 1; i <= endDay; i++) {
-//            // 날짜 형식 맞추기
-//            String day = String.format("%02d", i);
-//            String date = String.format("%s-%s-%s", year, month, day);
-//
-//            System.out.println("테스트 중인 날짜: " + date);
-//
-//            // Flux로 데이터 받아옴
-//            Flux<OriginAuctionDataRow> auctionDataFlux = originAuctionDataFetcher.getLastAuctionData_Flux(date);
-//
-//            // Flux에서 데이터를 스트림으로 변환 후 출력
-//            List<OriginAuctionDataRow> auctionDataList = auctionDataFlux.collectList().block();
-//
-//            if (auctionDataList != null && !auctionDataList.isEmpty()) {
-//                auctionDataList.forEach(item -> {
-//                    System.out.println(item);  // 데이터가 있을 경우 출력
-//                });
-//            } else {
-//                System.out.println("빈 데이터 또는 오류 발생: " + date);  // 데이터가 없거나 오류 발생 시 출력
-//            }
-//        }
-//    }
-
 }

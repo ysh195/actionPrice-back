@@ -41,7 +41,6 @@ public class OriginAuctionDataFetcher {
     private final WebClient webClient;
     private final Gson gson;
 
-
     public OriginAuctionDataFetcher() {
         ConnectionProvider provider = ConnectionProvider.builder("custom")
             .maxConnections(4000) // 최대 연결 수
@@ -118,54 +117,6 @@ public class OriginAuctionDataFetcher {
                 return Flux.fromIterable(document.getData().getItem());
             });
     }
-
-
-//
-//    public OriginAuctionDocument getLastAuctionData_LastDocument(String regday) throws Exception {
-//        URI uri = composeUri(regday);
-//
-//        System.out.println(uri);
-//        // 요청을 보내고 응답 받기
-//        String responseBody = webClient.get()
-//                .uri(uri)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .retrieve()
-//                .bodyToMono(String.class)
-//                .block();
-//        OriginAuctionDocument originAuctionDocument = gson.fromJson(responseBody, OriginAuctionDocument.class);
-//
-//        return originAuctionDocument;
-//    }
-//
-//    public Flux<OriginAuctionDataRow> getLastAuctionData_Flux(String regday) throws Exception {
-//        URI uri = composeUri(regday);
-//
-//        return webClient.get()
-//                .uri(uri)
-//                .accept(MediaType.APPLICATION_JSON)
-//                .retrieve() // 서버에 요청을 보내고, 응답을 받을 준비
-//                .bodyToMono(String.class) //응답 본문을 String 타입으로 받도록 지정
-//                .map(response -> {
-//                    try {
-//                        // 응답 JSON을 OriginAuctionDocument로 변환
-//                        return gson.fromJson(response, OriginAuctionDocument.class);
-//                    } catch (JsonSyntaxException e) {
-//                        // JSON 파싱 오류 처리
-//                        System.out.println("JSON 파싱 오류 발생: " + e.getMessage());
-//                        System.out.println("응답 JSON: " + response);
-//                        return new OriginAuctionDocument(); // 빈 객체 반환
-//                    }
-//                })
-//                .flatMapMany(document -> {
-//                    // document가 null이거나 데이터가 없는 경우 빈 Flux 반환
-//                    if (document.getData() != null && document.getData().getItem() != null) {
-//                        return Flux.fromIterable(document.getData().getItem());
-//                    } else {
-//                        return Flux.empty();
-//                    }
-//                });
-//    }
-
 
 }
 
