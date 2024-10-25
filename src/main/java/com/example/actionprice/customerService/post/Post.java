@@ -20,11 +20,8 @@ import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import lombok.*;
 import org.hibernate.annotations.BatchSize;
 
 /**
@@ -45,6 +42,7 @@ import org.hibernate.annotations.BatchSize;
 @Entity
 @Table(name = "post")
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

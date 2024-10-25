@@ -21,22 +21,6 @@ public class PostController {
 
     private final PostService postService;
 
-    @GetMapping(value = "/{id}/detail")
-    public PostDetailDTO goDetailPost(@PathVariable("id") Integer postId) {
-        log.info("goDetailPost");
-        return postService.getDetailPost(postId);
-    }
-
-    @GetMapping(value = "/{id}/update")
-    public ResponseEntity<Map<String, Map<String, String>>> goUpdatePost(@PathVariable("id") Integer postId) {
-        PostDetailDTO postDetailDTO = postService.getDetailPost(postId);
-        Map<String, String> data = new HashMap<>();
-        data.put("title", postDetailDTO.getTitle());
-        data.put("content", postDetailDTO.getContent());
-        Map<String, Map<String, String>> response = Map.of("data", data);
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
     public Integer createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
         log.info("[class] PostController - [method] createPost - username : {}", form.getUsername());
@@ -45,20 +29,27 @@ public class PostController {
         return postId;
     }
 
+    @GetMapping(value = "/{id}/detail")
+    public PostDetailDTO goDetailPost(@PathVariable("id") Integer postId) {
+        log.info("goDetailPost");
+        return postService.getDetailPost(postId);
+    }
+
+    @GetMapping(value = "/{id}/update")
+    public PostDetailDTO goUpdatePost(@PathVariable("id") Integer postId) {
+        log.info("goUpdatePost");
+        return postService.getDetailPost(postId);
+    }
+
     @PostMapping(value = "/{id}/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Map<String, String>>> updatePost(@PathVariable("id") Integer id, @RequestBody @Validated(PostForm.PostCreateGroup.class) PostForm form) {
-        String message = postService.updatePost(id, form);
-        Map<String, Map<String, String>> response = new HashMap<>();
-        response.put("data", Collections.singletonMap("message", message)); //Collections.singletonMap 맵 객체중 하나만 저장
-        return ResponseEntity.ok(response);
+    public PostDetailDTO updatePost(@PathVariable("id") Integer id, @RequestBody @Validated(PostForm.PostUpdateGroup.class) PostForm form) {
+        return postService.updatePost(id, form);
     }
 
     @PostMapping(value = "/{id}/delete" ,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Map<String, Map<String, String>>> deletePost(@PathVariable("id") Integer id) {
-        String message = postService.deletePost(id);
-        Map<String, Map<String, String>> response = new HashMap<>();
-        response.put("data", Collections.singletonMap("message", message));
-        return ResponseEntity.ok(response);
+    public String deletePost(@PathVariable("id") Integer id) {
+        postService.deletePost(id);
+        return "delete successful";
     }
 
     @GetMapping("/list")

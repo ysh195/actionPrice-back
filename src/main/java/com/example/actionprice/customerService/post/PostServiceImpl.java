@@ -45,29 +45,23 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public String updatePost(Integer postId, PostForm form) {
+    public PostDetailDTO updatePost(Integer postId, PostForm form) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("Id 에러  " + postId));
-        Post updatedPost = Post.builder()
-                .postId(post.getPostId())
-                .user(post.getUser())
-                .title(form.getTitle())
-                .content(form.getContent())
-                .published(post.isPublished())
-                .build();
 
-        post = updatedPost;
-        postRepository.save(post);
-        return "";
+        post.setTitle(form.getTitle());
+        post.setContent(form.getContent());
+
+        post = postRepository.save(post);
+
+        return convertPostToPostDetailDTO(post);
     }
 
 
     @Override
-    public String deletePost(Integer postId) {
-
+    public void deletePost(Integer postId) {
         postRepository.deleteById(postId);
-        return "";
     }
 
     @Override

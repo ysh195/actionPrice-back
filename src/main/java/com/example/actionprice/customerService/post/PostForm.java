@@ -6,11 +6,10 @@ import lombok.Getter;
 @Getter
 public class PostForm {
 
-    @NotBlank(groups = PostUpdateGroup.class)
-    private String username;
+    private Integer postId;
 
     @NotBlank(groups = PostUpdateGroup.class)
-    private Integer postId;
+    private String username;
 
     @NotBlank(groups = {PostCreateGroup.class, PostUpdateGroup.class})
     private String title;
