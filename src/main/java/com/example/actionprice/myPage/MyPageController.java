@@ -1,13 +1,14 @@
 package com.example.actionprice.myPage;
 
-import com.example.actionprice.customerService.post.Post;
+import com.example.actionprice.customerService.post.PostDetailDTO;
+import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/mypage")
@@ -23,13 +24,19 @@ public class MyPageController {
     }
 
     @GetMapping(value = "/{username}/myposts")
-    public Set<Post> goMyPosts(
+    public List<PostDetailDTO> goMyPosts(
              @PathVariable("username") String username,
              @RequestParam(required = false, name = "keyword") String keyword,
              @RequestParam(name = "pageNum") int pageNum,
              HttpServletRequest request)
     {
-        return null;
+        return myPageService.getMyPosts(username, keyword, pageNum, request);
+    }
+
+    @GetMapping(value = "/{username}/wishlist")
+    public String goMyWishlist(@PathVariable("username") String username, HttpServletRequest request) {
+        // 메인데이터 카테고리 끝나야 가능해서 나중에 처리함
+        return "OK";
     }
 
     @PostMapping(value = "/{username}/deleteUser")
