@@ -1,6 +1,6 @@
 package com.example.actionprice.customerService.post;
 
-import com.example.actionprice.common.BaseEntity;
+import com.example.actionprice.customerService.BaseEntity;
 import com.example.actionprice.user.User;
 import com.example.actionprice.customerService.comment.Comment;
 import com.fasterxml.jackson.annotation.JsonBackReference;

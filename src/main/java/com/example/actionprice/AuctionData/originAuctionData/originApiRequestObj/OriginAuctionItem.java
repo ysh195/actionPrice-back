@@ -1,17 +1,15 @@
-package com.example.actionprice.originAuctionData.originApiRequestObj;
+package com.example.actionprice.AuctionData.originAuctionData.originApiRequestObj;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.Objects;
+import org.springframework.context.annotation.Bean;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OriginAuctionCondition {
+public class OriginAuctionItem {
 
     @JsonProperty("p_product_cls_code")
     private String p_product_cls_code;// 구분 ( 01:소매, 02:도매, default:02 )
@@ -36,5 +34,6 @@ public class OriginAuctionCondition {
 
     @JsonProperty("p_returntype")
     private String p_returntype; // 리턴타입
+
 
 }

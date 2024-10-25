@@ -1,8 +1,8 @@
-package com.example.actionprice.originAuctionData;
+package com.example.actionprice.AuctionData.originAuctionData;
 
 
-import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
-import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDocument;
+import com.example.actionprice.AuctionData.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
+import com.example.actionprice.AuctionData.originAuctionData.originApiRequestObj.OriginAuctionDocument;
 import com.google.gson.*;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;

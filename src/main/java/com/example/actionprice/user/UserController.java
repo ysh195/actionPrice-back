@@ -12,10 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author : 연상훈
@@ -33,10 +30,33 @@ public class UserController {
   private final SendEmailService sendEmailService;
 
   /**
+   * 중복 로그인 등(보안 이슈)을 방지하기 위해 프론트에서 요청 받는 용도
+   * @author 연상훈
+   * @created 2024-10-25 오후 12:47
+   * @see : 보안관련메서드 @GetMapping("/login")
+   */
+  @GetMapping("/login")
+  public String goLogin() {
+    return "goLogin";
+  }
+
+  /**
+   * 중복 로그아웃 등(보안 이슈)을 방지하기 위해 프론트에서 요청 받는 용도
+   * @author 연상훈
+   * @created 2024-10-25 오후 12:47
+   * @see : 보안관련메서드 @GetMapping("/logout")
+   */
+  @GetMapping("/logout")
+  public String goLogout() {
+    return "goLogout";
+  }
+
+  /**
    * 로그인 기능 @PostMapping("/login")
    * @author : 연상훈
    * @created : 2024-10-06 오후 6:35
-   * @see
+   * @see : @PostMapping("/login")
+   * @info
    * 로그인 로직에 해당하는 @PostMappin("/user/login")은 CustomSecurityConfig에서 처리하기 때문에 별도의 메서드가 필요 없음.
    * 오히려 만들었다간 요청 충돌이 생김. 참고로 user login 할 때 UserLoginForm을 사용함
    */
@@ -45,7 +65,8 @@ public class UserController {
    * 로그아웃 기능
    * @author 연상훈
    * @created 2024-10-10 오전 9:30
-   * @see CustomSecurityConfig에서 처리하기 때문에 별도의 메서드가 필요 없음.
+   * @see : @PostMapping("/logout")
+   * @info CustomSecurityConfig에서 처리하기 때문에 별도의 메서드가 필요 없음.
    */
 
   /**

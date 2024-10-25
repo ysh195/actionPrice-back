@@ -1,5 +1,6 @@
 package com.example.actionprice.customerService.post;
 
+import com.example.actionprice.exception.PostNotFoundException;
 import com.example.actionprice.exception.UserNotFoundException;
 import com.example.actionprice.user.User;
 import com.example.actionprice.user.UserRepository;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Transactional //실패시 다같이 실패가 뜸
 @Log4j2
 public class PostServiceImpl implements PostService{
+
     private final PostRepository postRepository;
     private final UserRepository userRepository;
 
@@ -48,7 +50,7 @@ public class PostServiceImpl implements PostService{
     public PostDetailDTO updatePost(Integer postId, PostForm form) {
 
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("Id 에러  " + postId));
+                .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
         post.setTitle(form.getTitle());
         post.setContent(form.getContent());
@@ -58,10 +60,11 @@ public class PostServiceImpl implements PostService{
         return convertPostToPostDetailDTO(post);
     }
 
-
     @Override
     public void deletePost(Integer postId) {
-        postRepository.deleteById(postId);
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        postRepository.delete(post);
     }
 
     @Override
@@ -75,7 +78,7 @@ public class PostServiceImpl implements PostService{
             postPage = postRepository.findAll(pageable);
         } else {
             // 키워드가 있을 경우 제목에서 키워드를 검색
-            postPage = postRepository.findByKeywordContaining(keyword, pageable);
+            postPage = postRepository.findByTitleContainingOrUser_UsernameContaining(keyword, keyword, pageable);
         }
 
         List<PostDetailDTO> postList = postPage.getContent()
@@ -88,7 +91,8 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public PostDetailDTO getDetailPost(Integer postId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> {throw new RuntimeException("the post does not exist");});
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
         return convertPostToPostDetailDTO(post);
     }
