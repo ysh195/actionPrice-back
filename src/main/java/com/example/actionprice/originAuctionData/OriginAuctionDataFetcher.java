@@ -3,10 +3,7 @@ package com.example.actionprice.originAuctionData;
 
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDocument;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -108,9 +105,12 @@ public class OriginAuctionDataFetcher {
                 JsonElement jsonElement = JsonParser.parseString(str);
                 if (jsonElement.isJsonObject()) {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
-                    // data가 object면(= data가 없으면)
-                    if(jsonObject.get("data").isJsonArray()){
-                        return Mono.empty();
+                    JsonElement dataElement = jsonObject.get("data");
+                    if (dataElement.isJsonArray()) {
+                        JsonArray dataArray = dataElement.getAsJsonArray();
+                        if (dataArray.size() > 0 && dataArray.get(0).isJsonPrimitive() && dataArray.get(0).getAsString().equals("001")) {
+                            return Mono.empty();
+                        }
                     }
                 }
                 OriginAuctionDocument document = gson.fromJson(str, OriginAuctionDocument.class);
