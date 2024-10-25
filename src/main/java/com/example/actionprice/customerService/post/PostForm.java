@@ -1,21 +1,23 @@
 package com.example.actionprice.customerService.post;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
 public class PostForm {
 
-    @NotBlank(groups ={PostUpdateGroup.class})
+    @Min(value = 0, groups ={PostUpdateGroup.class})
     private Integer postId;
 
-    @NotBlank(groups ={PostCreateGroup.class, PostUpdateGroup.class})
+    @NotNull(groups ={PostCreateGroup.class, PostUpdateGroup.class})
     private String username;
 
-    @NotBlank(groups = {PostCreateGroup.class, PostUpdateGroup.class})
+    @NotNull(groups = {PostCreateGroup.class, PostUpdateGroup.class})
     private String title;
 
-    @NotBlank(groups = {PostCreateGroup.class, PostUpdateGroup.class})
+    @NotNull(groups = {PostCreateGroup.class, PostUpdateGroup.class})
     private String content;
 
 //    @NotBlank(groups = {PostCreateGroup.class})
