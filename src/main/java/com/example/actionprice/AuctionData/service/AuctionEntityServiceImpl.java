@@ -82,7 +82,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .middle(row.getItem_name())
         .product_name(row.getKind_name())
         .price(convertStrToPrice(row.getDpr1()))
-        .rank(row.getRank())
+        .product_rank(row.getRank())
         .market_name(marketName)
         .del_unit(row.getUnit())
         .build();
@@ -97,7 +97,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .middle(row.getItem_name())
         .product_name(row.getKind_name())
         .price(convertStrToPrice(row.getDpr1()))
-        .rank(row.getRank())
+        .product_rank(row.getRank())
         .market_name(marketName)
         .del_unit(row.getUnit())
         .build();
@@ -112,7 +112,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .middle(row.getItem_name())
         .product_name(row.getKind_name())
         .price(convertStrToPrice(row.getDpr1()))
-        .rank(row.getRank())
+        .product_rank(row.getRank())
         .market_name(marketName)
         .del_unit(row.getUnit())
         .build();
@@ -127,7 +127,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .middle(row.getItem_name())
         .product_name(row.getKind_name())
         .price(convertStrToPrice(row.getDpr1()))
-        .rank(row.getRank())
+        .product_rank(row.getRank())
         .market_name(marketName)
         .del_unit(row.getUnit())
         .build();
@@ -142,7 +142,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .middle(row.getItem_name())
         .product_name(row.getKind_name())
         .price(convertStrToPrice(row.getDpr1()))
-        .rank(row.getRank())
+        .product_rank(row.getRank())
         .market_name(marketName)
         .del_unit(row.getUnit())
         .build();
@@ -157,7 +157,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .middle(row.getItem_name())
         .product_name(row.getKind_name())
         .price(convertStrToPrice(row.getDpr1()))
-        .rank(row.getRank())
+        .product_rank(row.getRank())
         .market_name(marketName)
         .del_unit(row.getUnit())
         .build();

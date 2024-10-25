@@ -23,14 +23,21 @@ public class AuctionBaseEntity {
     private Long del_id;
 
     private LocalDate del_date; //거래일자
+
     private String large; //대분류
+
     private String middle; //중분류
+
     private String product_name; //상품명
-    private String rank; // 등급(상품, 중품)
+
+    @Column(nullable = true)
+    private String product_rank; // 등급(상품, 중품)
+
     private int price; // 가격
+
     private String market_name; //거래장 이름
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String del_unit; // 단위(중량 : kg 등)
 
 
