@@ -9,7 +9,7 @@ public interface PostService {
 
     PostDetailDTO createPost(PostForm form);
     PostDetailDTO updatePost(Integer postId,PostForm form);
-    void deletePost(Integer postId);
+    void deletePost(Integer postId, String logined_username);
 
     PostDetailDTO getDetailPost(Integer postId);
 

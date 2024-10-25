@@ -61,9 +61,15 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public void deletePost(Integer postId) {
+    public void deletePost(Integer postId, String logined_username) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+
+        if(logined_username.equals(post.getUser().getUsername())) {
+            log.info("you are not the writer");
+            return;
+        }
+
         postRepository.delete(post);
     }
 
