@@ -51,22 +51,22 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
 
     switch (category) {
       case "식량작물":
-        entity = convertRowToFoodCrops_andSave(row, date, marketName, date);
+        entity = convertRowToFoodCrops_andSave(row, date, marketName, category);
         break;
       case "채소류":
-        entity = convertRowToVegetable_andSave(row, date, marketName, date);
+        entity = convertRowToVegetable_andSave(row, date, marketName, category);
         break;
       case "특용작물":
-        entity = convertSpecialCrops_andSave(row, date, marketName, date);
+        entity = convertSpecialCrops_andSave(row, date, marketName, category);
         break;
       case "과일류":
-        entity = convertRowToFruit_andSave(row, date, marketName, date);
+        entity = convertRowToFruit_andSave(row, date, marketName, category);
         break;
       case "축산물":
-        entity = convertRowToAni_andSave(row, date, marketName, date);
+        entity = convertRowToAni_andSave(row, date, marketName, category);
         break;
       case "수산물":
-        entity = convertRowToFish_andSave(row, date, marketName, date);
+        entity = convertRowToFish_andSave(row, date, marketName, category);
         break;
       default:
         break;
