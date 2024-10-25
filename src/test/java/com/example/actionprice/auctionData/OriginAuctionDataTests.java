@@ -66,8 +66,8 @@ public class OriginAuctionDataTests {
                             auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
                         }, error -> {
                             log.error("Error retrieving auction data: {}", error.getMessage());
-                            latch.countDown(); // 에러 발생 시 감소
-                        }, latch::countDown); // 완료 시 감소
+                            latch.countDown(); // 에러 발생 시 대기중인 스레드 헤제
+                        }, latch::countDown); // 완료 시 대기중인 스레드 헤제
 
                         latch.await(); // 비동기 작업이 완료될 때까지 메인 스레드를 대기
                     } catch (Exception e) {
