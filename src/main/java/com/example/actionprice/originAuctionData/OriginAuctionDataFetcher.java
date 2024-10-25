@@ -4,12 +4,8 @@ package com.example.actionprice.originAuctionData;
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
 import com.example.actionprice.originAuctionData.originApiRequestObj.OriginAuctionDocument;
 import com.google.gson.*;
-import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.handler.timeout.ReadTimeoutHandler;
-import io.netty.handler.timeout.WriteTimeoutHandler;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +23,7 @@ import reactor.netty.resources.ConnectionProvider;
 
 @Data
 @Component
+@Log4j2
 public class OriginAuctionDataFetcher {
 
     @Value("${lastAuctionData.url}")
@@ -115,6 +112,8 @@ public class OriginAuctionDataFetcher {
                 category_code,
                 lastAuctionEncodedKey
         );
+
+        log.info(url);
 
         return new URI(url);
     }

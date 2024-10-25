@@ -25,7 +25,7 @@ public class PostServiceImpl implements PostService{
     private final UserRepository userRepository;
 
     @Override
-    public Integer createPost(PostForm form) {
+    public PostDetailDTO createPost(PostForm form) {
         User user = userRepository.findById(form.getUsername())
             .orElseThrow(() -> new UserNotFoundException("user(" + form.getUsername() + ") does not exist"));
 
@@ -40,7 +40,7 @@ public class PostServiceImpl implements PostService{
         user.addPost(post);
         userRepository.save(user);
 
-        return post.getPostId();
+        return convertPostToPostDetailDTO(post);
 
     }
 

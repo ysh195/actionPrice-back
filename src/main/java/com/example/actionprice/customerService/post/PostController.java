@@ -22,11 +22,9 @@ public class PostController {
     private final PostService postService;
 
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Integer createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
+    public PostDetailDTO createPost(@Validated(PostForm.PostCreateGroup.class) @RequestBody PostForm form){
         log.info("[class] PostController - [method] createPost - username : {}", form.getUsername());
-        Integer postId = postService.createPost(form); // postid를 반환하도록 수정
-        log.info("[class] PostController - [method] createPost - Success");
-        return postId;
+        return postService.createPost(form);
     }
 
     @GetMapping(value = "/{id}/detail")

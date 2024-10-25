@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface PostService {
 
-    Integer createPost(PostForm form);
+    PostDetailDTO createPost(PostForm form);
     PostDetailDTO updatePost(Integer postId,PostForm form);
     void deletePost(Integer postId);
 

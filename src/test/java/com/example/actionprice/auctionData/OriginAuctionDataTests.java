@@ -49,11 +49,11 @@ public class OriginAuctionDataTests {
 
             allSortingComponent.getMarket_code_map().entrySet().stream().forEach(marketCodeEntry -> {
                 // key : 지역 코드, value : 지역 이름
-                log.info("marketCode : " + marketCodeEntry.getValue());
+                log.info("marketCode : {} | marketName : {}", marketCodeEntry.getKey(), marketCodeEntry.getValue());
 
                 allSortingComponent.getGrand_sort().entrySet().stream().forEach(grandSortEntry -> {
                     // key : 대분류 코드, value : 대분류 이름
-                    log.info("grandSort : " + grandSortEntry.getValue());
+                    log.info("grandSortCode : {} | grandSortName : {}", grandSortEntry.getKey(), grandSortEntry.getValue());
 
                     CountDownLatch latch = new CountDownLatch(1); // 이 객체는 비동기 작업이 완료될 때까지 메인 스레드를 차단
 
@@ -63,7 +63,7 @@ public class OriginAuctionDataTests {
                         flux.subscribe(row -> {
                             log.info("flux - row");
                             log.info("row : " + row.toString());
-                            auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
+//                            auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
                         }, error -> {
                             log.error("Error retrieving auction data: {}", error.getMessage());
                             latch.countDown(); // 에러 발생 시 대기중인 스레드 헤제
