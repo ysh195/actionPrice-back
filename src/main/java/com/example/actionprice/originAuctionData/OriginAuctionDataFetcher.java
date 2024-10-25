@@ -109,7 +109,7 @@ public class OriginAuctionDataFetcher {
                 if (jsonElement.isJsonObject()) {
                     JsonObject jsonObject = jsonElement.getAsJsonObject();
                     // data가 object면(= data가 없으면)
-                    if(!jsonObject.get("data").isJsonObject()){
+                    if(jsonObject.get("data").isJsonArray()){
                         return Mono.empty();
                     }
                 }

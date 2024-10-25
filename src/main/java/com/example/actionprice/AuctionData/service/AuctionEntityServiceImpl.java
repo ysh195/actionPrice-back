@@ -47,6 +47,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
   @Override
   public AuctionBaseEntity saveEntityByCategory(OriginAuctionDataRow row, String date, String marketName, String category) {
 
+    log.info("[class] AuctionEntityServiceImpl - [method] saveEntityByCategory");
     AuctionBaseEntity entity = null;
 
     switch (category) {
@@ -72,6 +73,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         break;
     }
 
+    log.info("save successful");
     return entity;
   }
 
