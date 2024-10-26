@@ -71,6 +71,12 @@ public class Comment extends BaseEntity implements Comparable<Comment> {
   private Post post;
 
   // method
+
+
+  public void setContent(@Size(min = 1, max = 300) String content) {
+    this.content = content;
+  }
+
   public void setUser(User user) {
     this.user = user;
   }

@@ -1,19 +1,21 @@
 package com.example.actionprice.customerService.post;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.example.actionprice.customerService.post.dto.PostDetailDTO;
 
+import com.example.actionprice.customerService.post.dto.PostListDTO;
+import com.example.actionprice.customerService.post.dto.PostSimpleDTO;
 import java.util.List;
 
 public interface PostService {
 
-    PostDetailDTO createPost(PostForm form);
+    PostSimpleDTO createPost(PostForm form);
+    PostSimpleDTO goUpdatePost(Integer postId);
     PostDetailDTO updatePost(Integer postId,PostForm form);
     void deletePost(Integer postId, String logined_username);
 
-    PostDetailDTO getDetailPost(Integer postId);
+    PostDetailDTO getDetailPost(Integer postId, int commentPageNum);
 
-    List<PostDetailDTO> getPostList(int page, String keyword);
-    List<PostDetailDTO> getPostListForMyPage(String username, String keyword, int pageNumber);
+    PostListDTO getPostList(int page, String keyword);
+    PostListDTO getPostListForMyPage(String username, String keyword, int pageNumber);
 
 }

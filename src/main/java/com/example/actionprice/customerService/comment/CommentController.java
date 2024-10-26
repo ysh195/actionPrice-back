@@ -1,9 +1,11 @@
 package com.example.actionprice.customerService.comment;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,9 +20,10 @@ public class CommentController {
     @PostMapping("/{postId}/detail")
     public String createComment(
             @PathVariable("postId") int postId,
-            String username,
-            String content
+            @RequestBody Map<String, String> requestBody
     ) {
+        String username = requestBody.get("username");
+        String content = requestBody.get("content");
         return "";
     }
 
@@ -28,10 +31,10 @@ public class CommentController {
     public String updateComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
-            String logined_username,
-            String content
+            @RequestBody Map<String, String> requestBody
     ) {
-
+        String logined_username = requestBody.get("logined_username");
+        String content = requestBody.get("content");
         return "";
     }
 
@@ -39,8 +42,9 @@ public class CommentController {
     public String deleteComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
-            String logined_username
+            @RequestBody Map<String, String> requestBody
     ) {
+        String logined_username = requestBody.get("logined_username");
         return "";
     }
 }

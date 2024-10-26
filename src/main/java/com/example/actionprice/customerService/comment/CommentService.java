@@ -1,13 +1,17 @@
 package com.example.actionprice.customerService.comment;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 public interface CommentService {
 
-    Comment createComment(Integer postId, String username, String content);
-    Comment updateComment(Integer commentId, String logined_username, String content);
-    void deleteComment(Integer commentId, String logined_username);
+    CommentSimpleDTO createComment(Integer postId, String username, String content);
+    CommentSimpleDTO updateComment(Integer commentId, String logined_username, String content);
+    boolean deleteComment(Integer commentId, String logined_username);
 
-    List<Comment> getCommentListByPostId(Integer postId);
-    List<Comment> getCommentListByUsername(String username);
+    Page<Comment> getCommentListByPostId(Integer postId, int pageNum);
+    Page<Comment> getCommentListByUsername(String username, int pageNum);
+
+    List<CommentSimpleDTO> convertCommentPageToCommentSimpleDTOList(Page<Comment> commentPage);
+
 }
