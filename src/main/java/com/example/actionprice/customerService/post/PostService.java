@@ -8,14 +8,14 @@ import java.util.List;
 
 public interface PostService {
 
-    PostSimpleDTO createPost(PostForm form);
-    PostSimpleDTO goUpdatePost(Integer postId);
-    PostDetailDTO updatePost(Integer postId,PostForm form);
-    void deletePost(Integer postId, String logined_username);
+    Integer createPost(PostForm form);
+    PostSimpleDTO goUpdatePost(Integer postId, String logined_username);
+    String updatePost(Integer postId,PostForm form);
+    String deletePost(Integer postId, String logined_username);
 
     PostDetailDTO getDetailPost(Integer postId, int commentPageNum);
 
-    PostListDTO getPostList(int page, String keyword);
-    PostListDTO getPostListForMyPage(String username, String keyword, int pageNumber);
+    PostListDTO getPostList(int pageNum, String keyword);
+    PostListDTO getPostListForMyPage(String username, String keyword, int pageNum);
 
 }

@@ -5,8 +5,8 @@ import org.springframework.data.domain.Page;
 
 public interface CommentService {
 
-    CommentSimpleDTO createComment(Integer postId, String username, String content);
-    CommentSimpleDTO updateComment(Integer commentId, String logined_username, String content);
+    void createComment(Integer postId, String username, String content);
+    void updateComment(Integer commentId, String logined_username, String content);
     boolean deleteComment(Integer commentId, String logined_username);
 
     Page<Comment> getCommentListByPostId(Integer postId, int pageNum);
