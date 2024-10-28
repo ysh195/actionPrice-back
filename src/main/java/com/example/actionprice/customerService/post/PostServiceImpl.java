@@ -251,7 +251,7 @@ public class PostServiceImpl implements PostService{
         // 아무것도 없는 commentPage의 내부 값을 가져와서 변환하려는 시도는 오류가 나니까 이렇게 처리함
         List<CommentSimpleDTO> commentList =
             hasNoComments ? null : commentService.convertCommentPageToCommentSimpleDTOList(commentPage);
-        int currentPageNum = hasNoComments ? 1 : commentPage.getNumber();
+        int currentPageNum = hasNoComments ? 1 : (commentPage.getNumber() + 1);
         int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
         int listSize = hasNoComments ? 0 : commentList.size();
         int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
