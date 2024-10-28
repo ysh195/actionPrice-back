@@ -46,7 +46,7 @@ public class PostServiceImpl implements PostService{
      * postId만 반환해줌.
      */
     @Override
-    public Integer createPost(PostForm postForm) {
+    public PostSimpleDTO createPost(PostForm postForm) {
         User user = userRepository.findById(postForm.getUsername())
             .orElseThrow(() -> new UserNotFoundException("user(" + postForm.getUsername() + ") does not exist"));
 
@@ -61,7 +61,15 @@ public class PostServiceImpl implements PostService{
         user.addPost(post); // 그리고 postId가 있어야만 user의 postSet에 등록 가능
         userRepository.save(user); // post가 연결된 상태를 save
 
-        return post.getPostId();
+        return PostSimpleDTO.builder()
+            .postId(post.getPostId())
+            .title(post.getTitle())
+            .content(post.getContent())
+            .published(post.isPublished())
+            .username(postForm.getUsername())
+            .createdAt(post.getCreatedAt())
+            .commentSize(0)
+            .build();
     }
 
     /**

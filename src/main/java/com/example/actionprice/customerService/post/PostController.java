@@ -35,10 +35,9 @@ public class PostController {
      * postId만 반환함
      */
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Integer createPost(@RequestBody @Validated(PostForm.PostCreateGroup.class) PostForm postForm){
+    public PostSimpleDTO createPost(@RequestBody @Validated(PostForm.PostCreateGroup.class) PostForm postForm){
         log.info("[class] PostController - [method] createPost - username : {}", postForm.getUsername());
-        Integer postId = postService.createPost(postForm);
-        return postId;
+        return postService.createPost(postForm);
     }
 
     /**
