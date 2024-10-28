@@ -13,10 +13,8 @@ import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import java.time.LocalDateTime;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,8 +52,8 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   @Override
   public User issueRefreshToken(String username) {
 
-    // 해당 사용자에게 이미 리프레시 토큰이 있는지 체크하고 없으면 새로 생성
-    User user = userRepository.findById(username).orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+    User user = userRepository.findById(username)
+        .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
 
     RefreshTokenEntity refreshTokenEntity = user.getRefreshToken();
 
@@ -126,6 +124,41 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     refreshTokenRepository.save(refreshToken);
 
     return !currentState;
+  }
+
+  /**
+   * 어드민페이지에서 토큰 재발급
+   * @author 연상훈
+   * @created 2024-10-28 오후 7:41
+   * @info 어드민페이지에서 해주는 거라 검사도 없이 바로 재발급됨
+   */
+  @Override
+  public void resetRefreshToken(String username) {
+    User user = userRepository.findById(username)
+        .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+
+    // user와 token은 OneToOne 관계인데,
+    // 새로운 애가 user랑 연결된 상태로 repository에 등록되면 오류 날 테니
+    // 기존의 연결을 끊고 지워버림.
+    // 리프레시 토큰 재발급은 토큰 탈취 시 사용하기 때문에 기존의 것이 있으면 지워버리는 게 좋음
+    // 근데 신규 유저가 토큰 리셋 할 리는 없으니 애초에 기존 유저를 상정해도 될 것 같은데
+    RefreshTokenEntity oldRefreshToken = user.getRefreshToken();
+    if(oldRefreshToken != null) {
+      user.setRefreshToken(null);
+      refreshTokenRepository.delete(oldRefreshToken);
+    }
+
+    RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+        .user(user)
+        .refreshToken(jwtUtil.generateToken(user, refreshTokenValidityInMinutes))
+        .expiresAt(LocalDateTime.now().plusMinutes(refreshTokenValidityInMinutes))
+        .build();
+
+    // user 안에 넣으려면 pk 값이 있어야 하는데, 레포지토리에 들어가고 난 다음에야 pk 값이 생겨서 이렇게 함
+    refreshTokenEntity = refreshTokenRepository.save(refreshTokenEntity);
+
+    user.setRefreshToken(refreshTokenEntity);
+    userRepository.save(user);
   }
 
   // private method

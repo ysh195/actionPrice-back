@@ -10,4 +10,5 @@ public interface RefreshTokenService {
   User issueRefreshToken(String username);
   User checkRefreshFirst(String username);
   boolean setBlockUserByUsername(String username);
+  void resetRefreshToken(String username);
 }

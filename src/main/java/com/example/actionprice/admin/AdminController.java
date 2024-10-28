@@ -21,7 +21,7 @@ public class AdminController {
   private final UserService userService;
   private final RefreshTokenService refreshTokenService;
 
-  @GetMapping("/userList")
+  @GetMapping("/userlist")
   public UserListDTO getUserList(
       @RequestParam(name = "pageNum", defaultValue = "1", required = false) Integer pageNum,
       @RequestParam(name = "keyword", required = false) String keyword
@@ -30,12 +30,22 @@ public class AdminController {
     return userService.getUserList(keyword, pageNum);
   }
 
-  @PostMapping("/userList/block/{username}")
+  @PostMapping("/userlist/block/{username}")
   public Map<String, Object> setBlockUser(@PathVariable("username") String selected_username) {
 
     boolean result = refreshTokenService.setBlockUserByUsername(selected_username);
     String messege = result ? "blocked" : "unblocked";
     return Map.of("message", messege, "isBlocked", result);
+  }
+
+  @PostMapping("/userlist/reset/{username}")
+  public Map<String, String> resetUser(@PathVariable("username") String selected_username) {
+    refreshTokenService.resetRefreshToken(selected_username);
+    String messege = String.format("user(%s)'s refresh token was reset", selected_username);
+    return Map.of(
+        "selected_username", selected_username,
+        "messege", messege
+    );
   }
 
 }
