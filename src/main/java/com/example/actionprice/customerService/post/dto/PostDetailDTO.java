@@ -28,6 +28,8 @@ import java.time.LocalDateTime;
  * @see "/api/post/{id}/detail" 에 사용됨
  */
 @Builder
+@Getter
+@ToString
 public class PostDetailDTO {
     private Integer postId;
     private String username;

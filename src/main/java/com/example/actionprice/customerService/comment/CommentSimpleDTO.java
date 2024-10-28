@@ -2,6 +2,8 @@ package com.example.actionprice.customerService.comment;
 
 import java.time.LocalDateTime;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * PostDetail에서 Comment 리스트를 표현할 때 각 Comment 정보를 담아줄 객체
@@ -15,6 +17,8 @@ import lombok.Builder;
  * @info List<CommentSimpleDTO> 형태로 PostDetailDTO에 포함됨
  */
 @Builder
+@Getter
+@ToString
 public class CommentSimpleDTO {
   private Integer commentId;
   private Integer postId;

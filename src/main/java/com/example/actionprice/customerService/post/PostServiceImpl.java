@@ -47,6 +47,7 @@ public class PostServiceImpl implements PostService{
      */
     @Override
     public PostSimpleDTO createPost(PostForm postForm) {
+        log.info("[class] PostServiceImpl - [method] createPost - postForm : " + postForm.toString());
         User user = userRepository.findById(postForm.getUsername())
             .orElseThrow(() -> new UserNotFoundException("user(" + postForm.getUsername() + ") does not exist"));
 

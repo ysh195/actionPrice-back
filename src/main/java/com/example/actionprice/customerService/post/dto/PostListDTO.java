@@ -5,6 +5,8 @@ import com.example.actionprice.customerService.post.Post;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.ToString;
 import org.springframework.data.domain.Page;
 
 /**
@@ -22,6 +24,8 @@ import org.springframework.data.domain.Page;
  * @info 굳이 Builder로 처리할 필요도 없고, Builder로 처리하기엔 길고 복잡해서 그냥 생성자로 처리.
  * @see "/api/post/list?pageNum=0&keyword=abc" 에 사용됨
  */
+@Getter
+@ToString
 public class PostListDTO {
 
   private List<PostSimpleDTO> postList;

@@ -3,7 +3,9 @@ package com.example.actionprice.customerService.post.dto;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * PostListDTO의 List에 들어갈 각 게시글의 정보를 담는 객체. 그리고 update하기 전에 이미 입력된 내용 확인할 때도 쓰임
@@ -19,8 +21,8 @@ import lombok.NoArgsConstructor;
  * @see "/api/post/list?pageNum=0&keyword=abc"의 PostListDTO에 사용됨
  */
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
+@ToString
 public class PostSimpleDTO {
   private Integer postId;
   private String title;
