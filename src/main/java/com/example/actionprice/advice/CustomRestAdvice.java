@@ -1,5 +1,6 @@
 package com.example.actionprice.advice;
 
+import com.example.actionprice.exception.CommentNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -101,6 +102,12 @@ public class CustomRestAdvice {
   @ExceptionHandler(PostNotFoundException.class)
   @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerPostNotFoundException(PostNotFoundException e) {
+    return ResponseEntity.badRequest().body(e.getMessage());
+  }
+
+  @ExceptionHandler(CommentNotFoundException.class)
+  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
+  public ResponseEntity<String> handlerCommentNotFoundException(CommentNotFoundException e) {
     return ResponseEntity.badRequest().body(e.getMessage());
   }
 

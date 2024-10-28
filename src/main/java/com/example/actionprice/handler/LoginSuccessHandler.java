@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 /**
@@ -51,6 +52,7 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     log.info("Login Success Handler : " + jsonStr);
 
+    SecurityContextHolder.getContext().setAuthentication(authentication); // 추가됨
     response.setStatus(HttpServletResponse.SC_OK);
     response.getWriter().println(jsonStr); // response(json 형태)의 writer에 토큰 정보 추가
   }

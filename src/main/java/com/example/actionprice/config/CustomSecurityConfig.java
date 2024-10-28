@@ -56,9 +56,7 @@ public class CustomSecurityConfig {
     /**
      * @author : 연상훈
      * @created : 2024-10-05 오후 9:27
-     * @updated : 2024-10-10 오전 9:26
-     * - [2024-10-14 오전 5:38] : 리멤버미 사용을 위해 일부 수정.
-     * @see :
+     * @updated 2024-10-14 오전 5:38 : 리멤버미 사용을 위해 일부 수정.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

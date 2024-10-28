@@ -17,10 +17,4 @@ public class PostTest {
     @Autowired
     PostController postController;
 
-    @Test
-    public void test() {
-        System.out.println(postController.goDetailPost(1).toString());
-    }
-
-
 }

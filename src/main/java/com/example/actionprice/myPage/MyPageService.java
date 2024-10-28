@@ -1,13 +1,13 @@
 package com.example.actionprice.myPage;
 
-import com.example.actionprice.customerService.post.PostDetailDTO;
-import jakarta.servlet.http.HttpServletRequest;
+import com.example.actionprice.customerService.post.dto.PostDetailDTO;
 
+import com.example.actionprice.customerService.post.dto.PostListDTO;
 import java.util.List;
 import java.util.Map;
 
 public interface MyPageService {
-    Map<String, String> getPersonalInfo(String username, HttpServletRequest request);
-    boolean deleteUser(String username, HttpServletRequest request);
-    List<PostDetailDTO> getMyPosts(String username, String keyword, int pageNum, HttpServletRequest request);
+    Map<String, String> getPersonalInfo(String username);
+    void deleteUser(String username);
+    PostListDTO getMyPosts(String username, String keyword, int pageNum);
 }

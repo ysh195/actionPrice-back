@@ -7,6 +7,10 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+/**
+ * @author 연상훈
+ * @created 2024-10-27 오후 1:25
+ */
 public interface PostRepository extends JpaRepository<Post, Integer>{
     
     Page<Post> findByTitleContainingOrUser_UsernameContaining(String titleKeyword, String usernameKeyword, Pageable pageable);
