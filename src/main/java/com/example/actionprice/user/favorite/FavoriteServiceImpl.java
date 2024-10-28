@@ -71,7 +71,7 @@ public class FavoriteServiceImpl implements FavoriteService {
 
   @Override
   public List<FavoriteSimpleDTO> getFavoriteList(String logined_username) {
-    List<Favorite> favorites = favoriteRepository.findByUser_Id(logined_username);
+    List<Favorite> favorites = favoriteRepository.findByUser_Username(logined_username);
     if (favorites.isEmpty() || favorites == null){
       return null;
     }
