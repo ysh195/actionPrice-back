@@ -50,6 +50,7 @@ public class PostListDTO {
         .map(post -> {
           Set<Comment> commentSet = post.getCommentSet();
           int commentSize = (commentSet == null || commentSet.isEmpty()) ? 0 : commentSet.size();
+
           return PostSimpleDTO.builder()
             .postId(post.getPostId())
             .title(post.getTitle())

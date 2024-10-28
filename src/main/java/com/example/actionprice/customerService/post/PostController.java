@@ -53,7 +53,7 @@ public class PostController {
     @GetMapping(value = "/{postId}/detail")
     public PostDetailDTO goDetailPost(
         @PathVariable("postId") Integer postId,
-        @RequestParam(name = "commentPageNum", defaultValue = "0", required = false) int commentPageNum
+        @RequestParam(name = "commentPageNum", defaultValue = "1", required = false) Integer commentPageNum
     ) {
         log.info("goDetailPost");
         return postService.getDetailPost(postId, commentPageNum);
@@ -129,7 +129,7 @@ public class PostController {
      */
     @GetMapping("/list")
     public PostListDTO getPostList(
-        @RequestParam(name = "pageNum", defaultValue = "0", required = false) int pageNum,
+        @RequestParam(name = "pageNum", defaultValue = "1", required = false) Integer pageNum,
         @RequestParam(name = "keyword", required = false) String keyword
     ) {
         log.info("[class] PostController - [method] getPostList - page : {} | keyword : {}", pageNum, keyword);

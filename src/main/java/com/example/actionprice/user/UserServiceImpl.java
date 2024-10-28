@@ -1,8 +1,13 @@
 package com.example.actionprice.user;
 
+import com.example.actionprice.admin.UserListDTO;
 import com.example.actionprice.user.forms.UserRegisterForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,4 +135,21 @@ public class UserServiceImpl implements UserService {
     return false;
   }
 
+  @Override
+  public UserListDTO getUserList(String keyword, int pageNum) {
+    log.info("[class] UsertServiceImpl - [method] getUserList -  - page : {} | keyword : {}", pageNum, keyword);
+    Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.asc("username")));
+    Page<User> userPage = null;
+
+    if (keyword == null || keyword.isEmpty()) {
+      keyword = "";
+      userPage = userRepository.findAll(pageable);
+    } else {
+      userPage = userRepository.findByUsernameContaining(keyword, pageable);
+    }
+
+    boolean isUserExists = (userPage != null && userPage.hasContent());
+
+    return isUserExists ? new UserListDTO(userPage, keyword) : null;
+  }
 }

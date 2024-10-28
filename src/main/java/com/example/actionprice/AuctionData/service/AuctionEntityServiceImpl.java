@@ -175,7 +175,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
   private LocalDate convertStrToLocalDate(String str) {
     if (str == null || str.length() == 0) {
       log.error("[class] AllSortingComponent > [method] convertStrToLocalDate > 입력된 값이 null입니다.");
-      return LocalDate.parse("20241010", formatter);
+      return LocalDate.parse("19991231", formatter);
     }
     str = str.replace("-", "");
     return LocalDate.parse(str, formatter);
