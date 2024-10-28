@@ -38,8 +38,8 @@ public class OriginAuctionDataTests {
     @Test
     void auctionDataFluxTest() throws Exception {
         String year = "2024";
-        String month = "01";
-        int endDay = 1;
+        String month = "04";
+        int endDay = 30;
 
         for (int i = 1; i <= endDay; i++) {
             // 날짜 형식 맞추기
@@ -63,7 +63,7 @@ public class OriginAuctionDataTests {
                         flux.subscribe(row -> {
                             log.info("flux - row");
                             log.info("row : " + row.toString());
-//                            auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
+                            auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
                         }, error -> {
                             log.error("Error retrieving auction data: {}", error.getMessage());
                             latch.countDown(); // 에러 발생 시 대기중인 스레드 헤제

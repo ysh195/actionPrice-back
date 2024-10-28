@@ -9,4 +9,5 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "auctionData_ani")
 public class AuctionEntity_ani extends AuctionBaseEntity {
     public AuctionEntity_ani() {}
+
 }
