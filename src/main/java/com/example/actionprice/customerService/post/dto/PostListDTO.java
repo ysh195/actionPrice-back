@@ -62,7 +62,7 @@ public class PostListDTO {
         })
         .collect(Collectors.toList());
 
-    this.currentPageNum = postPages.getNumber();
+    this.currentPageNum = postPages.getNumber() + 1; // Page 객체는 첫 페이지가 0부터 시작함. 1부터 시작하려면 1을 더해줘야 함
     this.currentPageSize = postPages.getNumberOfElements();
     this.listSize = postPages.getTotalElements();
     this.totalPageNum = postPages.getTotalPages();

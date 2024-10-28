@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// TODO logined_username으로 수정해달라고 부탁하기
+// TODO comment list를 반환하는 방법에 대해 협의하기
 /**
  * @author 연상훈
  * @created 2024-10-27 오후 12:13
@@ -39,8 +41,9 @@ public class CommentController {
             @PathVariable("postId") int postId,
             @RequestBody Map<String, String> requestBody
     ) {
-        String logined_username = requestBody.get("logined_username");
+        String logined_username = requestBody.get("username");
         String content = requestBody.get("content");
+        log.info("[class] CommentController - [method] createComment - logined_username : {} | content : {}", logined_username, content);
 
         commentService.createComment(postId, logined_username, content);
 
@@ -67,7 +70,7 @@ public class CommentController {
             @PathVariable("commentId") int commentId,
             @RequestBody Map<String, String> requestBody
     ) {
-        String logined_username = requestBody.get("logined_username");
+        String logined_username = requestBody.get("username");
         String content = requestBody.get("content");
 
         commentService.updateComment(commentId, logined_username, content);
@@ -96,7 +99,7 @@ public class CommentController {
             @PathVariable("commentId") int commentId,
             @RequestBody Map<String, String> requestBody
     ) {
-        String logined_username = requestBody.get("logined_username");
+        String logined_username = requestBody.get("username");
         boolean isSuccess = commentService.deleteComment(commentId, logined_username);
 
         return isSuccess ? "delete comment success" : "delete comment failed";

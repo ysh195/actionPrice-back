@@ -40,7 +40,7 @@ public class UserListDTO {
         })
         .collect(Collectors.toList());
 
-    this.currentPageNum = userPage.getNumber();
+    this.currentPageNum = userPage.getNumber() + 1;
     this.currentPageSize = userPage.getNumberOfElements();
     this.listSize = userPage.getTotalElements();
     this.totalPageNum = userPage.getTotalPages();
