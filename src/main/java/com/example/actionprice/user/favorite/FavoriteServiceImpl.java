@@ -83,7 +83,7 @@ public class FavoriteServiceImpl implements FavoriteService {
             .favoriteURL(favorite.getFavoriteURL())
             .favorite_ownerS_username(favorite.getUser().getUsername())
             .build())
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
