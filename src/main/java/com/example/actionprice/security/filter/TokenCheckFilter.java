@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -35,7 +36,9 @@ public class TokenCheckFilter extends OncePerRequestFilter {
 
   // 토큰 검사를 실행하는 경로
   private final String[] tokenCheckPath = {
-    "/api/admin/**"
+      "/api/admin/**",
+      "/api/user/login",
+      "/api/user/logout"
   };
 
   @Override
@@ -54,7 +57,9 @@ public class TokenCheckFilter extends OncePerRequestFilter {
         UserDetails userDetails = userDetailService.loadUserByUsername(username);
         log.info("UserDetails : " + userDetails);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken authenticationToken =
+            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 추가됨
         log.info("Authentication Token : " + authenticationToken);
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
@@ -78,11 +83,10 @@ public class TokenCheckFilter extends OncePerRequestFilter {
    */
   private boolean shouldCheckToken(HttpServletRequest request) {
     String path = request.getRequestURI();
-    // 예: 로그인 및 기타 공개 API는 인증 불필요
+
+    // for문을 돌리면서 tokenCheckPath에 포함된 게 하나라도 있으면 = 토큰 체크를 해야 하는 경로에 해당하면
     for(String startWord : tokenCheckPath){
-      // for문을 돌리면서 tokenCheckPath에 포함된 게 하나라도 있으면 = 토큰 체크를 해야 하는 경로에 해당하면
       if(path.startsWith(startWord)){
-        //
         return true; // true를 반환
       }
     }

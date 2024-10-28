@@ -12,7 +12,6 @@ import com.example.actionprice.user.User;
 import com.example.actionprice.user.UserRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -83,7 +82,8 @@ public class PostServiceImpl implements PostService{
             return null;
         }
         
-        // 게시글 수정하러 가는데, commentSize는 알 필요가 없으니 그냥 0으로 고정
+        // 게시글 수정하러 가는데, commentSize는 알 필요가 없으니 그냥 0으로 고정.
+        // commentSet 불러 오는 것도 repository 조회가 필요하고, getSize()로 크기 계산하는 것도 다 코드 낭비임
         return PostSimpleDTO.builder()
             .postId(post.getPostId())
             .title(post.getTitle())

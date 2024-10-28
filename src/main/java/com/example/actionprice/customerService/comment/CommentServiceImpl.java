@@ -156,6 +156,7 @@ public class CommentServiceImpl implements CommentService {
      * @created 2024-10-27 오후 12:45
      * @info PostService에서 PostDetail을 처리할 때 사용할 기능이지만, 이게 은근히 길어서 메서드로 간단하게 처리.
      * PostService에 들어가기엔 관심사가 맞지 않는 기능이라 판단되어 CommentService에서 구현하고, 그걸 PostService에서 가져다 사용함
+     * @info 변환할 Page<Comment>가 존재하지 않는 경우에 대해서는 이걸 사용하는 곳에서 알아서 처리하니까 굳이 여기서 다시 처리하지 않아도 됨
      */
     @Override
     public List<CommentSimpleDTO> convertCommentPageToCommentSimpleDTOList(Page<Comment> commentPage) {

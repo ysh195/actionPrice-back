@@ -18,6 +18,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 // Todo 로그인 실패 시의 로직 구체화. 그리고 예외처리도 추가할 필요가 있음
 /**
@@ -85,6 +86,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     log.info("CustomUserDetails : {}", userDetails);
 
     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, loginForm.getPassword(), userDetails.getAuthorities());
+    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
     log.info("[class] LoginFilter - [method] attemptAuthentication > authenticationToken : " + authenticationToken);
 
