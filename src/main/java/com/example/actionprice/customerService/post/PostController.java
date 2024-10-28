@@ -36,7 +36,7 @@ public class PostController {
      */
     @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
     public PostSimpleDTO createPost(@RequestBody @Validated(PostForm.PostCreateGroup.class) PostForm postForm){
-        log.info("[class] PostController - [method] createPost - username : {}", postForm.getUsername());
+        log.info("[class] PostController - [method] createPost - username : {}, | title : {} | content : {}", postForm.getUsername(), postForm.getTitle(), postForm.getContent());
         return postService.createPost(postForm);
     }
 
