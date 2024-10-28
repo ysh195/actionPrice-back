@@ -3,6 +3,7 @@ package com.example.actionprice.customerService.comment;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 // TODO logined_username으로 수정해달라고 부탁하기
-// TODO comment list를 반환하는 방법에 대해 협의하기
 /**
  * @author 연상훈
  * @created 2024-10-27 오후 12:13
@@ -36,7 +36,7 @@ public class CommentController {
      * 여기서 PostDetail을 반환하기에는 과정도 번거롭고 낭비가 많음
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
-    @PostMapping("/{postId}/detail")
+    @PostMapping(value = "/{postId}/detail", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Integer createComment(
             @PathVariable("postId") int postId,
             @RequestBody Map<String, String> requestBody
@@ -64,8 +64,8 @@ public class CommentController {
      * 여기서 PostDetail을 반환하기에는 과정도 번거롭고 낭비가 많음
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
-    @PostMapping("/{postId}/detail/{commentId}/update")
-    public Integer updateComment(
+    @PostMapping(value = "/{postId}/detail/{commentId}/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> updateComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
             @RequestBody Map<String, String> requestBody
@@ -75,7 +75,7 @@ public class CommentController {
 
         commentService.updateComment(commentId, logined_username, content);
 
-        return postId;
+        return Map.of("postId", postId, "result", "success");
     }
 
     /**
@@ -93,15 +93,16 @@ public class CommentController {
      * 이것도 리다이렉트 시키게 postId로 줄 것인지 아니면 그냥 이렇게 결과만 줄 지는 고민 중.
      * 이미 삭제된 comment 다시 삭제 못 하게 리다이렉트하는 게 좋을 것 같기는데 한데
      */
-    @PostMapping("/{postId}/detail/{commentId}/delete")
-    public String deleteComment(
+    @PostMapping(value = "/{postId}/detail/{commentId}/delete", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> deleteComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
             @RequestBody Map<String, String> requestBody
     ) {
         String logined_username = requestBody.get("username");
         boolean isSuccess = commentService.deleteComment(commentId, logined_username);
+        String result = isSuccess ? "delete comment success" : "delete comment failed";
 
-        return isSuccess ? "delete comment success" : "delete comment failed";
+        return Map.of("postId", postId, "result", result);
     }
 }
