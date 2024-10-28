@@ -9,8 +9,8 @@ public interface CommentService {
     void updateComment(Integer commentId, String logined_username, String content);
     boolean deleteComment(Integer commentId, String logined_username);
 
-    Page<Comment> getCommentListByPostId(Integer postId, int pageNum);
-    Page<Comment> getCommentListByUsername(String username, int pageNum);
+    Page<Comment> getCommentListByPostId(Integer postId, Integer pageNum);
+    Page<Comment> getCommentListByUsername(String username, Integer pageNum);
 
     List<CommentSimpleDTO> convertCommentPageToCommentSimpleDTOList(Page<Comment> commentPage);
 

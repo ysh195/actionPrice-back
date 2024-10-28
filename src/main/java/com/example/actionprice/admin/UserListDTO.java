@@ -38,7 +38,7 @@ public class UserListDTO {
               .tokenExpiresAt(tokenExpiresAt).isBlocked(isBlocked)
               .build();
         })
-        .collect(Collectors.toList());
+        .toList();
 
     this.currentPageNum = userPage.getNumber() + 1;
     this.currentPageSize = userPage.getNumberOfElements();
