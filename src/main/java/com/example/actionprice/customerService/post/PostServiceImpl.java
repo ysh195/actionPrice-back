@@ -195,7 +195,7 @@ public class PostServiceImpl implements PostService{
         }
 
         // true : 게시글 없음 | false : 게시글 있음
-        boolean hasNoPosts = (postPage.isEmpty() || postPage == null);
+        boolean hasNoPosts = (!postPage.hasContent() || postPage == null);
 
         return hasNoPosts ? null : new PostListDTO(postPage, keyword);
     }
@@ -212,7 +212,7 @@ public class PostServiceImpl implements PostService{
      */
     @Override
     public PostListDTO getPostListForMyPage(String username, String keyword, int pageNum) {
-        log.info("[class] PostServiceImpl - [method] getPostList -  - page : {} | keyword : {}", pageNum, keyword);
+        log.info("[class] PostServiceImpl - [method] getPostList - page : {} | keyword : {}", pageNum, keyword);
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("postId")));
         Page<Post> postPage = null;
 
@@ -225,7 +225,7 @@ public class PostServiceImpl implements PostService{
             postPage = postRepository.findByUser_UsernameAndTitleContaining(username, keyword, pageable);
         }
 
-        boolean hasNoPosts = (postPage.isEmpty() || postPage == null);
+        boolean hasNoPosts = (!postPage.hasContent() || postPage == null);
 
         return hasNoPosts ? null : new PostListDTO(postPage, keyword);
     }

@@ -94,11 +94,13 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
    * @info 이 메서드는 엑세스 토큰 발급만 처리해야 하고, 리프레시 토큰에 문제 있으면 바로 예외 처리 해야 함
    * @info 그래서 토큰 검사가 가장 엄격해야 함
    */
+  @Override
   public User checkRefreshFirst(String username) {
 
     log.info("username : " + username);
 
-    User user = userRepository.findById(username).orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+    User user = userRepository.findById(username)
+        .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
     RefreshTokenEntity refreshTokenEntity = user.getRefreshToken();
     log.info("refresh_token : " + refreshTokenEntity.toString());
 
@@ -113,6 +115,19 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     return user;
   }
 
+  @Override
+  public boolean setBlockUserByUsername(String username) {
+    RefreshTokenEntity refreshToken = refreshTokenRepository.findByUser_Username(username)
+        .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+
+    boolean currentState = refreshToken.isBlocked();
+    refreshToken.setBlocked(!currentState);
+
+    refreshTokenRepository.save(refreshToken);
+
+    return !currentState;
+  }
+
   // private method
   /**
    * 입력 받은 리프레시 토큰에 대해 토큰 관련 모든 유효성 검사를 진행하는 메서드
@@ -121,7 +136,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
    * @created 2024-10-20 오후 3:08
    * @info 리프레시 토큰을 통한 엑세스 토큰 재발급 과정에서 사용하기 때문에 가장 엄격하게 검사함
    */
-  public void checkRefreshToken(RefreshTokenEntity refreshTokenEntity) {
+  private void checkRefreshToken(RefreshTokenEntity refreshTokenEntity) {
 
     if (refreshTokenEntity.isBlocked()) {
       throw new RefreshTokenException(ErrorCase.BLOCKED_REFRESH);
@@ -158,7 +173,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
    * @info 리프레시 토큰 발급/재발급 또는 삭제 시 사용하기 때문에 위변조 여부만 검사함
    * @info 위변조 된 리프레시 토큰 가져와서 멀쩡한 것으로 교환하려는 시도를 차단해야 하니까
    */
-  public void checkRefreshToken_and_reissue(User user) {
+  private void checkRefreshToken_and_reissue(User user) {
 
     RefreshTokenEntity refreshTokenEntity = user.getRefreshToken();
     log.info("checkRefreshToken_partially - refresh token : " + refreshTokenEntity);

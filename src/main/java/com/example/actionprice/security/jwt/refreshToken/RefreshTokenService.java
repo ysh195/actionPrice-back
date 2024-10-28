@@ -1,7 +1,6 @@
 package com.example.actionprice.security.jwt.refreshToken;
 
 import com.example.actionprice.user.User;
-import java.util.Map;
 
 /**
  * @author 연상훈
@@ -10,4 +9,5 @@ import java.util.Map;
 public interface RefreshTokenService {
   User issueRefreshToken(String username);
   User checkRefreshFirst(String username);
+  boolean setBlockUserByUsername(String username);
 }
