@@ -240,12 +240,14 @@ public class PostServiceImpl implements PostService{
      * @info createPost와 updatePost는 commentPageNum을 0으로 고정
      */
     private PostDetailDTO convertPostToPostDetailDTO(Post post, int commentPageNum) {
+        log.info("[class] PostServiceImpl - [method] convertPostToPostDetailDTO - post : {} | commentPageNum : {}", post.toString(), commentPageNum);
         // post.getCommentSet()보다 Page<Comment>로 레포지토리에서 불러오는 게 훨씬 효율 좋고 편함
         Page<Comment> commentPage =
             commentService.getCommentListByPostId(post.getPostId(), commentPageNum);
 
         // true : 댓글 없음 | false : 댓글 있음
         boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
+        log.info("[class] PostServiceImpl - [method] convertPostToPostDetailDTO - hasNoComments : {}", hasNoComments);
 
         // commentPage에 아무 것도 없어도 당장은 오류가 나지 않지만,
         // 아무것도 없는 commentPage의 내부 값을 가져와서 변환하려는 시도는 오류가 나니까 이렇게 처리함
@@ -255,6 +257,14 @@ public class PostServiceImpl implements PostService{
         int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
         int listSize = hasNoComments ? 0 : commentList.size();
         int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
+
+        log.info(
+            "[class] PostServiceImpl - [method] convertPostToPostDetailDTO - currentPageNum : {} | currentPageSize : {} | listSize : {} | totalPageNum : {}",
+            currentPageNum,
+            currentPageSize,
+            listSize,
+            totalPageNum
+        );
 
         return PostDetailDTO.builder()
             .postId(post.getPostId())

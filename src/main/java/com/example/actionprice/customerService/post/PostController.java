@@ -34,7 +34,7 @@ public class PostController {
      * postId를 반환하고, 그걸 가지고 리다이렉트해서 goDetailPost 메서드를 사용하는 것이 훨씬 효율적이라서
      * postId만 반환함
      */
-    @PostMapping(value = "/create" , consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public PostSimpleDTO createPost(@RequestBody @Validated(PostForm.PostCreateGroup.class) PostForm postForm){
         log.info("[class] PostController - [method] createPost - username : {}, | title : {} | content : {}", postForm.getUsername(), postForm.getTitle(), postForm.getContent());
         return postService.createPost(postForm);
@@ -127,7 +127,7 @@ public class PostController {
      * @created 2024-10-27 오후 2:47
      * @see "/api/post/list?pageNum=0&keyword=abc" 형태로 입력해야 함.
      */
-    @GetMapping("/list")
+    @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
     public PostListDTO getPostList(
         @RequestParam(name = "pageNum", defaultValue = "1", required = false) Integer pageNum,
         @RequestParam(name = "keyword", required = false) String keyword
