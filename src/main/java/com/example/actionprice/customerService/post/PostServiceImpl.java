@@ -245,12 +245,16 @@ public class PostServiceImpl implements PostService{
             commentService.getCommentListByPostId(post.getPostId(), commentPageNum);
 
         // true : 댓글 없음 | false : 댓글 있음
-        boolean hasNoComments = (commentPage.isEmpty() || commentPage == null);
+        boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
 
         // commentPage에 아무 것도 없어도 당장은 오류가 나지 않지만,
         // 아무것도 없는 commentPage의 내부 값을 가져와서 변환하려는 시도는 오류가 나니까 이렇게 처리함
         List<CommentSimpleDTO> commentList =
             hasNoComments ? null : commentService.convertCommentPageToCommentSimpleDTOList(commentPage);
+        int currentPageNum = hasNoComments ? 1 : commentPage.getNumber();
+        int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
+        int listSize = hasNoComments ? 0 : commentList.size();
+        int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
 
         return PostDetailDTO.builder()
             .postId(post.getPostId())
@@ -260,10 +264,10 @@ public class PostServiceImpl implements PostService{
             .published(post.isPublished())
             .createdAt(post.getCreatedAt())
             .commentList(commentList)
-            .currentPageNum(commentPage.getNumber())
-            .currentPageSize(commentPage.getNumberOfElements())
-            .listSize(commentPage.getTotalElements())
-            .totalPageNum(commentPage.getTotalPages())
+            .currentPageNum(currentPageNum)
+            .currentPageSize(currentPageSize)
+            .listSize(listSize)
+            .totalPageNum(totalPageNum)
             .build();
     }
 
