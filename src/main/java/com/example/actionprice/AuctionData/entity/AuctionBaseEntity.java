@@ -27,10 +27,10 @@ public class AuctionBaseEntity {
 
     private String middle; //중분류
 
-    @Column(name = "product_name") // 기존 컬럼명 유지
+    @Column(name = "product_name")
     private String productName; // 상품명
 
-    @Column(name = "product_rank", nullable = true) // 기존 컬럼명 유지
+    @Column(name = "product_rank", nullable = true)
     private String productRank; // 등급(상품, 중품)
 
     private int price; // 가격
