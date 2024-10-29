@@ -1,6 +1,5 @@
 package com.example.actionprice.AuctionData.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,10 +27,11 @@ public class AuctionBaseEntity {
 
     private String middle; //중분류
 
-    private String product_name; //상품명
+    @Column(name = "product_name")
+    private String productName; // 상품명
 
-    @Column(nullable = true)
-    private String product_rank; // 등급(상품, 중품)
+    @Column(name = "product_rank", nullable = true)
+    private String productRank; // 등급(상품, 중품)
 
     private int price; // 가격
 

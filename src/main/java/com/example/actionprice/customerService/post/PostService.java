@@ -13,9 +13,9 @@ public interface PostService {
     String updatePost(Integer postId,PostForm form);
     String deletePost(Integer postId, String logined_username);
 
-    PostDetailDTO getDetailPost(Integer postId, Integer commentPageNum);
+    PostDetailDTO getDetailPost(Integer postId, int commentPageNum);
 
     PostListDTO getPostList(int pageNum, String keyword);
-    PostListDTO getPostListForMyPage(String username, String keyword, Integer pageNum);
+    PostListDTO getPostListForMyPage(String username, String keyword, int pageNum);
 
 }

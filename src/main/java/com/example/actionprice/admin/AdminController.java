@@ -5,7 +5,6 @@ import com.example.actionprice.user.UserService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +21,7 @@ public class AdminController {
   private final UserService userService;
   private final RefreshTokenService refreshTokenService;
 
-  @GetMapping(value = "/userlist", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping("/userlist")
   public UserListDTO getUserList(
       @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum,
       @RequestParam(name = "keyword", required = false) String keyword
@@ -31,7 +30,7 @@ public class AdminController {
     return userService.getUserList(keyword, pageNum);
   }
 
-  @PostMapping(value = "/userlist/block/{username}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/userlist/block/{username}")
   public Map<String, Object> setBlockUser(@PathVariable("username") String selected_username) {
 
     boolean result = refreshTokenService.setBlockUserByUsername(selected_username);
@@ -39,7 +38,7 @@ public class AdminController {
     return Map.of("message", messege, "isBlocked", result);
   }
 
-  @PostMapping(value = "/userlist/reset/{username}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/userlist/reset/{username}")
   public Map<String, String> resetUser(@PathVariable("username") String selected_username) {
     refreshTokenService.resetRefreshToken(selected_username);
     String messege = String.format("user(%s)'s refresh token was reset", selected_username);

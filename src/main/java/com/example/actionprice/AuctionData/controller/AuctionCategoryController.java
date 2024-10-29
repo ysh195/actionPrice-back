@@ -1,23 +1,46 @@
 package com.example.actionprice.AuctionData.controller;
 
-import com.example.actionprice.AuctionData.dto.AuctionCategoryDTO;
+import com.example.actionprice.AuctionData.dto.MiddleCategoryDTO;
+import com.example.actionprice.AuctionData.dto.PriceDTO;
+import com.example.actionprice.AuctionData.dto.ProductRankDTO;
+import com.example.actionprice.AuctionData.dto.SmallCategoryDTO;
 import com.example.actionprice.AuctionData.service.AuctionCategoryService;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/auctions") // 니중에 고칠거
+@RequestMapping("/api/category") //수정할거
 public class AuctionCategoryController {
 
     private final AuctionCategoryService auctionCategoryService;
 
-    public AuctionCategoryController(AuctionCategoryService auctionCategoryService) {
-        this.auctionCategoryService = auctionCategoryService;
+    @GetMapping("/{large}/middle") //이런것들도
+    public MiddleCategoryDTO getMiddlecategoriesByLarge(@PathVariable String large) {
+        return auctionCategoryService.getMiddleCategory(large);
     }
 
-    @GetMapping("/categories") //마찬가지
-    public ResponseEntity<AuctionCategoryDTO> getCategoriesByLarge(@RequestParam String large) {
-        AuctionCategoryDTO result = auctionCategoryService.categorizeAuctionsByLarge(large);
-        return ResponseEntity.ok(result); // DTO 반환
+    @GetMapping("/{large}/{middle}/small")
+    public SmallCategoryDTO getSmallCategoriesByLargeAndMiddle(
+            @PathVariable String large,
+            @PathVariable String middle) {
+        return auctionCategoryService.getSmallCategory(large, middle);
+    }
+
+    @GetMapping("/{large}/{middle}/{small}/product")
+    public ProductRankDTO getProductMyLargeMiddleSmall(
+            @PathVariable String large,
+            @PathVariable String middle,
+            @PathVariable String small) {
+        return auctionCategoryService.getProductRankCategory(large, middle, small);
+    }
+
+    @GetMapping("/{large}/{middle}/{small}/{rank}/price")
+    public PriceDTO getPriceMySmallMiddleSmallRank(
+            @PathVariable String large,
+            @PathVariable String middle,
+            @PathVariable String small,
+            @PathVariable String rank) {
+        return auctionCategoryService.getAveragePrice(large, middle, small, rank);
     }
 }

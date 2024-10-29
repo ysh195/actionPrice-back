@@ -5,7 +5,6 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,7 +39,7 @@ public class CommentController {
      * 여기서 PostDetail을 반환하기에는 과정도 번거롭고 낭비가 많음
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
-    @PostMapping(value = "/{postId}/detail", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/{postId}/detail")
     public Integer createComment(
             @PathVariable("postId") int postId,
             @RequestBody Map<String, String> requestBody
@@ -68,7 +67,7 @@ public class CommentController {
      * 여기서 PostDetail을 반환하기에는 과정도 번거롭고 낭비가 많음
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
-    @PostMapping(value = "/{postId}/detail/{commentId}/update", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/{postId}/detail/{commentId}/update")
     public Map<String, Object> updateComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
@@ -97,7 +96,7 @@ public class CommentController {
      * 이것도 리다이렉트 시키게 postId로 줄 것인지 아니면 그냥 이렇게 결과만 줄 지는 고민 중.
      * 이미 삭제된 comment 다시 삭제 못 하게 리다이렉트하는 게 좋을 것 같기는데 한데
      */
-    @PostMapping(value = "/{postId}/detail/{commentId}/delete", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/{postId}/detail/{commentId}/delete")
     public Map<String, Object> deleteComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
@@ -116,7 +115,7 @@ public class CommentController {
      * @created 2024-10-29 오전 11:54
      * @see : 이건 기존 형태에 전혀 맞지 않고, 같은 곳으로 중복된 데이터를 전달하기 때문에 협의 후 수정하거나 삭제하거나 해야 함. 일단 프론트에 맞춰서 만들어 줬을 뿐임
      */
-    @GetMapping(value = "/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("/comments")
     public List<CommentSimpleDTO> getCommentList(
         @RequestParam(name = "postId", defaultValue = "0", required = false) Integer postId,
         @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
