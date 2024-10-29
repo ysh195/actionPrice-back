@@ -9,7 +9,6 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +76,7 @@ public class UserController {
    * @updated 2024-10-22 오후 2:14 : 불필요한 예외 처리를 CONFLICT 응답으로 대체함
    * @throw UsernameAlreadyExistsException
    */
-  @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/register")
   public ResponseEntity<String> register(@Valid @RequestBody UserRegisterForm userRegisterForm) {
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     boolean isUserAlreadyExists = userService.createUser(userRegisterForm);
@@ -100,7 +99,7 @@ public class UserController {
    * 근데 고작 컨트롤러 하나에서 딱 한 번 쓰이는 예외를 위해 따로 만들어주기에는 낭비라서 이건 그냥 통합하지 않고 그대로 두기로 함
    * @see : https://www.knotend.com/g/a#N4IgzgpgTglghgGxgLwnARgiAxA9lAWxAC5QA7XAEwjBPIEYAmRgVkYBZ6AOOkBDCAhIhALuOAVLsA+4wAJAOD2BCwZABfADQgy7AJwAGAMwA2DU1790g4SMAf3bLmAcFqniJIqYBcJwDXjAfiWqyAdh1cNDUYfLWMBIWIQAHkvNQ0Weno9PXYfMNMIkHk7QAHJqRZAEN6pHMAKhs8VNXp2FnZgrRZ0s0iADViyYJ16Qy4G0j5w4RiK9RZAxK0ePpMmkFbh0a4fdi4jKYHIwAmBwB0O2UBIOqlAEbX7SWs2vS16H0WORszABjrnKUAHGqlAB5HAH3bAA5qpQAtVtsCND4fIleqBpplACATcikgEZBwCvNeVvPF2OwdEC9LdhAAzRCQNo9apAiaYyJDbxAnSseok2ZtHRsDQpPT0GnwqRiQA7Qzk2okDHpGIyaQ4pIAM8cA3V2ACha2lclnp9OwaQAXKAAVwgdJYWkYXD0aTWGWEEAAHgBjCAAB0VMFwZCkgAyZwA1nUoKhBKABzGgkADaXsqzDYnB43k0ugMRgAuspfeptPpDIwQOT-IE6iBI9GQ3GjN4qjU6g102o-AEgiFE3EEkkUmlC2R4rzq+X2n4utwC1GKw3Uk3qmN6MTa7naiEGt4FksVgnax1Wz0m+PlhGOyM+8TvOdLtcFbWF5OmwCgSC08uNzKbkiaqj0cfowfgfRR2oCSwiTxa3ej+S-FT29Hn6+m3pAUmRZWsKR-JteUZYCbzUIDGXYZkmxlRD5VgsgoP5QVvHpLUdRrcMKjNBAEAAdRgShFQACxIeh6VUYiEAACQgGA3SoxUSGWBjBAQAAFOBKEoGAyDdEh6LUKgICiKBqFgUTvT9VgOG4HtYzDBMkxLVMLy7NIc2qYdqW8GdukfFdDH7IM1F3bM1FPLd90CQ8H33S80R8DFvH-EJrN8b9NXM+CQMgpJoOwotFlQlJAM1bVdTTRQgA
    */
-  @PostMapping(value = "/sendVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE) //요청을 json 타입으로 받음
+  @PostMapping("/sendVerificationCode") //요청을 json 타입으로 받음
   public ResponseEntity<String> sendVerificationCode(@Validated(SendVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm) throws Exception {
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
@@ -128,7 +127,7 @@ public class UserController {
    * @author : 연상훈
    * @created : 2024-10-06 오후 8:24
    */
-  @PostMapping(value = "/checkVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/checkVerificationCode")
   public Map<String, String> checkVerificationCode(@Valid @RequestBody UserRegisterForm userRegisterForm){
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     String resultOfVerification = sendEmailService.checkVerificationCode(userRegisterForm.getEmail(), userRegisterForm.getVerificationCode());
@@ -145,7 +144,7 @@ public class UserController {
    * @info 응답 방식을 통일하고 싶었으나, 이 로직은 HttpStatus가 중요하고, 그걸 수정하려면 따로 예외 처리를 해야 함.
    * 근데 고작 컨트롤러 하나에서 딱 한 번 쓰이는 예외를 위해 따로 만들어주기에는 낭비라서 이건 그냥 통합하지 않고 그대로 두기로 함
    */
-  @PostMapping(value = "/checkForDuplicateUsername", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/checkForDuplicateUsername")
   public ResponseEntity<String> checkForDuplicateUsername(@Validated(CheckForDuplicateUsernameGroup.class) @RequestBody UserRegisterForm userRegisterForm){
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping(value = "/api/auctiondata", consumes = MediaType.APPLICATION_JSON_VALUE) // 상황에 따라 많이 바꿔야 할 수 있음
+@RequestMapping("/api/auctiondata") // 상황에 따라 많이 바꿔야 할 수 있음
 public class FavoriteController {
 
   private final FavoriteService favoriteService;
 
   // principal을 쓸까 그냥 요청으로 받을까
-  @PostMapping(value = "/favorite", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/favorite")
   public String createFavorite(
       @RequestParam(name = "large", required = false, defaultValue = "") String large,
       @RequestParam(name = "middle", required = false, defaultValue = "") String middle,
@@ -58,7 +57,7 @@ public class FavoriteController {
     return result ? "create favorite : success" : "create favorite : failed";
   }
 
-  @PostMapping(value = "/favorite/delete", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PostMapping("/favorite/delete")
   public String deleteFavorite(@RequestBody Map<String, String> requestBody){
     String logined_username = requestBody.get("logined_username");
     if (logined_username == null || logined_username.isEmpty()) {
@@ -77,7 +76,7 @@ public class FavoriteController {
     return result ? "delete favorite : success" : "delete favorite : failed";
   }
 
-  @GetMapping(value = "/favorite/getlist", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping("/favorite/getlist")
   public Map<String, Object> getFavoriteList(@RequestBody Map<String, String> requestBody){
     String logined_username = requestBody.get("logined_username");
     if (logined_username == null || logined_username.isEmpty()) {
