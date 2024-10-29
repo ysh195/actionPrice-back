@@ -1,6 +1,5 @@
 package com.example.actionprice.AuctionData.entity;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
