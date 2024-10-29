@@ -30,7 +30,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         List<String> middleCategories;
         switch (large){
             case "축산물":
-                middleCategories = aniEntity_repo.findByMiddle(large).stream()
+                middleCategories = aniEntity_repo.findByLarge(large).stream()
                         .map(AuctionEntity_ani::getMiddle)
                         .distinct()
                         .collect(Collectors.toList());
@@ -84,7 +84,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         List<String> smallCategories;
         switch (large){
             case "축산물":
-                smallCategories = aniEntity_repo.findBySmall(large,middle).stream()
+                smallCategories = aniEntity_repo.findByLargeAndMiddle(large,middle).stream()
                         .map(AuctionEntity_ani::getProduct_name)
                         .distinct()
                         .collect(Collectors.toList());
@@ -139,7 +139,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         List<String> productRankCategories;
         switch (large){
             case "축산물":
-                productRankCategories = aniEntity_repo.findbyProductRank(large,middle,small).stream()
+                productRankCategories = aniEntity_repo.findByLargeAndMiddleAndProduct_name(large,middle,small).stream()
                         .map(AuctionEntity_ani::getProduct_rank)
                         .distinct()
                         .collect(Collectors.toList());
@@ -194,7 +194,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         List<Integer> prices;
         switch (large) {
             case "축산물":
-                prices = aniEntity_repo.findByPrice(large, middle, small, rank).stream()
+                prices = aniEntity_repo.findByLargeAndMiddleAndProduct_nameAndProduct_rank(large, middle, small, rank).stream()
                         .map(AuctionEntity_ani::getPrice)
                         .collect(Collectors.toList());
                 break;
