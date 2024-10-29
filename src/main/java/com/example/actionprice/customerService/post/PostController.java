@@ -127,7 +127,7 @@ public class PostController {
      * @created 2024-10-27 오후 2:47
      * @see "/api/post/list?pageNum=0&keyword=abc" 형태로 입력해야 함.
      */
-    @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/list")
     public PostListDTO getPostList(
         @RequestParam(name = "pageNum", defaultValue = "1", required = false) Integer pageNum,
         @RequestParam(name = "keyword", required = false) String keyword
