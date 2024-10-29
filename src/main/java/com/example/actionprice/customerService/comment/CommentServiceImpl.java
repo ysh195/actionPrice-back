@@ -119,7 +119,7 @@ public class CommentServiceImpl implements CommentService {
      * @info Page<Comment> 형태로 값을 반환함. List로 변환하는 등의 작업은 PostSerivce에서 처리
      */
     @Override
-    public Page<Comment> getCommentListByPostId(Integer postId, Integer pageNum) {
+    public Page<Comment> getCommentListByPostId(Integer postId, int pageNum) {
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("commentId")));
         Page<Comment> commentPage = commentRepository.findByPost_PostId(postId, pageable);
         if(!commentPage.hasContent()) {
@@ -139,7 +139,7 @@ public class CommentServiceImpl implements CommentService {
      * 근데 자기 댓글 조회 기능은 지금 구현되어 있지 않음
      */
     @Override
-    public Page<Comment> getCommentListByUsername(String username, Integer pageNum) {
+    public Page<Comment> getCommentListByUsername(String username, int pageNum) {
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("commentId")));
         Page<Comment> commentPage = commentRepository.findByUser_Username(username, pageable);
         if(!commentPage.hasContent()) {
@@ -169,6 +169,6 @@ public class CommentServiceImpl implements CommentService {
                 .content(comment.getContent())
                 .createdAt(comment.getCreatedAt())
                 .build())
-            .toList();
+            .collect(Collectors.toList());
     }
 }

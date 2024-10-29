@@ -164,7 +164,7 @@ public class PostServiceImpl implements PostService{
      * @info
      */
     @Override
-    public PostDetailDTO getDetailPost(Integer postId, Integer commentPageNum) {
+    public PostDetailDTO getDetailPost(Integer postId, int commentPageNum) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
@@ -211,7 +211,7 @@ public class PostServiceImpl implements PostService{
      * @info 해당 username을 가진 사람의 게시글을 검색하고, 만약 키워드가 있으면 그 중에서도 title에서 검색
      */
     @Override
-    public PostListDTO getPostListForMyPage(String username, String keyword, Integer pageNum) {
+    public PostListDTO getPostListForMyPage(String username, String keyword, int pageNum) {
         log.info("[class] PostServiceImpl - [method] getPostList - page : {} | keyword : {}", pageNum, keyword);
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("postId")));
         Page<Post> postPage = null;
