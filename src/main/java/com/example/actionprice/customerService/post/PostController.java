@@ -129,7 +129,7 @@ public class PostController {
      */
     @GetMapping(value = "/list", consumes = MediaType.APPLICATION_JSON_VALUE)
     public PostListDTO getPostList(
-        @RequestParam(name = "pageNum", defaultValue = "1", required = false) Integer pageNum,
+        @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum,
         @RequestParam(name = "keyword", required = false) String keyword
     ) {
         log.info("[class] PostController - [method] getPostList - page : {} | keyword : {}", pageNum, keyword);

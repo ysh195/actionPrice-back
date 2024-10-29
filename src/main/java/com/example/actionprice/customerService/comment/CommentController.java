@@ -1,13 +1,17 @@
 package com.example.actionprice.customerService.comment;
 
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 // TODO logined_username으로 수정해달라고 부탁하기
@@ -104,5 +108,47 @@ public class CommentController {
         String result = isSuccess ? "delete comment success" : "delete comment failed";
 
         return Map.of("postId", postId, "result", result);
+    }
+
+    /**
+     * 임시 댓글 리스트
+     * @author 연상훈
+     * @created 2024-10-29 오전 11:54
+     * @see : 이건 기존 형태에 전혀 맞지 않고, 같은 곳으로 중복된 데이터를 전달하기 때문에 협의 후 수정하거나 삭제하거나 해야 함. 일단 프론트에 맞춰서 만들어 줬을 뿐임
+     */
+    @GetMapping(value = "/comments", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public List<CommentSimpleDTO> getCommentList(
+        @RequestParam(name = "postId", defaultValue = "0", required = false) Integer postId,
+        @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
+        @RequestParam(name = "size", defaultValue = "0", required = false) Integer size
+    ){
+        log.info("[class] CommentController - [method] getCommentList - postId : {} | page : {} | size : {}", postId, page, size);
+        // post.getCommentSet()보다 Page<Comment>로 레포지토리에서 불러오는 게 훨씬 효율 좋고 편함
+        Page<Comment> commentPage =
+            commentService.getCommentListByPostId(postId, page);
+
+        // true : 댓글 없음 | false : 댓글 있음
+        boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
+        log.info("[class] CommentController - [method] getCommentList - hasNoComments : {}", hasNoComments);
+
+        // commentPage에 아무 것도 없어도 당장은 오류가 나지 않지만,
+        // 아무것도 없는 commentPage의 내부 값을 가져와서 변환하려는 시도는 오류가 나니까 이렇게 처리함
+        List<CommentSimpleDTO> commentList =
+            hasNoComments ? null : commentService.convertCommentPageToCommentSimpleDTOList(commentPage);
+        int currentPageNum = hasNoComments ? 1 : (commentPage.getNumber() + 1);
+        int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
+        int listSize = hasNoComments ? 0 : commentList.size();
+        int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
+
+        log.info(
+            "[class] CommentController - [method] getCommentList - currentPageNum : {} | currentPageSize : {} | listSize : {} | totalPageNum : {}",
+            currentPageNum,
+            currentPageSize,
+            listSize,
+            totalPageNum
+        );
+
+        return commentList;
+
     }
 }

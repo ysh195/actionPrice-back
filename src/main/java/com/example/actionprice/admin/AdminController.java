@@ -24,7 +24,7 @@ public class AdminController {
 
   @GetMapping(value = "/userlist", consumes = MediaType.APPLICATION_JSON_VALUE)
   public UserListDTO getUserList(
-      @RequestParam(name = "pageNum", defaultValue = "1", required = false) Integer pageNum,
+      @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum,
       @RequestParam(name = "keyword", required = false) String keyword
   ) {
     log.info("[class] AdminController - [method] getUserList - page : {} | keyword : {}", pageNum, keyword);
