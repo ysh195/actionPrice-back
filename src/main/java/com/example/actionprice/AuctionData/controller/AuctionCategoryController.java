@@ -1,13 +1,9 @@
 package com.example.actionprice.AuctionData.controller;
-
 import com.example.actionprice.AuctionData.dto.MiddleCategoryDTO;
-
-
 import com.example.actionprice.AuctionData.dto.PriceDTO;
 import com.example.actionprice.AuctionData.dto.ProductRankDTO;
 import com.example.actionprice.AuctionData.dto.SmallCategoryDTO;
 import com.example.actionprice.AuctionData.service.AuctionCategoryService;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

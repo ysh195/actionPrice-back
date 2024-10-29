@@ -8,8 +8,8 @@ import java.util.List;
 public interface AniEntity_repo extends JpaRepository<AuctionEntity_ani, Long> {
     List<AuctionEntity_ani> findByLarge(String large);
     List<AuctionEntity_ani> findByLargeAndMiddle(String large,String middle);
-    List<AuctionEntity_ani> findByLargeAndMiddleAndProduct_name(String large,String middle,String produce_name);
-    List<AuctionEntity_ani> findByLargeAndMiddleAndProduct_nameAndProduct_rank(String large,String middle,String product_name,String product_rank);
+    List<AuctionEntity_ani> findByLargeAndMiddleAndProductName(String large,String middle,String productName);
+    List<AuctionEntity_ani> findByLargeAndMiddleAndProductNameAndProductRank(String large,String middle,String productName,String productRank);
 
-    //나머지도 다 수정해야함 오류 고치면 다 적용
+
 }
