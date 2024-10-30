@@ -66,7 +66,7 @@ public class PostController {
     @GetMapping("/{postId}/update/{username}")
     public PostSimpleDTO goUpdatePost(
         @PathVariable("postId") Integer postId,
-        @PathVariable("username") String username,
+        @PathVariable("username") String username
     ) {
         log.info("goUpdatePost");
 
