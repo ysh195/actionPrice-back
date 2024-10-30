@@ -38,7 +38,7 @@ public class OriginAuctionDataTests {
     @Test
     void auctionDataFluxTest() throws Exception {
         String year = "2024";
-        String month = "07";
+        String month = "08";
         int endDay = 31;
 
         for (int i = 1; i <= endDay; i++) {

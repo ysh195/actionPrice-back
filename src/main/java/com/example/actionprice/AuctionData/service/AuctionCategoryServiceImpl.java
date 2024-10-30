@@ -1,6 +1,6 @@
 package com.example.actionprice.AuctionData.service;
 
-import com.example.actionprice.AuctionData.dto.PriceDTO;
+import com.example.actionprice.AuctionData.dto.CategoryResultDTO;
 import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.entity.*;
 import com.example.actionprice.AuctionData.repository.*;
@@ -190,7 +190,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     }
 
     @Override
-    public PriceDTO getAveragePrice(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate) {
+    public CategoryResultDTO getAveragePrice(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate) {
         List<Integer> prices;
         switch (large) {
             case "축산물":
@@ -228,7 +228,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         }
         OptionalDouble average = prices.stream().mapToInt(Integer::intValue).average();
         int averagePrice = (int) Math.round(average.orElse(0.0));
-        return PriceDTO.builder()
+        return CategoryResultDTO.builder()
                 .large(large)
                 .middle(middle)
                 .small(small)

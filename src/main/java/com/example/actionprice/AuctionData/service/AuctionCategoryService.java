@@ -1,9 +1,7 @@
 package com.example.actionprice.AuctionData.service;
 
-import com.example.actionprice.AuctionData.dto.MiddleCategoryDTO;
-import com.example.actionprice.AuctionData.dto.PriceDTO;
+import com.example.actionprice.AuctionData.dto.CategoryResultDTO;
 import com.example.actionprice.AuctionData.dto.CategoryDTO;
-import com.example.actionprice.AuctionData.dto.SmallCategoryDTO;
 
 import java.time.LocalDate;
 
@@ -19,6 +17,6 @@ public interface AuctionCategoryService {
     CategoryDTO getProductRankCategory(String large, String middle, String small);
 
     // 대분류, 중분류, 소분류, 등급에 따른 평균 가격 조회
-    PriceDTO getAveragePrice(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate);
+    CategoryResultDTO getAveragePrice(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate);
 
 }
