@@ -115,6 +115,7 @@ public class CommentController {
      * @created 2024-10-29 오전 11:54
      * @see : 이건 기존 형태에 전혀 맞지 않고, 같은 곳으로 중복된 데이터를 전달하기 때문에 협의 후 수정하거나 삭제하거나 해야 함. 일단 프론트에 맞춰서 만들어 줬을 뿐임
      */
+    // "/api/post/{postid}/comments"
     @GetMapping("/comments")
     public List<CommentSimpleDTO> getCommentList(
         @RequestParam(name = "postId", defaultValue = "0", required = false) Integer postId,
