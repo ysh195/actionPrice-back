@@ -2,7 +2,7 @@ package com.example.actionprice.AuctionData.controller;
 
 import com.example.actionprice.AuctionData.dto.MiddleCategoryDTO;
 import com.example.actionprice.AuctionData.dto.PriceDTO;
-import com.example.actionprice.AuctionData.dto.ProductRankDTO;
+import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.dto.SmallCategoryDTO;
 import com.example.actionprice.AuctionData.service.AuctionCategoryService;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +18,19 @@ public class AuctionCategoryController {
     private final AuctionCategoryService auctionCategoryService;
 
     @GetMapping("/{large}/middle") //이런것들도
-    public MiddleCategoryDTO getMiddlecategoriesByLarge(@PathVariable String large) {
+    public CategoryDTO getCaterotysByLarge(@PathVariable String large) {
         return auctionCategoryService.getMiddleCategory(large);
     }
 
     @GetMapping("/{large}/{middle}/small")
-    public SmallCategoryDTO getSmallCategoriesByLargeAndMiddle(
+    public CategoryDTO getCaterotysByLargeAndMiddle(
             @PathVariable String large,
             @PathVariable String middle) {
         return auctionCategoryService.getSmallCategory(large, middle);
     }
 
     @GetMapping("/{large}/{middle}/{small}/product")
-    public ProductRankDTO getProductMyLargeMiddleSmall(
+    public CategoryDTO getCaterotysMyLargeMiddleSmall(
             @PathVariable String large,
             @PathVariable String middle,
             @PathVariable String small) {

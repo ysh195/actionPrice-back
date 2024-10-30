@@ -7,10 +7,10 @@ import java.util.List;
 
 @Getter
 @Builder
-public class ProductRankDTO {
+public class CategoryDTO {
 
     private String large;
     private String middle;
     private String small;
-    private List<String> productRankCategories;
+    private List<String> list;
 }
