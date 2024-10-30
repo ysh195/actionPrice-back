@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
      * @throws PostNotFoundException 해당 id를 가진 post가 존재하지 않음
      */
     @Override
-    public void createComment(Integer postId, String logined_username, String content) {
+    public CommentSimpleDTO createComment(Integer postId, String logined_username, String content) {
 
         User user = userRepository.findById(logined_username)
                 .orElseThrow(() -> new UserNotFoundException("user(" + logined_username + ") does not exist"));
@@ -60,6 +60,8 @@ public class CommentServiceImpl implements CommentService {
 
         post.addComment(comment);
         postRepository.save(post);
+
+        return convertCommentToCommentSimpleDTO(comment);
     }
 
     /**
@@ -72,18 +74,20 @@ public class CommentServiceImpl implements CommentService {
      * @throws CommentNotFoundException 해당 id를 가진 comment가 존재하지 않음
      */
     @Override
-    public void updateComment(Integer commentId, String logined_username, String content) {
+    public CommentSimpleDTO updateComment(Integer commentId, String logined_username, String content) {
 
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFoundException("comment(id : " + commentId + ") does not exist"));
 
         if(!logined_username.equals(comment.getUser().getUsername())) {
             log.error("댓글을 작성한 사용자와 수정을 시도하려는 사용자의 username이 일치하지 않습니다.");
-            return;
+            return null;
         }
 
         comment.setContent(content);
         commentRepository.save(comment);
+
+        return convertCommentToCommentSimpleDTO(comment);
     }
 
     /**
@@ -95,19 +99,19 @@ public class CommentServiceImpl implements CommentService {
      * @throws CommentNotFoundException 해당 id를 가진 comment가 존재하지 않음
      */
     @Override
-    public boolean deleteComment(Integer commentId, String logined_username) {
+    public CommentSimpleDTO deleteComment(Integer commentId, String logined_username) {
 
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFoundException("comment(id : " + commentId + ") does not exist"));
 
         if(!logined_username.equals(comment.getUser().getUsername())) {
             log.error("댓글을 작성한 사용자와 삭제를 시도하려는 사용자의 username이 일치하지 않습니다.");
-            return false;
+            return null;
         }
 
         commentRepository.delete(comment);
 
-        return true;
+        return convertCommentToCommentSimpleDTO(comment);
     }
 
     /**
@@ -119,14 +123,36 @@ public class CommentServiceImpl implements CommentService {
      * @info Page<Comment> 형태로 값을 반환함. List로 변환하는 등의 작업은 PostSerivce에서 처리
      */
     @Override
-    public Page<Comment> getCommentListByPostId(Integer postId, Integer pageNum) {
+    public CommentListDTO getCommentListByPostId(Integer postId, Integer pageNum) {
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("commentId")));
         Page<Comment> commentPage = commentRepository.findByPost_PostId(postId, pageable);
-        if(!commentPage.hasContent()) {
-            // 없을 수도 있으니 에러로 처리하면 안 됨
-            return null;
-        }
-        return commentPage;
+
+        boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
+
+        List<CommentSimpleDTO> commentList =
+                hasNoComments ? null : convertCommentPageToCommentSimpleDTOList(commentPage);
+        int currentPageNum = hasNoComments ? 1 : (commentPage.getNumber() + 1);
+        int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
+        int listSize = hasNoComments ? 0 : commentList.size();
+        int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
+        boolean hasNext = hasNoComments ? false : commentPage.hasNext();
+
+        log.info(
+                "[class] CommentServiceImpl - [method] getCommentListByPostId - currentPageNum : {} | currentPageSize : {} | listSize : {} | totalPageNum : {}",
+                currentPageNum,
+                currentPageSize,
+                listSize,
+                totalPageNum
+        );
+
+        return CommentListDTO.builder()
+                .commentList(commentList)
+                .currentPageNum(currentPageNum)
+                .currentPageSize(currentPageSize)
+                .listSize(listSize)
+                .totalPageNum(totalPageNum)
+                .hasNext(hasNext)
+                .build();
     }
 
     /**
@@ -139,14 +165,46 @@ public class CommentServiceImpl implements CommentService {
      * 근데 자기 댓글 조회 기능은 지금 구현되어 있지 않음
      */
     @Override
-    public Page<Comment> getCommentListByUsername(String username, Integer pageNum) {
+    public CommentListDTO getCommentListByUsername(String username, Integer pageNum) {
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("commentId")));
         Page<Comment> commentPage = commentRepository.findByUser_Username(username, pageable);
-        if(!commentPage.hasContent()) {
-            // 없을 수도 있으니 에러로 처리하면 안 됨
-            return null;
-        }
-        return commentPage;
+
+        boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
+
+        List<CommentSimpleDTO> commentList =
+                hasNoComments ? null : convertCommentPageToCommentSimpleDTOList(commentPage);
+        int currentPageNum = hasNoComments ? 1 : (commentPage.getNumber() + 1);
+        int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
+        int listSize = hasNoComments ? 0 : commentList.size();
+        int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
+        boolean hasNext = hasNoComments ? false : commentPage.hasNext();
+
+        log.info(
+                "[class] CommentServiceImpl - [method] getCommentListByUsername - currentPageNum : {} | currentPageSize : {} | listSize : {} | totalPageNum : {}",
+                currentPageNum,
+                currentPageSize,
+                listSize,
+                totalPageNum
+        );
+
+        return CommentListDTO.builder()
+                .commentList(commentList)
+                .currentPageNum(currentPageNum)
+                .currentPageSize(currentPageSize)
+                .listSize(listSize)
+                .totalPageNum(totalPageNum)
+                .hasNext(hasNext)
+                .build();
+    }
+
+    private CommentSimpleDTO convertCommentToCommentSimpleDTO(Comment comment){
+        return CommentSimpleDTO.builder()
+                .commentId(comment.getCommentId())
+                .postId(comment.getPost().getPostId())
+                .username(comment.getUser().getUsername())
+                .content(comment.getContent())
+                .createdAt(comment.getCreatedAt())
+                .build();
     }
 
     /**
@@ -158,8 +216,7 @@ public class CommentServiceImpl implements CommentService {
      * PostService에 들어가기엔 관심사가 맞지 않는 기능이라 판단되어 CommentService에서 구현하고, 그걸 PostService에서 가져다 사용함
      * @info 변환할 Page<Comment>가 존재하지 않는 경우에 대해서는 이걸 사용하는 곳에서 알아서 처리하니까 굳이 여기서 다시 처리하지 않아도 됨
      */
-    @Override
-    public List<CommentSimpleDTO> convertCommentPageToCommentSimpleDTOList(Page<Comment> commentPage) {
+    private List<CommentSimpleDTO> convertCommentPageToCommentSimpleDTOList(Page<Comment> commentPage) {
         return commentPage.getContent()
             .stream()
             .map(comment -> CommentSimpleDTO.builder()

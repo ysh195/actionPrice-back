@@ -5,13 +5,10 @@ import org.springframework.data.domain.Page;
 
 public interface CommentService {
 
-    void createComment(Integer postId, String username, String content);
-    void updateComment(Integer commentId, String logined_username, String content);
-    boolean deleteComment(Integer commentId, String logined_username);
+    CommentSimpleDTO createComment(Integer postId, String username, String content);
+    CommentSimpleDTO updateComment(Integer commentId, String logined_username, String content);
+    CommentSimpleDTO deleteComment(Integer commentId, String logined_username);
 
-    Page<Comment> getCommentListByPostId(Integer postId, Integer pageNum);
-    Page<Comment> getCommentListByUsername(String username, Integer pageNum);
-
-    List<CommentSimpleDTO> convertCommentPageToCommentSimpleDTOList(Page<Comment> commentPage);
-
+    CommentListDTO getCommentListByPostId(Integer postId, Integer pageNum);
+    CommentListDTO getCommentListByUsername(String username, Integer pageNum);
 }

@@ -40,7 +40,7 @@ public class CommentController {
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
     @PostMapping("/{postId}/detail")
-    public Integer createComment(
+    public CommentSimpleDTO createComment(
             @PathVariable("postId") int postId,
             @RequestBody Map<String, String> requestBody
     ) {
@@ -48,9 +48,7 @@ public class CommentController {
         String content = requestBody.get("content");
         log.info("[class] CommentController - [method] createComment - logined_username : {} | content : {}", logined_username, content);
 
-        commentService.createComment(postId, logined_username, content);
-
-        return postId;
+        return commentService.createComment(postId, logined_username, content);
     }
 
     /**
@@ -68,7 +66,7 @@ public class CommentController {
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
     @PostMapping("/{postId}/detail/{commentId}/update")
-    public Map<String, Object> updateComment(
+    public CommentSimpleDTO updateComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
             @RequestBody Map<String, String> requestBody
@@ -76,9 +74,7 @@ public class CommentController {
         String logined_username = requestBody.get("username");
         String content = requestBody.get("content");
 
-        commentService.updateComment(commentId, logined_username, content);
-
-        return Map.of("postId", postId, "result", "success");
+        return commentService.updateComment(commentId, logined_username, content);
     }
 
     /**
@@ -97,16 +93,14 @@ public class CommentController {
      * 이미 삭제된 comment 다시 삭제 못 하게 리다이렉트하는 게 좋을 것 같기는데 한데
      */
     @PostMapping("/{postId}/detail/{commentId}/delete")
-    public Map<String, Object> deleteComment(
+    public CommentSimpleDTO deleteComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
             @RequestBody Map<String, String> requestBody
     ) {
         String logined_username = requestBody.get("username");
-        boolean isSuccess = commentService.deleteComment(commentId, logined_username);
-        String result = isSuccess ? "delete comment success" : "delete comment failed";
 
-        return Map.of("postId", postId, "result", result);
+        return commentService.deleteComment(commentId, logined_username);
     }
 
     /**
@@ -117,38 +111,11 @@ public class CommentController {
      */
     // "/api/post/{postid}/comments"
     @GetMapping("/comments")
-    public List<CommentSimpleDTO> getCommentList(
+    public CommentListDTO getCommentList(
         @RequestParam(name = "postId", defaultValue = "0", required = false) Integer postId,
         @RequestParam(name = "page", defaultValue = "0", required = false) Integer page,
         @RequestParam(name = "size", defaultValue = "0", required = false) Integer size
     ){
-        log.info("[class] CommentController - [method] getCommentList - postId : {} | page : {} | size : {}", postId, page, size);
-        // post.getCommentSet()보다 Page<Comment>로 레포지토리에서 불러오는 게 훨씬 효율 좋고 편함
-        Page<Comment> commentPage =
-            commentService.getCommentListByPostId(postId, page);
-
-        // true : 댓글 없음 | false : 댓글 있음
-        boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
-        log.info("[class] CommentController - [method] getCommentList - hasNoComments : {}", hasNoComments);
-
-        // commentPage에 아무 것도 없어도 당장은 오류가 나지 않지만,
-        // 아무것도 없는 commentPage의 내부 값을 가져와서 변환하려는 시도는 오류가 나니까 이렇게 처리함
-        List<CommentSimpleDTO> commentList =
-            hasNoComments ? null : commentService.convertCommentPageToCommentSimpleDTOList(commentPage);
-        int currentPageNum = hasNoComments ? 1 : (commentPage.getNumber() + 1);
-        int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
-        int listSize = hasNoComments ? 0 : commentList.size();
-        int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
-
-        log.info(
-            "[class] CommentController - [method] getCommentList - currentPageNum : {} | currentPageSize : {} | listSize : {} | totalPageNum : {}",
-            currentPageNum,
-            currentPageSize,
-            listSize,
-            totalPageNum
-        );
-
-        return commentList;
-
+        return commentService.getCommentListByPostId(postId, page);
     }
 }

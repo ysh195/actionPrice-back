@@ -1,6 +1,5 @@
 package com.example.actionprice.customerService.post;
 
-import com.example.actionprice.customerService.post.dto.PostDetailDTO;
 import com.example.actionprice.customerService.post.dto.PostListDTO;
 import com.example.actionprice.customerService.post.dto.PostSimpleDTO;
 import lombok.RequiredArgsConstructor;
@@ -49,9 +48,9 @@ public class PostController {
      * commentPageNum은 선택사항. 없으면 0으로 처리
      */
     @GetMapping("/{postId}/detail")
-    public PostDetailDTO goDetailPost(
+    public PostSimpleDTO goDetailPost(
         @PathVariable("postId") Integer postId,
-        @RequestParam(name = "commentPageNum", defaultValue = "1", required = false) Integer commentPageNum
+        @RequestParam(name = "commentPageNum", defaultValue = "0", required = false) Integer commentPageNum
     ) {
         log.info("goDetailPost");
         return postService.getDetailPost(postId, commentPageNum);

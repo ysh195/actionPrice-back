@@ -1,9 +1,5 @@
 package com.example.actionprice.customerService.post;
 
-import com.example.actionprice.customerService.comment.Comment;
-import com.example.actionprice.customerService.comment.CommentService;
-import com.example.actionprice.customerService.comment.CommentSimpleDTO;
-import com.example.actionprice.customerService.post.dto.PostDetailDTO;
 import com.example.actionprice.customerService.post.dto.PostListDTO;
 import com.example.actionprice.customerService.post.dto.PostSimpleDTO;
 import com.example.actionprice.exception.PostNotFoundException;
@@ -11,7 +7,6 @@ import com.example.actionprice.exception.UserNotFoundException;
 import com.example.actionprice.user.User;
 import com.example.actionprice.user.UserRepository;
 import jakarta.transaction.Transactional;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -32,7 +27,6 @@ public class PostServiceImpl implements PostService{
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
-    private final CommentService commentService;
 
     /**
      * 게시글 생성 기능
@@ -171,7 +165,7 @@ public class PostServiceImpl implements PostService{
                 .published(post.isPublished())
                 .username(post.getUser().getUsername())
                 .createdAt(post.getCreatedAt())
-                .commentSize(post.getCommentSet().size())
+                .commentSize(0)
                 .build();
     }
 
@@ -182,11 +176,19 @@ public class PostServiceImpl implements PostService{
      * @info
      */
     @Override
-    public PostDetailDTO getDetailPost(Integer postId, Integer commentPageNum) {
+    public PostSimpleDTO getDetailPost(Integer postId, Integer commentPageNum) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
-        return convertPostToPostDetailDTO(post, commentPageNum);
+        return PostSimpleDTO.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .published(post.isPublished())
+                .username(post.getUser().getUsername())
+                .createdAt(post.getCreatedAt())
+                .commentSize(post.getCommentSet().size())
+                .build();
     }
 
     /**
@@ -247,56 +249,56 @@ public class PostServiceImpl implements PostService{
 
         return hasNoPosts ? null : new PostListDTO(postPage, keyword);
     }
-
-    /**
-     * Post를 PostDetailDTO로 변환하는 기능
-     * @author 연상훈
-     * @created 2024-10-27 오후 3:15
-     * @info PostListDTO처럼 그냥 PostDetailDTO의 생성자로 처리할까 싶었는데,
-     * commentPage를 불러 오려면 서비스가 필요하고,
-     * 고작 생성자에 서비스까지 써주기에는 아까움
-     * @info createPost와 updatePost는 commentPageNum을 0으로 고정
-     */
-    private PostDetailDTO convertPostToPostDetailDTO(Post post, int commentPageNum) {
-        log.info("[class] PostServiceImpl - [method] convertPostToPostDetailDTO - post : {} | commentPageNum : {}", post.toString(), commentPageNum);
-        // post.getCommentSet()보다 Page<Comment>로 레포지토리에서 불러오는 게 훨씬 효율 좋고 편함
-        Page<Comment> commentPage =
-            commentService.getCommentListByPostId(post.getPostId(), commentPageNum);
-
-        // true : 댓글 없음 | false : 댓글 있음
-        boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
-        log.info("[class] PostServiceImpl - [method] convertPostToPostDetailDTO - hasNoComments : {}", hasNoComments);
-
-        // commentPage에 아무 것도 없어도 당장은 오류가 나지 않지만,
-        // 아무것도 없는 commentPage의 내부 값을 가져와서 변환하려는 시도는 오류가 나니까 이렇게 처리함
-        List<CommentSimpleDTO> commentList =
-            hasNoComments ? null : commentService.convertCommentPageToCommentSimpleDTOList(commentPage);
-        int currentPageNum = hasNoComments ? 1 : (commentPage.getNumber() + 1);
-        int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
-        int listSize = hasNoComments ? 0 : commentList.size();
-        int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
-
-        log.info(
-            "[class] PostServiceImpl - [method] convertPostToPostDetailDTO - currentPageNum : {} | currentPageSize : {} | listSize : {} | totalPageNum : {}",
-            currentPageNum,
-            currentPageSize,
-            listSize,
-            totalPageNum
-        );
-
-        return PostDetailDTO.builder()
-            .postId(post.getPostId())
-            .username(post.getUser().getUsername())
-            .title(post.getTitle())
-            .content(post.getContent())
-            .published(post.isPublished())
-            .createdAt(post.getCreatedAt())
-            .commentList(commentList)
-            .currentPageNum(currentPageNum)
-            .currentPageSize(currentPageSize)
-            .listSize(listSize)
-            .totalPageNum(totalPageNum)
-            .build();
-    }
+//
+//    /**
+//     * Post를 PostDetailDTO로 변환하는 기능
+//     * @author 연상훈
+//     * @created 2024-10-27 오후 3:15
+//     * @info PostListDTO처럼 그냥 PostDetailDTO의 생성자로 처리할까 싶었는데,
+//     * commentPage를 불러 오려면 서비스가 필요하고,
+//     * 고작 생성자에 서비스까지 써주기에는 아까움
+//     * @info createPost와 updatePost는 commentPageNum을 0으로 고정
+//     */
+//    private PostDetailDTO convertPostToPostDetailDTO(Post post, int commentPageNum) {
+//        log.info("[class] PostServiceImpl - [method] convertPostToPostDetailDTO - post : {} | commentPageNum : {}", post.toString(), commentPageNum);
+//        // post.getCommentSet()보다 Page<Comment>로 레포지토리에서 불러오는 게 훨씬 효율 좋고 편함
+//        Page<Comment> commentPage =
+//            commentService.getCommentListByPostId(post.getPostId(), commentPageNum);
+//
+//        // true : 댓글 없음 | false : 댓글 있음
+//        boolean hasNoComments = (commentPage == null || !commentPage.hasContent());
+//        log.info("[class] PostServiceImpl - [method] convertPostToPostDetailDTO - hasNoComments : {}", hasNoComments);
+//
+//        // commentPage에 아무 것도 없어도 당장은 오류가 나지 않지만,
+//        // 아무것도 없는 commentPage의 내부 값을 가져와서 변환하려는 시도는 오류가 나니까 이렇게 처리함
+//        List<CommentSimpleDTO> commentList =
+//            hasNoComments ? null : commentService.convertCommentPageToCommentSimpleDTOList(commentPage);
+//        int currentPageNum = hasNoComments ? 1 : (commentPage.getNumber() + 1);
+//        int currentPageSize = hasNoComments ? 0 : commentPage.getNumberOfElements();
+//        int listSize = hasNoComments ? 0 : commentList.size();
+//        int totalPageNum = hasNoComments ? 1 : commentPage.getTotalPages();
+//
+//        log.info(
+//            "[class] PostServiceImpl - [method] convertPostToPostDetailDTO - currentPageNum : {} | currentPageSize : {} | listSize : {} | totalPageNum : {}",
+//            currentPageNum,
+//            currentPageSize,
+//            listSize,
+//            totalPageNum
+//        );
+//
+//        return PostDetailDTO.builder()
+//            .postId(post.getPostId())
+//            .username(post.getUser().getUsername())
+//            .title(post.getTitle())
+//            .content(post.getContent())
+//            .published(post.isPublished())
+//            .createdAt(post.getCreatedAt())
+//            .commentList(commentList)
+//            .currentPageNum(currentPageNum)
+//            .currentPageSize(currentPageSize)
+//            .listSize(listSize)
+//            .totalPageNum(totalPageNum)
+//            .build();
+//    }
 
 }
