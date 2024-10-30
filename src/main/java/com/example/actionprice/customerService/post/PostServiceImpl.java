@@ -113,7 +113,7 @@ public class PostServiceImpl implements PostService{
      * @throws PostNotFoundException
      */
     @Override
-    public String updatePost(Integer postId, PostForm postForm) {
+    public PostSimpleDTO updatePost(Integer postId, PostForm postForm) {
 
         String username = postForm.getUsername();
 
@@ -122,15 +122,23 @@ public class PostServiceImpl implements PostService{
 
         if(!username.equals(post.getUser().getUsername())) {
             log.error("you are not the writer");
-            return "post update : failed";
+            return null;
         }
 
         post.setTitle(postForm.getTitle());
         post.setContent(postForm.getContent());
 
-        postRepository.save(post);
+        post = postRepository.save(post);
 
-        return "post update : success";
+        return PostSimpleDTO.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .published(post.isPublished())
+                .username(post.getUser().getUsername())
+                .createdAt(post.getCreatedAt())
+                .commentSize(post.getCommentSet().size())
+                .build();
     }
 
     /**
@@ -142,7 +150,7 @@ public class PostServiceImpl implements PostService{
      * @throws PostNotFoundException
      */
     @Override
-    public String deletePost(Integer postId, String logined_username) {
+    public PostSimpleDTO deletePost(Integer postId, String logined_username) {
 
         log.info("[class] PostServiceImpl - [method] deletePost - postId : {} | username : {}", postId, logined_username);
         Post post = postRepository.findById(postId)
@@ -151,12 +159,20 @@ public class PostServiceImpl implements PostService{
         log.info("found the post");
         if(!logined_username.equals(post.getUser().getUsername())) {
             log.error("you are not the writer");
-            return "post delete : failed";
+            return null;
         }
 
         postRepository.delete(post);
 
-        return "post delete : success";
+        return PostSimpleDTO.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .published(post.isPublished())
+                .username(post.getUser().getUsername())
+                .createdAt(post.getCreatedAt())
+                .commentSize(post.getCommentSet().size())
+                .build();
     }
 
     /**

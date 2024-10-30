@@ -88,13 +88,11 @@ public class PostController {
      * @info 게시글 수정 후 Map<String, Object> 형태로 처리 결과 messege와 postId를 반환함.
      */
     @PostMapping("/{postId}/update")
-    public Map<String, Object> updatePost(
+    public PostSimpleDTO updatePost(
         @PathVariable("postId") Integer postId,
         @RequestBody @Validated(PostForm.PostUpdateGroup.class) PostForm postForm
     ) {
-        String messege = postService.updatePost(postId, postForm);
-
-        return Map.of("message", messege, "postId", postId);
+        return postService.updatePost(postId, postForm);
     }
 
     /**
@@ -106,7 +104,7 @@ public class PostController {
      * @info 게시글 수정 후 처리 결과 messege를 반환함
      */
     @PostMapping("/{postId}/delete")
-    public String deletePost(
+    public PostSimpleDTO deletePost(
         @PathVariable("postId") Integer postId,
         @RequestBody Map<String, String> requestBody
     ) {
