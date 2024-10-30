@@ -5,6 +5,7 @@ import com.example.actionprice.AuctionData.dto.PriceDTO;
 import com.example.actionprice.AuctionData.dto.ProductRankDTO;
 import com.example.actionprice.AuctionData.dto.SmallCategoryDTO;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.OptionalDouble;
 
@@ -20,6 +21,6 @@ public interface AuctionCategoryService {
     ProductRankDTO getProductRankCategory(String large, String middle, String small);
 
     // 대분류, 중분류, 소분류, 등급에 따른 평균 가격 조회
-    PriceDTO getAveragePrice(String large, String middle, String small, String rank);
+    PriceDTO getAveragePrice(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate);
 
 }

@@ -9,6 +9,7 @@ import com.example.actionprice.AuctionData.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private final FruitEntity_repo fruitEntity_repo;
     private final SpecialCropsEntity_repo specialCropsEntity_repo;
     private final VegetableEntity_repo vegetableEntity_repo;
+    private final CategoryEntity_repo categoryEntity_repo;
 
 
     @Override
@@ -30,43 +32,43 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         List<String> middleCategories;
         switch (large){
             case "축산물":
-                middleCategories = aniEntity_repo.findByLarge(large).stream()
-                        .map(AuctionEntity_ani::getMiddle)
+                middleCategories = categoryEntity_repo.findByLarge(large).stream()
+                        .map(AuctionCategoryEntity::getMiddle)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "수산물":
-                middleCategories = fishEntity_repo.findByLarge(large).stream()
-                        .map(AuctionEntity_fish::getMiddle)
+                middleCategories = categoryEntity_repo.findByLarge(large).stream()
+                        .map(AuctionCategoryEntity::getMiddle)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "식량작물":
-                middleCategories = foodCropsEntity_repo.findByLarge(large).stream()
-                        .map(AuctionEntity_foodCrops::getMiddle)
+                middleCategories = categoryEntity_repo.findByLarge(large).stream()
+                        .map(AuctionCategoryEntity::getMiddle)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "과일류":
-                middleCategories = fruitEntity_repo.findByLarge(large).stream()
-                        .map(AuctionEntity_fruit::getMiddle)
+                middleCategories = categoryEntity_repo.findByLarge(large).stream()
+                        .map(AuctionCategoryEntity::getMiddle)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "특용작물":
-                middleCategories = specialCropsEntity_repo.findByLarge(large).stream()
-                        .map(AuctionEntity_specialCrop::getMiddle)
+                middleCategories = categoryEntity_repo.findByLarge(large).stream()
+                        .map(AuctionCategoryEntity::getMiddle)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "채소류":
-                middleCategories = vegetableEntity_repo.findByLarge(large).stream()
-                        .map(AuctionEntity_vegetable::getMiddle)
+                middleCategories = categoryEntity_repo.findByLarge(large).stream()
+                        .map(AuctionCategoryEntity::getMiddle)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
@@ -84,43 +86,43 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         List<String> smallCategories;
         switch (large){
             case "축산물":
-                smallCategories = aniEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionEntity_ani::getProductName)
+                smallCategories = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
+                        .map(AuctionCategoryEntity::getProductName)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "수산물":
-                smallCategories = fishEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionEntity_fish::getProductName)
+                smallCategories = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
+                        .map(AuctionCategoryEntity::getProductName)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "식량작물":
-                smallCategories = foodCropsEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionEntity_foodCrops::getProductName)
+                smallCategories = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
+                        .map(AuctionCategoryEntity::getProductName)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "과일류":
-                smallCategories = fruitEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionEntity_fruit::getProductName)
+                smallCategories = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
+                        .map(AuctionCategoryEntity::getProductName)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "특용작물":
-                smallCategories = specialCropsEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionEntity_specialCrop::getProductName)
+                smallCategories = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
+                        .map(AuctionCategoryEntity::getProductName)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
             case "채소류":
-                smallCategories = vegetableEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionEntity_vegetable::getProductName)
+                smallCategories = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
+                        .map(AuctionCategoryEntity::getProductName)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
@@ -139,42 +141,42 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         List<String> productRankCategories;
         switch (large){
             case "축산물":
-                productRankCategories = aniEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                        .map(AuctionEntity_ani::getProductRank)
+                productRankCategories = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
+                        .map(AuctionCategoryEntity::getProductRank)
                         .distinct()
                         .collect(Collectors.toList());
                 break;
 
                 case "수산물":
-                    productRankCategories = fishEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionEntity_fish::getProductRank)
+                    productRankCategories = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
+                            .map(AuctionCategoryEntity::getProductRank)
                             .distinct()
                             .collect(Collectors.toList());
                     break;
                 case "식량작물":
-                    productRankCategories = foodCropsEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionEntity_foodCrops::getProductRank)
+                    productRankCategories = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
+                            .map(AuctionCategoryEntity::getProductRank)
                             .distinct()
                             .collect(Collectors.toList());
                     break;
 
                 case "과일류":
-                    productRankCategories = fruitEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionEntity_fruit::getProductRank)
+                    productRankCategories = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
+                            .map(AuctionCategoryEntity::getProductRank)
                             .distinct()
                             .collect(Collectors.toList());
                     break;
 
                 case "특용작물":
-                        productRankCategories = specialCropsEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                                .map(AuctionEntity_specialCrop::getProductRank)
+                    productRankCategories = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
+                            .map(AuctionCategoryEntity::getProductRank)
                                 .distinct()
                                 .collect(Collectors.toList());
                         break;
 
                 case "채소류":
-                        productRankCategories = vegetableEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                                .map(AuctionEntity_vegetable::getProductRank)
+                    productRankCategories = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
+                            .map(AuctionCategoryEntity::getProductRank)
                                 .distinct()
                                 .collect(Collectors.toList());
                         break;
@@ -190,11 +192,11 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     }
 
     @Override
-    public PriceDTO getAveragePrice(String large, String middle, String small, String rank) {
+    public PriceDTO getAveragePrice(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate) {
         List<Integer> prices;
         switch (large) {
             case "축산물":
-                prices = aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRank(large, middle, small, rank).stream()
+                prices = aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate).stream()
                         .map(AuctionEntity_ani::getPrice)
                         .collect(Collectors.toList());
                 break;
@@ -233,6 +235,8 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .middle(middle)
                 .small(small)
                 .rank(rank)
+                .startDate(startDate)
+                .endDate(endDate)
                 .averagePrice(averagePrice)
                 .build();
     }

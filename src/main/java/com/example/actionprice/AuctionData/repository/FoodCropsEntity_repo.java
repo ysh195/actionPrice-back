@@ -9,9 +9,7 @@ import java.util.List;
 
 public interface FoodCropsEntity_repo extends JpaRepository<AuctionEntity_foodCrops, Long> {
 
-    List<AuctionEntity_foodCrops> findByLarge(String large);
-    List<AuctionEntity_foodCrops> findByLargeAndMiddle(String large,String middle);
-    List<AuctionEntity_foodCrops> findByLargeAndMiddleAndProductName(String large,String middle,String productName);
+
     List<AuctionEntity_foodCrops> findByLargeAndMiddleAndProductNameAndProductRank(String large,String middle,String productName,String productRank);
 
 

@@ -8,6 +8,8 @@ import com.example.actionprice.AuctionData.service.AuctionCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/category") //수정할거
@@ -40,7 +42,9 @@ public class AuctionCategoryController {
             @PathVariable String large,
             @PathVariable String middle,
             @PathVariable String small,
-            @PathVariable String rank) {
-        return auctionCategoryService.getAveragePrice(large, middle, small, rank);
+            @PathVariable String rank,
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
+        return auctionCategoryService.getAveragePrice(large, middle, small, rank,startDate, endDate);
     }
 }
