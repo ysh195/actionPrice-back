@@ -8,8 +8,6 @@ import lombok.Getter;
 @Getter
 public class PostForm {
 
-    @Min(value = 0, groups ={PostUpdateGroup.class})
-    @NotNull(groups ={PostUpdateGroup.class})
     private Integer postId;
 
     @NotNull(groups ={PostCreateGroup.class, PostUpdateGroup.class})
