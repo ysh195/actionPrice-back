@@ -6,7 +6,6 @@ import com.example.actionprice.customerService.post.Post;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,7 +39,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EntityListeners(CommentListener.class)
 public class Comment extends BaseEntity implements Comparable<Comment> {
 
   //implements Comparable<Comment> 이것은 set으로 가져올떄 순서를 정함

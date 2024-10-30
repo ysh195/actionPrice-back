@@ -144,12 +144,14 @@ public class PostServiceImpl implements PostService{
     @Override
     public String deletePost(Integer postId, String logined_username) {
 
+        log.info("[class] PostServiceImpl - [method] deletePost - postId : {} | username : {}", postId, logined_username);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
+        log.info("found the post");
         if(!logined_username.equals(post.getUser().getUsername())) {
             log.error("you are not the writer");
-            return "post delete : success";
+            return "post delete : failed";
         }
 
         postRepository.delete(post);
