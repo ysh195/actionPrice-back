@@ -214,13 +214,6 @@ public class PostServiceImpl implements PostService{
             postPage = postRepository.findByTitleContainingOrUser_UsernameContaining(keyword, keyword, pageable);
         }
 
-        // true : 게시글 없음 | false : 게시글 있음
-        boolean hasNoPosts = (!postPage.hasContent() || postPage == null);
-
-        if (hasNoPosts){
-            throw new PostNotFoundException("no posts contain the keyword : " + keyword);
-        }
-
         return new PostListDTO(postPage, keyword);
     }
 
@@ -247,12 +240,6 @@ public class PostServiceImpl implements PostService{
         } else {
             // 키워드가 있을 경우, 해당 사용자가 작성한 게시글 중 제목에 해당 키워드가 있는 것을 반환
             postPage = postRepository.findByUser_UsernameAndTitleContaining(username, keyword, pageable);
-        }
-
-        boolean hasNoPosts = (!postPage.hasContent() || postPage == null);
-
-        if (hasNoPosts){
-            throw new PostNotFoundException("no posts contain the keyword : " + keyword);
         }
 
         return new PostListDTO(postPage, keyword);
