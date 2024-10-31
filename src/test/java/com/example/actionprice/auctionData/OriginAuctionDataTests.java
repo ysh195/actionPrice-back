@@ -38,8 +38,8 @@ public class OriginAuctionDataTests {
     @Test
     void auctionDataFluxTest() throws Exception {
         String year = "2023";
-        String month = "11";
-        int endDay = 30;
+        String month = "10";
+        int endDay = 31;
 
         for (int i = 1; i <= endDay; i++) {
             // 날짜 형식 맞추기

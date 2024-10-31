@@ -194,8 +194,17 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     }
 
     @Override
-    public CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate) {
-        Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("del_id"))); // 페이징 및 정렬 조건 설정
+    public CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate,Integer pageNum) {
+
+        LocalDate today = LocalDate.now();
+        if (startDate == null) {
+            startDate = today; // startDate가 null일 경우 현재 날짜를 사용
+        }
+        if (endDate == null) {
+            endDate = today; // endDate가 null일 경우 현재 날짜를 사용
+        }
+
+        Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id"))); // 페이징 및 정렬 조건 설정
         Page<?> pageResult;
 
         switch (large) {
@@ -239,13 +248,20 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private <T> CategoryResultDTO convertPageToDTO(Page<T> page) {
         boolean hasContent = (page != null && page.hasContent());
 
+        List<AuctionBaseEntity> transactionHistoryList = hasContent ? convertListObject(page.getContent(), hasContent) : Collections.emptyList();
+
+        int currentPageNum = hasContent ? (page.getNumber() + 1) : 1;
+        int currentPageSize = hasContent ? page.getNumberOfElements() : 0;
+        int totalPageNum = hasContent ? page.getTotalPages() : 1;
+        boolean hasNext = hasContent && page.hasNext();
+
         return CategoryResultDTO.builder()
-                .transactionHistoryList(convertListObject(page.getContent(), hasContent))
-                .currentPageNum(page.getNumber())
-                .currentPageSize(page.getSize())
-                .totalPageNum(page.getTotalPages())
-                .listSize(page.getTotalElements())
-                .hasNext(page.hasNext())
+                .transactionHistoryList(transactionHistoryList)
+                .currentPageNum(currentPageNum)
+                .currentPageSize(currentPageSize)
+                .totalPageNum(totalPageNum)
+                .listSize(transactionHistoryList.size())
+                .hasNext(hasNext)
                 .build();
     }
 

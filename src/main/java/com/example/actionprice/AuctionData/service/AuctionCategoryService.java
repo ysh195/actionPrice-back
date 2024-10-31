@@ -20,5 +20,5 @@ public interface AuctionCategoryService {
     CategoryDTO getProductRankCategory(String large, String middle, String small);
 
     // 대분류, 중분류, 소분류, 등급에 날짜에 따른 데이터 조회 및 페이징 처리
-    CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate);
+    CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate ,Integer pageNum);
 }

@@ -42,7 +42,9 @@ public class AuctionCategoryController {
             @PathVariable String small,
             @PathVariable String rank,
             @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate) {
-        return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate);
+            @RequestParam LocalDate endDate,
+            @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
+    ) {
+        return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate, page);
     }
 }
