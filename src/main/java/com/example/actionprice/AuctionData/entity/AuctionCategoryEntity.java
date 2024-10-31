@@ -7,7 +7,7 @@ import lombok.ToString;
 
 @Entity
 @Getter
-@Table(name="auction_catetory")
+@Table(name="auction_category")
 
 public class AuctionCategoryEntity {
 

@@ -13,4 +13,6 @@ public class CategoryDTO {
     private String middle;
     private String small;
     private List<String> list;
+
+
 }

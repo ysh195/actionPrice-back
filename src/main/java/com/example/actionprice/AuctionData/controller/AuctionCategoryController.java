@@ -43,6 +43,6 @@ public class AuctionCategoryController {
             @PathVariable String rank,
             @RequestParam LocalDate startDate,
             @RequestParam LocalDate endDate) {
-        return auctionCategoryService.getAveragePrice(large, middle, small, rank,startDate, endDate);
+        return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate);
     }
 }
