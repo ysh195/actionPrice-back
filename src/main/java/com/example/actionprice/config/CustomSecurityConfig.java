@@ -84,7 +84,7 @@ public class CustomSecurityConfig {
                               "/api/user/checkForDuplicateUsername",
                               "/api/post/**",
                               "/api/mypage/**",
-                              "api/category/**"
+                              "/api/category/**"
                       ).permitAll()
                       .anyRequest().authenticated())
           .authenticationManager(authenticationManager)
