@@ -176,7 +176,7 @@ public class PostServiceImpl implements PostService{
      * @info
      */
     @Override
-    public PostSimpleDTO getDetailPost(Integer postId, Integer commentPageNum) {
+    public PostSimpleDTO getDetailPost(Integer postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
