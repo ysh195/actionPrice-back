@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/category") //수정할거
+@RequestMapping("api/category") //수정할거
 public class AuctionCategoryController {
 
     private final AuctionCategoryService auctionCategoryService;
