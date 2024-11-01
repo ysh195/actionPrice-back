@@ -40,7 +40,6 @@ public class PostController {
     /**
      * 게시글 보기 기능
      * @param postId 내용을 확인할 게시글의 postId
-     * @param commentPageNum comment가 많아서 페이지가 있다면, 확인할 comment 페이지 번호 
      * @author 연상훈
      * @created 2024-10-27 오후 1:53
      * @see
@@ -48,12 +47,9 @@ public class PostController {
      * commentPageNum은 선택사항. 없으면 0으로 처리
      */
     @GetMapping("/{postId}/detail")
-    public PostSimpleDTO goDetailPost(
-        @PathVariable("postId") Integer postId,
-        @RequestParam(name = "commentPageNum", defaultValue = "0", required = false) Integer commentPageNum
-    ) {
+    public PostSimpleDTO goDetailPost(@PathVariable("postId") Integer postId) {
         log.info("goDetailPost");
-        return postService.getDetailPost(postId, commentPageNum);
+        return postService.getDetailPost(postId);
     }
 
     /**
