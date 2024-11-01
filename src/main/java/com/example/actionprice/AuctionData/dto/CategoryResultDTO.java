@@ -7,6 +7,7 @@ import java.util.List;
 
 @Getter
 @Builder
+
 public class CategoryResultDTO {
 
     private List<AuctionBaseEntity> transactionHistoryList; //데이터 리스트

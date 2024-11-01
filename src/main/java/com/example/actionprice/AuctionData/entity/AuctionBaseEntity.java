@@ -1,6 +1,7 @@
 package com.example.actionprice.AuctionData.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,7 @@ public class AuctionBaseEntity {
     @Column(name = "product_rank", nullable = true)
     private String productRank; // 등급(상품, 중품)
 
+    @Positive
     private int price; // 가격
 
     private String market_name; //거래장 이름

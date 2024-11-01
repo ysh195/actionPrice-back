@@ -5,6 +5,7 @@ import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.entity.*;
 import com.example.actionprice.AuctionData.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -19,12 +20,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
     private final AniEntity_repo aniEntity_repo;
@@ -199,22 +202,32 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .list(list)
                 .build();
     }
+    
+    /**
+     * @author homin
+     * @created 2024. 11. 1. 오후 4:03
+     * @updated 2024. 11. 1. 오후 4:03
+     * @info 데이터리스트 및 페이지 작업 타입을 일반 리스트로 다 받는거라 에러날 시  AuctionBaseEntity 자식 객체만 받을 수 있게 설정 가능
+     */
 
     @Override
-    public CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate,Integer pageNum) {
-
+    public CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate, Integer pageNum) {
         LocalDate today = LocalDate.now();
         LocalDate oneYearFromToday = today.plusYears(1);
+
+        // 날짜 유효성 검사 및 설정
         if (startDate == null || startDate.isAfter(oneYearFromToday)) {
-            startDate = today; // 1년 이상 선택된 날짜이거나 데이터가 없을시 현재날짜로 설정
+            startDate = today;
         }
-        if (endDate == null || startDate.isAfter(oneYearFromToday)) {
-            endDate = today; // 1년 이상 선택된 날짜이거나 데이터가 없을시 현재날짜로 설정
+        if (endDate == null || endDate.isAfter(oneYearFromToday)) {
+            endDate = today;
         }
 
-        Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id"))); // 페이징 및 정렬 조건 설정
+        // 페이징 및 정렬 조건 설정
+        Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id")));
         Page<?> pageResult;
 
+        // 대분류에 따라 적절한 리포지토리 메서드 호출
         switch (large) {
             case "축산물":
                 pageResult = aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
@@ -256,7 +269,10 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private <T> CategoryResultDTO convertPageToDTO(Page<T> page) {
         boolean hasContent = (page != null && page.hasContent());
 
-        List<AuctionBaseEntity> transactionHistoryList = hasContent ? convertListObject(page.getContent(), hasContent) : Collections.emptyList();
+        List<AuctionBaseEntity> transactionHistoryList = hasContent
+                ? convertListObject(page.getContent())
+                : Collections.emptyList();
+
 
         int currentPageNum = hasContent ? (page.getNumber() + 1) : 1;
         int currentPageSize = hasContent ? page.getNumberOfElements() : 0;
@@ -272,8 +288,15 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .hasNext(hasNext)
                 .build();
     }
-    private <T> List<AuctionBaseEntity> convertListObject(List<T> list, boolean hasContent) {
-        return hasContent ? (List<AuctionBaseEntity>) list : Collections.emptyList();
+
+    private <T> List<AuctionBaseEntity> convertListObject(List<T> list) {
+        if (list == null) {
+            return Collections.emptyList();
+        }
+        return list.stream()
+                .filter(AuctionBaseEntity.class::isInstance) // AuctionBaseEntity 인스턴스만 필터링
+                .map(AuctionBaseEntity.class::cast) // 타입 캐스팅
+                .collect(Collectors.toList()); // 리스트로 수집
     }
 
 
@@ -286,55 +309,63 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
      */
     @Override
     public ResponseEntity<byte[]> createExcelFile(List<AuctionBaseEntity> transactionHistoryList) {
-        // 엑셀 워크북 생성
-        //Apache POI 라이브러리를 사용하여 엑셀 워크북을 생성합니다. XSSFWorkbook은 XLSX 형식의 엑셀 파일을 처리하는 클래스
-        Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("TransactionHistory");
-
-        // 첫 번째 행(인덱스 0)을 생성하여 헤더를 위한 행으로 사용
-        Row headerRow = sheet.createRow(0);
-        // 헤더 값 설정
-        headerRow.createCell(0).setCellValue("날짜");
-        headerRow.createCell(1).setCellValue("대분류");
-        headerRow.createCell(2).setCellValue("중분류");
-        headerRow.createCell(3).setCellValue("소분류");
-        headerRow.createCell(4).setCellValue("등급");
-        headerRow.createCell(5).setCellValue("단위");
-        headerRow.createCell(6).setCellValue("가격");
-
-        // 데이터 추가
-        int rowNum = 1;
-        for (AuctionBaseEntity entity : transactionHistoryList) {
-            //새로운 행을 생성하고, rowNum을 증가
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(entity.getDelDate());
-            row.createCell(1).setCellValue(entity.getLarge());
-            row.createCell(2).setCellValue(entity.getMiddle());
-            row.createCell(3).setCellValue(entity.getProductName());
-            row.createCell(4).setCellValue(entity.getProductRank());
-            row.createCell(5).setCellValue(entity.getDel_unit());
-            row.createCell(6).setCellValue(entity.getPrice());
+        // transactionHistoryList가 null인 경우 처리
+        if (transactionHistoryList == null || transactionHistoryList.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body("거래 내역이 없습니다.".getBytes());
         }
+        // 엑셀 워크북 생성
+        try (Workbook workbook = new XSSFWorkbook();
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
 
-        // 바이트 배열로 엑셀 파일 생성
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            workbook.write(outputStream); // 내용 기록
-            workbook.close();
+            Sheet sheet = workbook.createSheet("TransactionHistory");
+
+            // 첫 번째 행(인덱스 0)을 생성하여 헤더를 위한 행으로 사용
+            Row headerRow = sheet.createRow(0);
+            // 헤더 값 설정
+            headerRow.createCell(0).setCellValue("날짜");
+            headerRow.createCell(1).setCellValue("대분류");
+            headerRow.createCell(2).setCellValue("중분류");
+            headerRow.createCell(3).setCellValue("소분류");
+            headerRow.createCell(4).setCellValue("등급");
+            headerRow.createCell(5).setCellValue("단위");
+            headerRow.createCell(6).setCellValue("가격");
+
+            // 데이터 추가
+            int rowNum = 1;
+            for (AuctionBaseEntity entity : transactionHistoryList) {
+                // 새로운 행을 생성하고, rowNum을 증가
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(entity.getDelDate().toString());
+                row.createCell(1).setCellValue(entity.getLarge());
+                row.createCell(2).setCellValue(entity.getMiddle());
+                row.createCell(3).setCellValue(entity.getProductName());
+                row.createCell(4).setCellValue(entity.getProductRank());
+                row.createCell(5).setCellValue(entity.getDel_unit());
+                row.createCell(6).setCellValue(entity.getPrice());
+            }
+
+            // 내용 기록
+            workbook.write(outputStream);
 
             byte[] excelFile = outputStream.toByteArray(); // 배열 가져오기
-            //Content-Disposition 웹 브라우저에게 콘텐츠가 어떻게 처리되어야 하는지를 알려줌 | 주로 파일 다운로드와 관련된 정보를 제공하는 데 사용
+
+            // Content-Disposition 웹 브라우저에게 콘텐츠가 어떻게 처리되어야 하는지를 알려줌
             HttpHeaders headers = new HttpHeaders();
-            //attachment 값은 브라우저에게 응답으로 받은 데이터를 파일로 다운로드해야 한다고 지시
+            // attachment 값은 브라우저에게 응답으로 받은 데이터를 파일로 다운로드해야 한다고 지시
             headers.add("Content-Disposition", "attachment; filename=transaction_history.xlsx");
+
             return ResponseEntity.ok()
                     .headers(headers)
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(excelFile);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
+
 
 }
 
