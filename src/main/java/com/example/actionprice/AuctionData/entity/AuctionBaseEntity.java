@@ -19,7 +19,8 @@ public class AuctionBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long del_id;
+    @Column(name="del_id")
+    private Long delId;
 
     @Column(name="del_date")
     private LocalDate delDate; //거래일자

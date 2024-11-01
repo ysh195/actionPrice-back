@@ -11,7 +11,8 @@ public class AuctionCategoryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long del_id;
+    @Column(name="del_id")
+    private Long delId;
 
     private String large;
     private String middle;

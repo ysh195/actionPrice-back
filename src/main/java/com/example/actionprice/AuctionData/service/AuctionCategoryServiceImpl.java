@@ -44,7 +44,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 중분류 갖고오기
     @Override
     public CategoryDTO getMiddleCategory(String large) {
-        List<CategoryItemDTO> list = getDistinctValues(large, AuctionCategoryEntity::getMiddle, AuctionCategoryEntity::getDel_id);
+        List<CategoryItemDTO> list = getDistinctValues(large, AuctionCategoryEntity::getMiddle, AuctionCategoryEntity::getDelId);
         return CategoryDTO.builder()
                 .large(large)
                 .list(list)
@@ -54,7 +54,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 소분류 갖고오기
     @Override
     public CategoryDTO getSmallCategory(String large, String middle) {
-        List<CategoryItemDTO> list = getDistinctValues(large, middle, AuctionCategoryEntity::getProductName, AuctionCategoryEntity::getDel_id);
+        List<CategoryItemDTO> list = getDistinctValues(large, middle, AuctionCategoryEntity::getProductName, AuctionCategoryEntity::getDelId);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -65,7 +65,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 등급 갖고오기
     @Override
     public CategoryDTO getProductRankCategory(String large, String middle, String small) {
-        List<CategoryItemDTO> list = getDistinctValues(large, middle, small, AuctionCategoryEntity::getProductRank, AuctionCategoryEntity::getDel_id);
+        List<CategoryItemDTO> list = getDistinctValues(large, middle, small, AuctionCategoryEntity::getProductRank, AuctionCategoryEntity::getDelId);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -163,7 +163,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
         // ID 리스트 생성
         List<Long> transactionIds = transactionHistoryList.stream()
-                .map(AuctionBaseEntity::getDel_id) // 각 거래 내역의 ID를 가져옴
+                .map(AuctionBaseEntity::getDelId) // 각 거래 내역의 ID를 가져옴
                 .collect(Collectors.toList());
 
         int currentPageNum = hasContent ? (page.getNumber() + 1) : 1; // 1 기반 페이지 번호
