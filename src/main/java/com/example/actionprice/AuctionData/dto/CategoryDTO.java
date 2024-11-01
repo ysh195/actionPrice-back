@@ -11,7 +11,5 @@ public class CategoryDTO {
     private String large;
     private String middle;
     private String small;
-    private List<String> list;
-
-
+    private List<CategoryItemDTO> list;
 }

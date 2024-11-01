@@ -22,6 +22,8 @@ public class ExcelServiceTest {
     @Autowired
     AuctionCategoryService auctionCategoryService;
 
+
+    // 엑셀 응답 테스트
     @Disabled
     @Test
     void createExcelFile_ShouldReturnExcelFile() {

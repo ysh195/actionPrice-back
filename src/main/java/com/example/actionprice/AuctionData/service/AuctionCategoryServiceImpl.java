@@ -1,5 +1,6 @@
 package com.example.actionprice.AuctionData.service;
 
+import com.example.actionprice.AuctionData.dto.CategoryItemDTO;
 import com.example.actionprice.AuctionData.dto.CategoryResultDTO;
 import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.entity.*;
@@ -43,7 +44,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 중분류 갖고오기
     @Override
     public CategoryDTO getMiddleCategory(String large) {
-        List<String> list = getDistinctValues(large, AuctionCategoryEntity::getMiddle);
+        List<CategoryItemDTO> list = getDistinctValues(large, AuctionCategoryEntity::getMiddle, AuctionCategoryEntity::getDel_id);
         return CategoryDTO.builder()
                 .large(large)
                 .list(list)
@@ -53,7 +54,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 소분류 갖고오기
     @Override
     public CategoryDTO getSmallCategory(String large, String middle) {
-        List<String> list = getDistinctValues(large, middle, AuctionCategoryEntity::getProductName);
+        List<CategoryItemDTO> list = getDistinctValues(large, middle, AuctionCategoryEntity::getProductName, AuctionCategoryEntity::getDel_id);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -64,7 +65,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 등급 갖고오기
     @Override
     public CategoryDTO getProductRankCategory(String large, String middle, String small) {
-        List<String> list = getDistinctValues(large, middle, small, AuctionCategoryEntity::getProductRank);
+        List<CategoryItemDTO> list = getDistinctValues(large, middle, small, AuctionCategoryEntity::getProductRank, AuctionCategoryEntity::getDel_id);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -73,26 +74,36 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .build();
     }
 
-    private List<String> getDistinctValues(String large, Function<AuctionCategoryEntity, String> mapper) {
+    private List<CategoryItemDTO> getDistinctValues(String large, Function<AuctionCategoryEntity, String> mapper, Function<AuctionCategoryEntity, Long> idMapper) {
         return categoryEntity_repo.findByLarge(large).stream()
-                .map(mapper)
-                .distinct()
+                .map(entity -> CategoryItemDTO.builder()
+                        .name(mapper.apply(entity)) // 카테고리 이름
+                        .id(idMapper.apply(entity)) // DB에서 가져온 ID
+                        .build())
+                .distinct() // ID와 이름 조합으로 중복 제거
                 .collect(Collectors.toList());
     }
 
-    private List<String> getDistinctValues(String large, String middle, Function<AuctionCategoryEntity, String> mapper) {
+    private List<CategoryItemDTO> getDistinctValues(String large, String middle, Function<AuctionCategoryEntity, String> mapper, Function<AuctionCategoryEntity, Long> idMapper) {
         return categoryEntity_repo.findByLargeAndMiddle(large, middle).stream()
-                .map(mapper)
-                .distinct()
+                .map(entity -> CategoryItemDTO.builder()
+                        .name(mapper.apply(entity)) // 카테고리 이름
+                        .id(idMapper.apply(entity)) // DB에서 가져온 ID
+                        .build())
+                .distinct() // ID와 이름 조합으로 중복 제거
                 .collect(Collectors.toList());
     }
 
-    private List<String> getDistinctValues(String large, String middle, String small, Function<AuctionCategoryEntity, String> mapper) {
+    private List<CategoryItemDTO> getDistinctValues(String large, String middle, String small, Function<AuctionCategoryEntity, String> mapper, Function<AuctionCategoryEntity, Long> idMapper) {
         return categoryEntity_repo.findByLargeAndMiddleAndProductName(large, middle, small).stream()
-                .map(mapper)
-                .distinct()
+                .map(entity -> CategoryItemDTO.builder()
+                        .name(mapper.apply(entity)) // 카테고리 이름
+                        .id(idMapper.apply(entity)) // DB에서 가져온 ID
+                        .build())
+                .distinct() // ID와 이름 조합으로 중복 제거
                 .collect(Collectors.toList());
     }
+
 
     /**
      * @author homin
@@ -144,10 +155,16 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
     private <T> CategoryResultDTO convertPageToDTO(Page<T> page) {
         boolean hasContent = (page != null && page.hasContent());
+
         // 거래 내역 리스트 생성 (내용이 있으면 변환, 없으면 빈 리스트)
         List<AuctionBaseEntity> transactionHistoryList = hasContent
                 ? convertListObject(page.getContent())
                 : Collections.emptyList();
+
+        // ID 리스트 생성
+        List<Long> transactionIds = transactionHistoryList.stream()
+                .map(AuctionBaseEntity::getDel_id) // 각 거래 내역의 ID를 가져옴
+                .collect(Collectors.toList());
 
         int currentPageNum = hasContent ? (page.getNumber() + 1) : 1; // 1 기반 페이지 번호
         int currentPageSize = hasContent ? page.getNumberOfElements() : 0; // 현재 페이지의 요소 수
@@ -161,15 +178,18 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .totalPageNum(totalPageNum)
                 .listSize(transactionHistoryList.size())
                 .hasNext(hasNext)
+                .transactionIds(transactionIds) // ID 리스트 추가
                 .build();
     }
+
     // 리스트의 요소를 AuctionBaseEntity 타입으로 변환하는 메서드
     private <T> List<AuctionBaseEntity> convertListObject(List<T> list) {
         return list.stream()
-                .filter(AuctionBaseEntity.class::isInstance) //AuctionBaseEntity 타입 필터링
+                .filter(AuctionBaseEntity.class::isInstance) // AuctionBaseEntity 타입 필터링
                 .map(AuctionBaseEntity.class::cast) // 필터링된 객체를 AuctionBaseEntity로 변환
                 .collect(Collectors.toList());
     }
+
 
 
     /**
