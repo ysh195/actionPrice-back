@@ -197,11 +197,12 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     public CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate,Integer pageNum) {
 
         LocalDate today = LocalDate.now();
-        if (startDate == null) {
-            startDate = today; // startDate가 null일 경우 현재 날짜를 사용
+        LocalDate oneYearFromToday = today.plusYears(1);
+        if (startDate == null || startDate.isAfter(oneYearFromToday)) {
+            startDate = today; // 1년 이상 선택된 날짜이거나 데이터가 없을시 현재날짜로 설정
         }
-        if (endDate == null) {
-            endDate = today; // endDate가 null일 경우 현재 날짜를 사용
+        if (endDate == null || startDate.isAfter(oneYearFromToday)) {
+            endDate = today; // 1년 이상 선택된 날짜이거나 데이터가 없을시 현재날짜로 설정
         }
 
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id"))); // 페이징 및 정렬 조건 설정

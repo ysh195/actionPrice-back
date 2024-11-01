@@ -12,12 +12,6 @@ import java.util.List;
 
 public interface FruitEntity_repo extends JpaRepository<AuctionEntity_fruit, Long> {
 
-
-//    List<AuctionEntity_fruit> findByLargeAndMiddleAndProductNameAndProductRank(String large,String middle,String productName,String productRank);
-
     Page<AuctionEntity_fruit> findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(String large, String middle, String productName, String productRank, LocalDate startDate, LocalDate endDate , Pageable pageable);
-
-
-
 
 }

@@ -12,8 +12,7 @@ import java.util.List;
 public interface AniEntity_repo extends JpaRepository<AuctionEntity_ani, Long> {
 
 
-    // large,middle,productName,productRank 값으로 price 조회 후 평균 도출
-    List<AuctionEntity_ani> findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(String large, String middle, String productName, String productRank, LocalDate startDate, LocalDate endDate);
+    // large,middle,small,rank 로 조건에 맞는 데이터 조회 후 날짜 및 페이지 받고 보여주기
     Page<AuctionEntity_ani>  findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(String large, String middle, String productName, String productRank, LocalDate startDate, LocalDate endDate , Pageable pageable);
 
 

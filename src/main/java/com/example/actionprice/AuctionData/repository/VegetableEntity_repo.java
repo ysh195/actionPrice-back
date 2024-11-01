@@ -12,9 +12,6 @@ import java.util.List;
 
 public interface VegetableEntity_repo extends JpaRepository<AuctionEntity_vegetable, Long> {
 
-
-//    List<AuctionEntity_vegetable> findByLargeAndMiddleAndProductNameAndProductRank(String large,String middle,String productName,String productRank);
-
     Page<AuctionEntity_vegetable> findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(String large, String middle, String productName, String productRank, LocalDate startDate, LocalDate endDate , Pageable pageable);
 
 

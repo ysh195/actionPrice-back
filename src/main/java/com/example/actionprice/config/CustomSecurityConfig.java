@@ -83,7 +83,8 @@ public class CustomSecurityConfig {
                               "/api/user/generate/refreshToken",
                               "/api/user/checkForDuplicateUsername",
                               "/api/post/**",
-                              "/api/mypage/**"
+                              "/api/mypage/**",
+                              "/category/**"
                       ).permitAll()
                       .anyRequest().authenticated())
           .authenticationManager(authenticationManager)

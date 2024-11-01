@@ -4,13 +4,14 @@ import com.example.actionprice.AuctionData.dto.CategoryResultDTO;
 import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.service.AuctionCategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/category") //수정할거
+@RequestMapping("/category") //수정할거
 public class AuctionCategoryController {
 
     private final AuctionCategoryService auctionCategoryService;
@@ -41,10 +42,10 @@ public class AuctionCategoryController {
             @PathVariable String middle,
             @PathVariable String small,
             @PathVariable String rank,
-            @RequestParam LocalDate startDate,
-            @RequestParam LocalDate endDate,
-            @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
+            @RequestParam(value = "startDate",required = false,defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(value = "endDate",required = false,defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum
     ) {
-        return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate, page);
+        return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate, pageNum);
     }
 }

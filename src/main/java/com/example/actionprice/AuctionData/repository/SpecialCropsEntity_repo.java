@@ -12,9 +12,6 @@ import java.util.List;
 
 public interface SpecialCropsEntity_repo extends JpaRepository<AuctionEntity_specialCrop, Long> {
 
-
-//    List<AuctionEntity_specialCrop> findByLargeAndMiddleAndProductNameAndProductRank(String large,String middle,String productName,String productRank);
-
     Page<AuctionEntity_specialCrop> findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(String large, String middle, String productName, String productRank, LocalDate startDate, LocalDate endDate , Pageable pageable);
 
 
