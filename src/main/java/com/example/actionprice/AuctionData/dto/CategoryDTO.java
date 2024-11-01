@@ -2,7 +2,6 @@ package com.example.actionprice.AuctionData.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-
 import java.util.List;
 
 @Getter

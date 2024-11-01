@@ -5,12 +5,19 @@ import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.entity.*;
 import com.example.actionprice.AuctionData.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -265,64 +272,69 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .hasNext(hasNext)
                 .build();
     }
-
     private <T> List<AuctionBaseEntity> convertListObject(List<T> list, boolean hasContent) {
         return hasContent ? (List<AuctionBaseEntity>) list : Collections.emptyList();
     }
 
 
+    /**
+     * @author homin
+     * @created 2024. 11. 1. 오후 12:43
+     * @updated 2024. 11. 1. 오후 12:43
+     * @param  transactionHistoryList AuctionBaseEntity 에 담긴 리스트 데이터
+     * @info Excel 시트를 위한 로직
+     */
+    @Override
+    public ResponseEntity<byte[]> createExcelFile(List<AuctionBaseEntity> transactionHistoryList) {
+        // 엑셀 워크북 생성
+        //Apache POI 라이브러리를 사용하여 엑셀 워크북을 생성합니다. XSSFWorkbook은 XLSX 형식의 엑셀 파일을 처리하는 클래스
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("TransactionHistory");
 
+        // 첫 번째 행(인덱스 0)을 생성하여 헤더를 위한 행으로 사용
+        Row headerRow = sheet.createRow(0);
+        // 헤더 값 설정
+        headerRow.createCell(0).setCellValue("날짜");
+        headerRow.createCell(1).setCellValue("대분류");
+        headerRow.createCell(2).setCellValue("중분류");
+        headerRow.createCell(3).setCellValue("소분류");
+        headerRow.createCell(4).setCellValue("등급");
+        headerRow.createCell(5).setCellValue("단위");
+        headerRow.createCell(6).setCellValue("가격");
 
-//    @Override
-//    public CategoryResultDTO getAveragePrice(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate) {
-//        List<Integer> prices;
-//        switch (large) {
-//            case "축산물":
-//                prices = aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate).stream()
-//                        .map(AuctionEntity_ani::getPrice)
-//                        .collect(Collectors.toList());
-//                break;
-//            case "수산물":
-//                prices = fishEntity_repo.findByLargeAndMiddleAndProductNameAndProductRank(large, middle, small, rank).stream()
-//                        .map(AuctionEntity_fish::getPrice)
-//                        .collect(Collectors.toList());
-//                break;
-//            case "식량작물":
-//                prices = foodCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRank(large, middle, small, rank).stream()
-//                        .map(AuctionEntity_foodCrops::getPrice)
-//                        .collect(Collectors.toList());
-//                break;
-//            case "과일류":
-//                prices = fruitEntity_repo.findByLargeAndMiddleAndProductNameAndProductRank(large, middle, small, rank).stream()
-//                        .map(AuctionEntity_fruit::getPrice)
-//                        .collect(Collectors.toList());
-//                break;
-//            case "특용작물":
-//                prices = specialCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRank(large, middle, small, rank).stream()
-//                        .map(AuctionEntity_specialCrop::getPrice)
-//                        .collect(Collectors.toList());
-//                break;
-//            case "채소류":
-//                prices = vegetableEntity_repo.findByLargeAndMiddleAndProductNameAndProductRank(large, middle, small, rank).stream()
-//                        .map(AuctionEntity_vegetable::getPrice)
-//                        .collect(Collectors.toList());
-//                break;
-//            default:
-//                prices = List.of();
-//        }
-//        OptionalDouble average = prices.stream().mapToInt(Integer::intValue).average();
-//        int averagePrice = (int) Math.round(average.orElse(0.0));
-//        return CategoryResultDTO.builder()
-//                .large(large)
-//                .middle(middle)
-//                .small(small)
-//                .rank(rank)
-//                .startDate(startDate)
-//                .endDate(endDate)
-//                .averagePrice(averagePrice)
-//                .build();
-//    }
+        // 데이터 추가
+        int rowNum = 1;
+        for (AuctionBaseEntity entity : transactionHistoryList) {
+            //새로운 행을 생성하고, rowNum을 증가
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(entity.getDelDate());
+            row.createCell(1).setCellValue(entity.getLarge());
+            row.createCell(2).setCellValue(entity.getMiddle());
+            row.createCell(3).setCellValue(entity.getProductName());
+            row.createCell(4).setCellValue(entity.getProductRank());
+            row.createCell(5).setCellValue(entity.getDel_unit());
+            row.createCell(6).setCellValue(entity.getPrice());
+        }
 
+        // 바이트 배열로 엑셀 파일 생성
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            workbook.write(outputStream); // 내용 기록
+            workbook.close();
+
+            byte[] excelFile = outputStream.toByteArray(); // 배열 가져오기
+            //Content-Disposition 웹 브라우저에게 콘텐츠가 어떻게 처리되어야 하는지를 알려줌 | 주로 파일 다운로드와 관련된 정보를 제공하는 데 사용
+            HttpHeaders headers = new HttpHeaders();
+            //attachment 값은 브라우저에게 응답으로 받은 데이터를 파일로 다운로드해야 한다고 지시
+            headers.add("Content-Disposition", "attachment; filename=transaction_history.xlsx");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(excelFile);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 
 }
 

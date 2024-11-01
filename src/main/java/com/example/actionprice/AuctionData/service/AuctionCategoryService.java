@@ -5,8 +5,10 @@ import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.entity.AuctionBaseEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface AuctionCategoryService {
 
@@ -21,4 +23,7 @@ public interface AuctionCategoryService {
 
     // 대분류, 중분류, 소분류, 등급에 날짜에 따른 데이터 조회 및 페이징 처리
     CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate ,Integer pageNum);
+
+    // 엑셀 다운로드
+    ResponseEntity<byte[]> createExcelFile(List<AuctionBaseEntity> transactionHistoryList);
 }

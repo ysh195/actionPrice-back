@@ -14,5 +14,4 @@ public interface FoodCropsEntity_repo extends JpaRepository<AuctionEntity_foodCr
 
     Page<AuctionEntity_foodCrops> findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(String large, String middle, String productName, String productRank, LocalDate startDate, LocalDate endDate , Pageable pageable);
 
-
 }
