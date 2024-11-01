@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -109,61 +110,49 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         startDate = (startDate == null || startDate.isAfter(oneYearFromToday)) ? today : startDate;
         endDate = (endDate == null || endDate.isAfter(oneYearFromToday)) ? today : endDate;
 
-        // 페이징 및 정렬 조건 설정
-        Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id")));
-        Page<?> pageResult;
-
-        // 대분류에 따라 적절한 리포지토리 메서드 호출
-        switch (large) {
-            case "축산물":
-                pageResult = aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-                        large, middle, small, rank, startDate, endDate, pageable);
-                break;
-
-            case "수산물":
-                pageResult = fishEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-                        large, middle, small, rank, startDate, endDate, pageable);
-                break;
-
-            case "식량작물":
-                pageResult = foodCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-                        large, middle, small, rank, startDate, endDate, pageable);
-                break;
-
-            case "과일류":
-                pageResult = fruitEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-                        large, middle, small, rank, startDate, endDate, pageable);
-                break;
-
-            case "특용작물":
-                pageResult = specialCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-                        large, middle, small, rank, startDate, endDate, pageable);
-                break;
-
-            case "채소류":
-                pageResult = vegetableEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-                        large, middle, small, rank, startDate, endDate, pageable);
-                break;
-
-            default:
-                throw new IllegalArgumentException("Invalid category: " + large);
+        // startDate가 endDate보다 나중일 경우 예외 처리
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date cannot be after end date.");
         }
+        Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id")));
+
+        // 대분류에 따라 적절한 레포지토리 메서드 호출
+        Page<?> pageResult = getPageResultByLarge(large, middle, small, rank, startDate, endDate, pageable);
 
         return convertPageToDTO(pageResult);
     }
 
+    // 대분류에 따른 리포지토리 메서드 호출을 처리하는 별도의 메서드
+    private Page<?> getPageResultByLarge(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate, Pageable pageable) {
+        Map<String, Function<Pageable, Page<?>>> repositoryMap = Map.of(
+                "축산물", pageableParam -> aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate, pageableParam),
+                "수산물", pageableParam -> fishEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate, pageableParam),
+                "식량작물", pageableParam -> foodCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate, pageableParam),
+                "과일류", pageableParam -> fruitEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate, pageableParam),
+                "특용작물", pageableParam -> specialCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate, pageableParam),
+                "채소류", pageableParam -> vegetableEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(large, middle, small, rank, startDate, endDate, pageableParam)
+        );
+
+        Function<Pageable, Page<?>> repositoryMethod = repositoryMap.get(large);
+        // 대분류가 유효하지 않으면 예외 발생
+        if (repositoryMethod == null) {
+            throw new IllegalArgumentException("Invalid category: " + large);
+        }
+
+        return repositoryMethod.apply(pageable);
+    }
+
     private <T> CategoryResultDTO convertPageToDTO(Page<T> page) {
         boolean hasContent = (page != null && page.hasContent());
-
+        // 거래 내역 리스트 생성 (내용이 있으면 변환, 없으면 빈 리스트)
         List<AuctionBaseEntity> transactionHistoryList = hasContent
                 ? convertListObject(page.getContent())
                 : Collections.emptyList();
 
-
-        int currentPageNum = hasContent ? (page.getNumber() + 1) : 1;
-        int currentPageSize = hasContent ? page.getNumberOfElements() : 0;
-        int totalPageNum = hasContent ? page.getTotalPages() : 1;
-        boolean hasNext = hasContent && page.hasNext();
+        int currentPageNum = hasContent ? (page.getNumber() + 1) : 1; // 1 기반 페이지 번호
+        int currentPageSize = hasContent ? page.getNumberOfElements() : 0; // 현재 페이지의 요소 수
+        int totalPageNum = hasContent ? page.getTotalPages() : 1; // 총 페이지 수
+        boolean hasNext = hasContent && page.hasNext(); // 다음 페이지 여부
 
         return CategoryResultDTO.builder()
                 .transactionHistoryList(transactionHistoryList)
@@ -174,15 +163,12 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .hasNext(hasNext)
                 .build();
     }
-
+    // 리스트의 요소를 AuctionBaseEntity 타입으로 변환하는 메서드
     private <T> List<AuctionBaseEntity> convertListObject(List<T> list) {
-        if (list == null) {
-            return Collections.emptyList();
-        }
         return list.stream()
-                .filter(AuctionBaseEntity.class::isInstance) // AuctionBaseEntity 인스턴스만 필터링
-                .map(AuctionBaseEntity.class::cast) // 타입 캐스팅
-                .collect(Collectors.toList()); // 리스트로 수집
+                .filter(AuctionBaseEntity.class::isInstance) //AuctionBaseEntity 타입 필터링
+                .map(AuctionBaseEntity.class::cast) // 필터링된 객체를 AuctionBaseEntity로 변환
+                .collect(Collectors.toList());
     }
 
 
