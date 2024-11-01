@@ -78,13 +78,17 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public CommentSimpleDTO updateComment(Integer commentId, String logined_username, String content) {
+        log.info("[class] CommentServiceImpl - [method] updateComment - logined_username : {} | commentId : {} | commentId : {}", logined_username, commentId, commentId);
 
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFoundException("comment(id : " + commentId + ") does not exist"));
 
-        if(!logined_username.equals(comment.getUser().getUsername())) {
-            log.error("댓글을 작성한 사용자와 수정을 시도하려는 사용자의 username이 일치하지 않습니다.");
-            return null;
+        String commented_username = comment.getUser().getUsername();
+        log.info("[class] CommentServiceImpl - [method] updateComment - logined_username : {} | commented_username : {}", logined_username, commented_username);
+
+        if(!commented_username.equals(logined_username)) {
+            log.error("댓글을 작성한 사용자와 삭제를 시도하려는 사용자의 username이 일치하지 않습니다.");
+            throw new IllegalAccessError("you are not allowed to update this comment");
         }
 
         comment.setContent(content);
@@ -103,13 +107,17 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public CommentSimpleDTO deleteComment(Integer commentId, String logined_username) {
+        log.info("[class] CommentServiceImpl - [method] deleteComment - logined_username : {} | commentId : {}", logined_username, commentId);
 
         Comment comment = commentRepository.findById(commentId)
             .orElseThrow(() -> new CommentNotFoundException("comment(id : " + commentId + ") does not exist"));
 
-        if(!logined_username.equals(comment.getUser().getUsername())) {
+        String commented_username = comment.getUser().getUsername();
+        log.info("[class] CommentServiceImpl - [method] deleteComment - logined_username : {} | commented_username : {}", logined_username, commented_username);
+
+        if(!commented_username.equals(logined_username)) {
             log.error("댓글을 작성한 사용자와 삭제를 시도하려는 사용자의 username이 일치하지 않습니다.");
-            return null;
+            throw new IllegalAccessError("you are not allowed to delete this comment");
         }
 
         commentRepository.delete(comment);
