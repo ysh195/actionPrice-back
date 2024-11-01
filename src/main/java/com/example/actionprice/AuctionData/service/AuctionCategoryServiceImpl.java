@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -38,108 +39,20 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private final CategoryEntity_repo categoryEntity_repo;
 
 
+    // 중분류 갖고오기
     @Override
     public CategoryDTO getMiddleCategory(String large) {
-        List<String> list;
-        switch (large){
-            case "축산물":
-                list = categoryEntity_repo.findByLarge(large).stream()
-                        .map(AuctionCategoryEntity::getMiddle)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "수산물":
-                list = categoryEntity_repo.findByLarge(large).stream()
-                        .map(AuctionCategoryEntity::getMiddle)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "식량작물":
-                list = categoryEntity_repo.findByLarge(large).stream()
-                        .map(AuctionCategoryEntity::getMiddle)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "과일류":
-                list = categoryEntity_repo.findByLarge(large).stream()
-                        .map(AuctionCategoryEntity::getMiddle)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "특용작물":
-                list = categoryEntity_repo.findByLarge(large).stream()
-                        .map(AuctionCategoryEntity::getMiddle)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "채소류":
-                list = categoryEntity_repo.findByLarge(large).stream()
-                        .map(AuctionCategoryEntity::getMiddle)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-            default:
-                list = List.of();
-        }
+        List<String> list = getDistinctValues(large, AuctionCategoryEntity::getMiddle);
         return CategoryDTO.builder()
                 .large(large)
                 .list(list)
                 .build();
     }
 
+    // 소분류 갖고오기
     @Override
     public CategoryDTO getSmallCategory(String large, String middle) {
-        List<String> list;
-        switch (large){
-            case "축산물":
-                list = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionCategoryEntity::getProductName)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "수산물":
-                list = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionCategoryEntity::getProductName)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "식량작물":
-                list = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionCategoryEntity::getProductName)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "과일류":
-                list = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionCategoryEntity::getProductName)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "특용작물":
-                list = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionCategoryEntity::getProductName)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-            case "채소류":
-                list = categoryEntity_repo.findByLargeAndMiddle(large,middle).stream()
-                        .map(AuctionCategoryEntity::getProductName)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-            default:
-                list = List.of();
-        }
+        List<String> list = getDistinctValues(large, middle, AuctionCategoryEntity::getProductName);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -147,53 +60,10 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .build();
     }
 
+    // 등급 갖고오기
     @Override
     public CategoryDTO getProductRankCategory(String large, String middle, String small) {
-        List<String> list;
-        switch (large){
-            case "축산물":
-                list = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                        .map(AuctionCategoryEntity::getProductRank)
-                        .distinct()
-                        .collect(Collectors.toList());
-                break;
-
-                case "수산물":
-                    list = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionCategoryEntity::getProductRank)
-                            .distinct()
-                            .collect(Collectors.toList());
-                    break;
-                case "식량작물":
-                    list = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionCategoryEntity::getProductRank)
-                            .distinct()
-                            .collect(Collectors.toList());
-                    break;
-
-                case "과일류":
-                    list = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionCategoryEntity::getProductRank)
-                            .distinct()
-                            .collect(Collectors.toList());
-                    break;
-
-                case "특용작물":
-                    list = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionCategoryEntity::getProductRank)
-                                .distinct()
-                                .collect(Collectors.toList());
-                        break;
-
-                case "채소류":
-                    list = categoryEntity_repo.findByLargeAndMiddleAndProductName(large,middle,small).stream()
-                            .map(AuctionCategoryEntity::getProductRank)
-                                .distinct()
-                                .collect(Collectors.toList());
-                        break;
-                default:
-                    list = List.of();
-        }
+        List<String> list = getDistinctValues(large, middle, small, AuctionCategoryEntity::getProductRank);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -201,7 +71,28 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .list(list)
                 .build();
     }
-    
+
+    private List<String> getDistinctValues(String large, Function<AuctionCategoryEntity, String> mapper) {
+        return categoryEntity_repo.findByLarge(large).stream()
+                .map(mapper)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getDistinctValues(String large, String middle, Function<AuctionCategoryEntity, String> mapper) {
+        return categoryEntity_repo.findByLargeAndMiddle(large, middle).stream()
+                .map(mapper)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private List<String> getDistinctValues(String large, String middle, String small, Function<AuctionCategoryEntity, String> mapper) {
+        return categoryEntity_repo.findByLargeAndMiddleAndProductName(large, middle, small).stream()
+                .map(mapper)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
     /**
      * @author homin
      * @created 2024. 11. 1. 오후 4:03
@@ -215,12 +106,8 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         LocalDate oneYearFromToday = today.plusYears(1);
 
         // 날짜 유효성 검사 및 설정
-        if (startDate == null || startDate.isAfter(oneYearFromToday)) {
-            startDate = today;
-        }
-        if (endDate == null || endDate.isAfter(oneYearFromToday)) {
-            endDate = today;
-        }
+        startDate = (startDate == null || startDate.isAfter(oneYearFromToday)) ? today : startDate;
+        endDate = (endDate == null || endDate.isAfter(oneYearFromToday)) ? today : endDate;
 
         // 페이징 및 정렬 조건 설정
         Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id")));
@@ -364,8 +251,6 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-
 
 }
 

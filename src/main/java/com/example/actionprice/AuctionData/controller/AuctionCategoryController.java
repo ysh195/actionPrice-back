@@ -45,8 +45,8 @@ public class AuctionCategoryController {
             @PathVariable String middle,
             @PathVariable String small,
             @PathVariable String rank,
-            @RequestParam(value = "startDate",required = false,defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam(value = "endDate",required = false,defaultValue = "") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            @RequestParam(value = "startDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+            @RequestParam(value = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum
     ) {
         return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate, pageNum);
