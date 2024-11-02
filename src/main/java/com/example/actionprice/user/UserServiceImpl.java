@@ -145,11 +145,9 @@ public class UserServiceImpl implements UserService {
       keyword = "";
       userPage = userRepository.findAll(pageable);
     } else {
-      userPage = userRepository.findByUsernameContaining(keyword, pageable);
+      userPage = userRepository.findByUsernameContainingOrEmailContaining(keyword, keyword, pageable);
     }
 
-    boolean isUserExists = (userPage != null && userPage.hasContent());
-
-    return isUserExists ? new UserListDTO(userPage, keyword) : null;
+    return new UserListDTO(userPage, keyword);
   }
 }
