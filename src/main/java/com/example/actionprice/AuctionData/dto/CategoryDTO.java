@@ -8,6 +8,7 @@ import java.util.List;
 @Builder
 public class CategoryDTO {
 
+    private Long delId;
     private String large;
     private String middle;
     private String small;

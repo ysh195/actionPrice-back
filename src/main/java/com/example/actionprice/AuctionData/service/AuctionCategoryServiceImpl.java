@@ -38,8 +38,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private final FruitEntity_repo fruitEntity_repo;
     private final SpecialCropsEntity_repo specialCropsEntity_repo;
     private final VegetableEntity_repo vegetableEntity_repo;
-    private final CategoryEntity_repo categoryEntity_repo;
-
+    private final CategoryEntityRepo categoryEntity_repo;
 
     // 중분류 갖고오기
     @Override
