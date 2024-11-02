@@ -47,9 +47,12 @@ public class PostController {
      * commentPageNum은 선택사항. 없으면 0으로 처리
      */
     @GetMapping("/{postId}/detail")
-    public PostSimpleDTO goDetailPost(@PathVariable("postId") Integer postId) {
+    public PostSimpleDTO goDetailPost(
+        @PathVariable("postId") Integer postId,
+        @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
+    ) {
         log.info("goDetailPost");
-        return postService.getDetailPost(postId);
+        return postService.getDetailPost(postId, page);
     }
 
     /**
