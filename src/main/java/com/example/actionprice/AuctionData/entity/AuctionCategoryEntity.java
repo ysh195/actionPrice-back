@@ -1,12 +1,15 @@
 package com.example.actionprice.AuctionData.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @Table(name="auction_category")
-
+@NoArgsConstructor
+@AllArgsConstructor
 public class AuctionCategoryEntity {
 
     @Id
