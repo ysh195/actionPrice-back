@@ -2,10 +2,9 @@ package com.example.actionprice.admin;
 
 import com.example.actionprice.security.jwt.refreshToken.RefreshTokenEntity;
 import com.example.actionprice.user.User;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.domain.Page;
@@ -23,7 +22,8 @@ public class UserListDTO {
   private String keyword; // 검색에 사용된 키워드
 
   public UserListDTO(Page<User> userPage, String keyword) {
-    this.userList = userPage.getContent()
+    boolean hasContent = userPage.hasContent();
+    this.userList = hasContent ? userPage.getContent()
         .stream()
         .map(user -> {
           RefreshTokenEntity refreshToken = user.getRefreshToken();
@@ -38,7 +38,7 @@ public class UserListDTO {
               .tokenExpiresAt(tokenExpiresAt).isBlocked(isBlocked)
               .build();
         })
-        .toList();
+        .toList() : new ArrayList<UserSimpleDTO>();
 
     this.currentPageNum = userPage.getNumber() + 1;
     this.currentPageSize = userPage.getNumberOfElements();
