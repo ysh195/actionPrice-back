@@ -24,8 +24,10 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 
 @RequiredArgsConstructor
 @Service
@@ -41,10 +43,11 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private final VegetableEntity_repo vegetableEntity_repo;
     private final CategoryEntityRepo categoryEntity_repo;
 
+
     // 중분류 갖고오기
     @Override
     public CategoryDTO getMiddleCategory(String large) {
-        List<CategoryItemDTO> list = getDistinctValues(large, AuctionCategoryEntity::getMiddle, AuctionCategoryEntity::getDelId);
+        List<CategoryItemDTO> list = getDistinctValues(large, AuctionCategoryEntity::getMiddle);
         return CategoryDTO.builder()
                 .large(large)
                 .list(list)
@@ -54,7 +57,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 소분류 갖고오기
     @Override
     public CategoryDTO getSmallCategory(String large, String middle) {
-        List<CategoryItemDTO> list = getDistinctValues(large, middle, AuctionCategoryEntity::getProductName, AuctionCategoryEntity::getDelId);
+        List<CategoryItemDTO> list = getDistinctValues(large, middle, AuctionCategoryEntity::getProductName);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -65,7 +68,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 등급 갖고오기
     @Override
     public CategoryDTO getProductRankCategory(String large, String middle, String small) {
-        List<CategoryItemDTO> list = getDistinctValues(large, middle, small, AuctionCategoryEntity::getProductRank, AuctionCategoryEntity::getDelId);
+        List<CategoryItemDTO> list = getDistinctValues(large, middle, small, AuctionCategoryEntity::getProductRank);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -74,36 +77,36 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .build();
     }
 
-    private List<CategoryItemDTO> getDistinctValues(String large, Function<AuctionCategoryEntity, String> mapper, Function<AuctionCategoryEntity, Long> idMapper) {
+    // UUID로 고유 ID를 생성하는 getDistinctValues 메서드
+    private List<CategoryItemDTO> getDistinctValues(String large, Function<AuctionCategoryEntity, String> mapper) {
         return categoryEntity_repo.findByLarge(large).stream()
                 .map(entity -> CategoryItemDTO.builder()
+                        .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE) // UUID 기반 고유 ID 생성
                         .name(mapper.apply(entity)) // 카테고리 이름
-                        .id(idMapper.apply(entity)) // DB에서 가져온 ID
                         .build())
-                .distinct() // ID와 이름 조합으로 중복 제거
+                .distinct()
                 .collect(Collectors.toList());
     }
 
-    private List<CategoryItemDTO> getDistinctValues(String large, String middle, Function<AuctionCategoryEntity, String> mapper, Function<AuctionCategoryEntity, Long> idMapper) {
+    private List<CategoryItemDTO> getDistinctValues(String large, String middle, Function<AuctionCategoryEntity, String> mapper) {
         return categoryEntity_repo.findByLargeAndMiddle(large, middle).stream()
                 .map(entity -> CategoryItemDTO.builder()
+                        .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE) // UUID 기반 고유 ID 생성
                         .name(mapper.apply(entity)) // 카테고리 이름
-                        .id(idMapper.apply(entity)) // DB에서 가져온 ID
                         .build())
-                .distinct() // ID와 이름 조합으로 중복 제거
+                .distinct()
                 .collect(Collectors.toList());
     }
 
-    private List<CategoryItemDTO> getDistinctValues(String large, String middle, String small, Function<AuctionCategoryEntity, String> mapper, Function<AuctionCategoryEntity, Long> idMapper) {
+    private List<CategoryItemDTO> getDistinctValues(String large, String middle, String small, Function<AuctionCategoryEntity, String> mapper) {
         return categoryEntity_repo.findByLargeAndMiddleAndProductName(large, middle, small).stream()
                 .map(entity -> CategoryItemDTO.builder()
+                        .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE) // UUID 기반 고유 ID 생성
                         .name(mapper.apply(entity)) // 카테고리 이름
-                        .id(idMapper.apply(entity)) // DB에서 가져온 ID
                         .build())
-                .distinct() // ID와 이름 조합으로 중복 제거
+                .distinct()
                 .collect(Collectors.toList());
     }
-
 
     /**
      * @author homin

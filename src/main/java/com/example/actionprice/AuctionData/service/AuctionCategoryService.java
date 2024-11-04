@@ -3,8 +3,6 @@ package com.example.actionprice.AuctionData.service;
 import com.example.actionprice.AuctionData.dto.CategoryResultDTO;
 import com.example.actionprice.AuctionData.dto.CategoryDTO;
 import com.example.actionprice.AuctionData.entity.AuctionBaseEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDate;
