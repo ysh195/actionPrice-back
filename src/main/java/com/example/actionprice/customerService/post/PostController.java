@@ -33,7 +33,12 @@ public class PostController {
      */
     @PostMapping("/create")
     public PostSimpleDTO createPost(@RequestBody @Validated(PostForm.PostCreateGroup.class) PostForm postForm){
-        log.info("[class] PostController - [method] createPost - username : {}, | title : {} | content : {}", postForm.getUsername(), postForm.getTitle(), postForm.getContent());
+        log.info(
+            "[class] PostController - [method] createPost - username : {}, | title : {} | content : {}",
+            postForm.getUsername(),
+            postForm.getTitle(),
+            postForm.getContent()
+        );
         return postService.createPost(postForm);
     }
 
@@ -69,7 +74,11 @@ public class PostController {
     ) {
         log.info("goUpdatePost");
 
-        log.info("[class] PostController - [method] deletePost - id : {} | username : {}", postId, username);
+        log.info(
+            "[class] PostController - [method] deletePost - id : {} | username : {}",
+            postId,
+            username)
+        ;
 
         return postService.goUpdatePost(postId, username);
     }
@@ -105,7 +114,11 @@ public class PostController {
     ) {
         String logined_username = requestBody.get("logined_username");
 
-        log.info("[class] PostController - [method] deletePost - id : {} | username : {}", postId, logined_username);
+        log.info(
+            "[class] PostController - [method] deletePost - id : {} | username : {}",
+            postId,
+            logined_username
+        );
 
         return postService.deletePost(postId, logined_username);
     }
@@ -123,7 +136,11 @@ public class PostController {
         @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum,
         @RequestParam(name = "keyword", defaultValue = "", required = false) String keyword
     ) {
-        log.info("[class] PostController - [method] getPostList - page : {} | keyword : {}", pageNum, keyword);
+        log.info(
+            "[class] PostController - [method] getPostList - page : {} | keyword : {}",
+            pageNum,
+            keyword
+        );
         return postService.getPostList(pageNum, keyword);
     }
 
