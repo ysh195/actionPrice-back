@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
+    //설명
     private final AniEntity_repo aniEntity_repo;
     private final FishEntity_repo fishEntity_repo;
     private final FoodCropsEntity_repo foodCropsEntity_repo;
@@ -110,6 +111,8 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
      * @updated 2024. 11. 1. 오후 4:03
      * @info 데이터리스트 및 페이지 작업 타입을 일반 리스트로 다 받는거라 에러날 시  AuctionBaseEntity 자식 객체만 받을 수 있게 설정 가능
      */
+
+
 
     @Override
     public CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate, Integer pageNum) {
