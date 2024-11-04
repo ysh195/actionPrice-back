@@ -68,4 +68,20 @@ public class UserRepositoryTest {
     }
   }
 
+  @Test
+  public void adminCreateTest() {
+    String username = "adminadmin";
+    String email = String.format("admin%s@gmail.com", 001);
+
+    User user = User.builder()
+        .username(username)
+        .password(passwordEncoder.encode("11111111"))
+        .email(email)
+        .build();
+
+    user.setUserRoles(true);
+
+    userRepository.save(user);
+  }
+
 }
