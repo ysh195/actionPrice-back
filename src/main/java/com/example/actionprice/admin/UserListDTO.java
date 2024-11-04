@@ -2,6 +2,7 @@ package com.example.actionprice.admin;
 
 import com.example.actionprice.security.jwt.refreshToken.RefreshTokenEntity;
 import com.example.actionprice.user.User;
+import com.example.actionprice.user.UserRole;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +30,15 @@ public class UserListDTO {
           RefreshTokenEntity refreshToken = user.getRefreshToken();
           LocalDateTime tokenExpiresAt = (refreshToken == null) ? null : refreshToken.getExpiresAt();
           boolean isBlocked = (refreshToken == null) ? false : refreshToken.isBlocked();
+          boolean isAdmin = user.getAuthorities().contains(UserRole.ROLE_ADMIN.name());
 
           return UserSimpleDTO.builder()
               .username(user.getUsername()).email(user.getEmail())
               .postCount(user.getPostSet().size())
               .commentCount(user.getCommentSet().size())
-              .authorities(user.getAuthorities().toString())
-              .tokenExpiresAt(tokenExpiresAt).isBlocked(isBlocked)
+              .authorities(isAdmin? UserRole.ROLE_ADMIN.name() : UserRole.ROLE_USER.name())
+              .tokenExpiresAt(tokenExpiresAt)
+              .isBlocked(isBlocked)
               .build();
         })
         .toList() : new ArrayList<UserSimpleDTO>();
