@@ -12,5 +12,6 @@ public class CategoryDTO {
     private String large;
     private String middle;
     private String small;
+    private String rank;
     private List<CategoryItemDTO> list;
 }
