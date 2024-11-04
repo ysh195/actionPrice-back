@@ -170,14 +170,15 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private <T> CategoryResultDTO convertPageToDTO(Page<T> page) {
         boolean hasContent = (page != null && page.hasContent());
 
+        // 거래 내역 리스트 생성 (내용이 있으면 변환, 없으면 빈 리스트)
         List<AuctionBaseEntity> transactionHistoryList = hasContent
                 ? convertListObject(page.getContent())
                 : Collections.emptyList();
 
-        int currentPageNum = hasContent ? (page.getNumber() + 1) : 1;
-        int currentPageSize = hasContent ? page.getNumberOfElements() : 0;
-        int totalPageNum = hasContent ? page.getTotalPages() : 1;
-        boolean hasNext = hasContent && page.hasNext();
+        int currentPageNum = hasContent ? (page.getNumber() + 1) : 1; // 1 기반 페이지 번호
+        int currentPageSize = hasContent ? page.getNumberOfElements() : 0; // 현재 페이지의 요소 수
+        int totalPageNum = hasContent ? page.getTotalPages() : 1; // 총 페이지 수
+        boolean hasNext = hasContent && page.hasNext(); // 다음 페이지 여부
 
         return CategoryResultDTO.builder()
                 .transactionHistoryList(transactionHistoryList)
