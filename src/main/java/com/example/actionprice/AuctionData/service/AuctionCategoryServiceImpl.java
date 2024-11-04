@@ -140,7 +140,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
         // 날짜 유효성 검사
         if (startDate == null || endDate == null || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
-            // 날짜가 유효하지 않으면 둘 다 오늘 날짜로 설정
+            // 시작,종료날짜 null || 1년전 이상인지 || 시작날짜가 종료날짜보다 뒤에있는가
             startDate = today;
             endDate = today;
         }
