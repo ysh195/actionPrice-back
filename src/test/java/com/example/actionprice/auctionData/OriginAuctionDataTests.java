@@ -36,9 +36,9 @@ public class OriginAuctionDataTests {
 
     @Test
     void auctionDataFluxTest() throws Exception {
-        String year = "2023";
-        String month = "09";
-        int endDay = 1;
+        String year = "2024";
+        String month = "11";
+        int endDay = 4;
 
         for (int i = 1; i <= endDay; i++) {
             // 날짜 형식 맞추기

@@ -21,10 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -76,37 +73,57 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .list(list)
                 .build();
     }
-
-    // UUID로 고유 ID를 생성하는 getDistinctValues 메서드
     private List<CategoryItemDTO> getDistinctValues(String large, Function<AuctionCategoryEntity, String> mapper) {
-        return categoryEntity_repo.findByLarge(large).stream()
-                .map(entity -> CategoryItemDTO.builder()
-                        .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE) // UUID 기반 고유 ID 생성
-                        .name(mapper.apply(entity)) // 카테고리 이름
-                        .build())
-                .distinct()
-                .collect(Collectors.toList());
+        Map<String, CategoryItemDTO> distinctItems = new HashMap<>();
+
+        categoryEntity_repo.findByLarge(large).forEach(entity -> {
+            String name = mapper.apply(entity);
+            if (!distinctItems.containsKey(name)) {
+                Long id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+                distinctItems.put(name, CategoryItemDTO.builder()
+                        .id(id)
+                        .name(name)
+                        .build());
+            }
+        });
+
+        return new ArrayList<>(distinctItems.values());
     }
 
     private List<CategoryItemDTO> getDistinctValues(String large, String middle, Function<AuctionCategoryEntity, String> mapper) {
-        return categoryEntity_repo.findByLargeAndMiddle(large, middle).stream()
-                .map(entity -> CategoryItemDTO.builder()
-                        .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE) // UUID 기반 고유 ID 생성
-                        .name(mapper.apply(entity)) // 카테고리 이름
-                        .build())
-                .distinct()
-                .collect(Collectors.toList());
+        Map<String, CategoryItemDTO> distinctItems = new HashMap<>();
+
+        categoryEntity_repo.findByLargeAndMiddle(large, middle).forEach(entity -> {
+            String name = mapper.apply(entity);
+            if (!distinctItems.containsKey(name)) {
+                Long id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+                distinctItems.put(name, CategoryItemDTO.builder()
+                        .id(id)
+                        .name(name)
+                        .build());
+            }
+        });
+
+        return new ArrayList<>(distinctItems.values());
     }
 
     private List<CategoryItemDTO> getDistinctValues(String large, String middle, String small, Function<AuctionCategoryEntity, String> mapper) {
-        return categoryEntity_repo.findByLargeAndMiddleAndProductName(large, middle, small).stream()
-                .map(entity -> CategoryItemDTO.builder()
-                        .id(UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE) // UUID 기반 고유 ID 생성
-                        .name(mapper.apply(entity)) // 카테고리 이름
-                        .build())
-                .distinct()
-                .collect(Collectors.toList());
+        Map<String, CategoryItemDTO> distinctItems = new HashMap<>();
+
+        categoryEntity_repo.findByLargeAndMiddleAndProductName(large, middle, small).forEach(entity -> {
+            String name = mapper.apply(entity);
+            if (!distinctItems.containsKey(name)) {
+                Long id = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+                distinctItems.put(name, CategoryItemDTO.builder()
+                        .id(id)
+                        .name(name)
+                        .build());
+            }
+        });
+
+        return new ArrayList<>(distinctItems.values());
     }
+
 
     /**
      * @author homin
@@ -117,15 +134,19 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
     @Override
     public CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate, Integer pageNum) {
+
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
 
-        // 날짜 유효성 검사 및 설정
-        startDate = (startDate == null || startDate.isAfter(oneYearAgo)) ? today : startDate;
-        endDate = (endDate == null || endDate.isAfter(oneYearAgo)) ? today : endDate;
+        // 날짜 유효성 검사
+        if (startDate == null || endDate == null || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
+            // 날짜가 유효하지 않으면 둘 다 오늘 날짜로 설정
+            startDate = today;
+            endDate = today;
+        }
 
         // 페이징 및 정렬 조건 설정
-        Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("del_id")));
+        Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("delId")));
         Page<?> pageResult;
 
         // 대분류에 따라 적절한 리포지토리 메서드 호출

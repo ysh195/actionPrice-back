@@ -17,6 +17,4 @@ public class CategoryResultDTO {
     private long listSize; // 총 데이터 갯수
     private int totalPageNum; // 총 데이터 페이지
     private boolean hasNext;  // 다음 페이지가 있는지(= 현재가 마지막 페이지가 아닌지)
-
-    private List<Long> transactionIds; //어차피 AuctionBaseEntity에 pk 있어서 없어두 될거 같지만 추가
 }
