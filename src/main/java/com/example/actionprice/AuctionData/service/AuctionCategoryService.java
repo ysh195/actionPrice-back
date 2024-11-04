@@ -23,5 +23,5 @@ public interface AuctionCategoryService {
     CategoryResultDTO getCategoryAndPage(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate ,Integer pageNum);
 
     // 엑셀 다운로드
-    ResponseEntity<byte[]> createExcelFile(List<AuctionBaseEntity> transactionHistoryList);
+    byte[] createExcelFile(List<AuctionBaseEntity> transactionHistoryList);
 }
