@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         .build();
 
     // 권한은 일반 유저. 사용자 권한을 줄 때는 반드시 UserRole 사용
-    newUser.addAuthorities(UserRole.ROLE_USER);
+    newUser.setUserRoles(false);
 
     // 저장
     userRepository.save(newUser);
@@ -148,6 +148,9 @@ public class UserServiceImpl implements UserService {
       userPage = userRepository.findByUsernameContainingOrEmailContaining(keyword, keyword, pageable);
     }
 
-    return new UserListDTO(userPage, keyword);
+    UserListDTO listDTO = new UserListDTO(userPage, keyword);
+    log.info("UserListDTO : " + listDTO.toString());
+
+    return listDTO;
   }
 }
