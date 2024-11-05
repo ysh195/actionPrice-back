@@ -101,7 +101,8 @@ public class CustomSecurityConfig {
                   .usernameParameter("username")
                   .passwordParameter("password")
                   .loginProcessingUrl("/api/user/login")
-                  .failureUrl("/api/user/login") // TODO failureForwardUrl는 기존 url을 유지하면서 이동. 거기에 failureHandler를 쓰면 로그인 실패 횟수를 체크할 수 있을 것 같은데?
+                  .successHandler(loginSuccessHandler())
+                  .failureUrl("/api/user/login")
                   .defaultSuccessUrl("/", true))
           .logout((logout) -> logout.logoutUrl("/api/user/logout")
               .logoutSuccessUrl("/api/user/login"));
@@ -119,7 +120,7 @@ public class CustomSecurityConfig {
 
     @Bean
     LoginFilter loginFilter(AuthenticationManager authenticationManager) throws Exception {
-      return new LoginFilter("/api/user/login", userDetailsService, loginSuccessHandler(), userRepository, authenticationManager);
+      return new LoginFilter("/api/user/login", userDetailsService, userRepository, authenticationManager);
     }
 
     @Bean
