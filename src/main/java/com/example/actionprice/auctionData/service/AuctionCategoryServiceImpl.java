@@ -176,7 +176,6 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .collect(Collectors.toList()); // 리스트로 수집
     }
 
-
     /**
      * @param
      * @author homin
@@ -234,7 +233,6 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
         }
     }
 
-
     @Override
     public CategoryResultDTO getCategory(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate) {
         List<AuctionBaseEntity> categories; // 거래 내역을 담을 리스트
@@ -279,8 +277,6 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .categoryList(categories)
                 .build();
     }
-
-
 }
 
 

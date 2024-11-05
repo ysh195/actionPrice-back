@@ -25,4 +25,5 @@ public interface AuctionCategoryService {
     byte[] createExcelFile(List<AuctionBaseEntity> transactionHistoryList);
 
     CategoryResultDTO getCategory(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate);
+
 }

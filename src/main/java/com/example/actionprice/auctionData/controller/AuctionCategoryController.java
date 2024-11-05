@@ -60,16 +60,13 @@ public class AuctionCategoryController {
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
         // 날짜 유효성 검사
+        if (endDate == null || endDate.isBefore(oneYearAgo)) {
+            endDate = today; // 기본값으로 오늘 날짜로 설정
+        }
         if (startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
             // 기본값으로 오늘 날짜로 설정
             startDate = today;
         }
-
-        if (endDate == null || endDate.isBefore(oneYearAgo)) {
-            endDate = today; // 기본값으로 오늘 날짜로 설정
-        }
-
-
         return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate, pageNum);
     }
 
@@ -86,15 +83,13 @@ public class AuctionCategoryController {
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
         // 날짜 유효성 검사
+        if (endDate == null || endDate.isBefore(oneYearAgo)) {
+            endDate = today; // 기본값으로 오늘 날짜로 설정
+        }
         if (startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
             // 기본값으로 오늘 날짜로 설정
             startDate = today;
         }
-
-        if (endDate == null || endDate.isBefore(oneYearAgo)) {
-            endDate = today; // 기본값으로 오늘 날짜로 설정
-        }
-
         // 페이지 없이 데이터를 가져오는 서비스 메서드 호출
         CategoryResultDTO resultDTO = auctionCategoryService.getCategory(large, middle, small, rank, startDate, endDate);
         List<AuctionBaseEntity> categoryList = resultDTO.getCategoryList();
@@ -111,5 +106,4 @@ public class AuctionCategoryController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(excelFile);
     }
-
 }
