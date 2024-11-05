@@ -47,11 +47,11 @@ public class FavoriteController {
 
     boolean isDeleted = favoriteService.deleteFavorite(favoriteId);
 
-    if(!isDeleted){
-      return Map.of("status", "failure", "favoriteId", favoriteId);
+    if(isDeleted){
+      return Map.of("status", "success", "favoriteId", favoriteId);
     }
 
-    return Map.of("status", "success", "favoriteId", favoriteId);
+    return Map.of("status", "failure", "favoriteId", favoriteId);
   }
 
 }
