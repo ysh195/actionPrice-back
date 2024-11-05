@@ -163,6 +163,7 @@ public class UserServiceImpl implements UserService {
       return false;
     }
 
+    // 로그인 실패횟수 초기화 및 lock 해제 기능도 추가해야 함
     user.setPassword(passwordEncoder.encode(newPassword));
     userRepository.save(user);
 
