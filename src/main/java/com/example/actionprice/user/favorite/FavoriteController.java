@@ -47,7 +47,7 @@ public class FavoriteController {
 
     boolean isDeleted = favoriteService.deleteFavorite(favoriteId);
 
-    if(isDeleted){
+    if(!isDeleted){
       return Map.of("status", "failure", "favoriteId", favoriteId);
     }
 
