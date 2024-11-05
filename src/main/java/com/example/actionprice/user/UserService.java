@@ -8,4 +8,5 @@ public interface UserService {
   boolean checkUserExistsWithUsername(String username);
   boolean checkUserExistsWithEmail(String email);
   UserListDTO getUserList(String keyword, int pageNumber);
+  boolean changePassword(String username, String newPassword);
 }
