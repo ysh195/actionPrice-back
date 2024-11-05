@@ -200,13 +200,13 @@ public class UserController {
   ) throws Exception {
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
+    log.info("[class] UserController - [method] sendVerificationCode");
 
-    log.info("[class] UserController - [method] sendVerificationCode - email already used");
     String email = userRegisterForm.getEmail();
 
     //이미 사용하고 있는 이메일인지 체크하는 로직
-    if(!userService.checkUserExistsWithEmail(email)){
-      return ResponseEntity.status(HttpStatus.CONFLICT).body("No one is using the email");
+    if(!userService.checkUsernameAndEmailExists(userRegisterForm.getUsername(), email)) {
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("No one is using both of them(username & email)");
     }
 
     // 발송되었으면 true, 이미 5분 내로 발송된 것이 있으면 false.

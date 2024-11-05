@@ -137,6 +137,22 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public boolean checkUsernameAndEmailExists(String username, String email) {
+
+    User existing_user = userRepository.findByEmail(email).orElse(null);
+
+    if(existing_user == null) {
+      return false;
+    }
+
+    if(existing_user.getEmail().equals(email)) {
+     return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
   public UserListDTO getUserList(String keyword, int pageNum) {
     log.info("[class] UsertServiceImpl - [method] getUserList -  - page : {} | keyword : {}", pageNum, keyword);
     Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.asc("username")));
