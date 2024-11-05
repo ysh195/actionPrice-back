@@ -188,8 +188,7 @@ public class UserController {
     boolean isPasswordChanged = userService.changePassword(userRegisterForm.getUsername(), userRegisterForm.getPassword());
 
     if(isPasswordChanged){
-      String message = String.format("Changing password success.", userRegisterForm.getUsername());
-      return ResponseEntity.ok(message);
+      return ResponseEntity.ok("Changing password success.");
     }
 
     return ResponseEntity.status(HttpStatus.CONFLICT).body("Changing password failed.");

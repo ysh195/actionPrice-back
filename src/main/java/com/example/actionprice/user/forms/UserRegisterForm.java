@@ -38,12 +38,11 @@ public class UserRegisterForm {
   private String username;
 
   // 현재 정규식 : 8~16자, 영어+숫자+특수문자
-  @NotBlank(message = "비밀번호는 필수 입력사항입니다.", groups = {CheckValidityOfPasswordGroup.class})
-  @NotNull(message = "비밀번호는 필수 입력사항입니다.", groups = {CheckValidityOfPasswordGroup.class})
+  @NotBlank(message = "비밀번호는 필수 입력사항입니다.")
+  @NotNull(message = "비밀번호는 필수 입력사항입니다.")
   @Pattern(
       regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*\\W).{8,16}$",
-      message = "비밀번호는 8~16자로 구성되며, 영어, 숫자, 특수문자를 각각 하나 이상 포함해야 합니다.",
-      groups = {CheckValidityOfPasswordGroup.class})
+      message = "비밀번호는 8~16자로 구성되며, 영어, 숫자, 특수문자를 각각 하나 이상 포함해야 합니다.")
   private String password;
 
   @NotBlank(message = "이메일은 필수입니다.", groups = {SendVerificationCodeGroup.class, CheckValidityOfVerificationCodeGroup.class})
@@ -57,7 +56,6 @@ public class UserRegisterForm {
 
   // 검증 시 구분을 위한 그룹입니다. 실질적인 기능은 없습니다.
   public interface CheckDuplicationOfUsernameGroup {}
-  public interface CheckValidityOfPasswordGroup {}
   public interface SendVerificationCodeGroup {}
   public interface CheckValidityOfVerificationCodeGroup {}
 }
