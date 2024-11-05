@@ -194,4 +194,28 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.CONFLICT).body("Changing password failed.");
   }
 
+  @PostMapping("/sendVerificationCodeForChangingPW") //요청을 json 타입으로 받음
+  public ResponseEntity<String> sendVerificationCodeForChangingPW(
+          @Validated(UserRegisterForm.SendVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm
+  ) throws Exception {
+
+    // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
+
+    log.info("[class] UserController - [method] sendVerificationCode - email already used");
+    String email = userRegisterForm.getEmail();
+
+    //이미 사용하고 있는 이메일인지 체크하는 로직
+    if(!userService.checkUserExistsWithEmail(email)){
+      return ResponseEntity.status(HttpStatus.CONFLICT).body("No one is using the email");
+    }
+
+    // 발송되었으면 true, 이미 5분 내로 발송된 것이 있으면 false.
+    // 이미 발송된 것이 있지만 5분이 지났으면 새로 발송해주고 true 반환.
+    // 발송 실패 시 InvalidEmailAddressException으로 처리
+    boolean isEmailSent = sendEmailService.sendVerificationEmail(email);
+
+    String resultOfSending = isEmailSent ? "인증코드가 성공적으로 발송되었습니다." : "최근 5분 내로 이미 발송된 인증코드가 있습니다. 발송된 코드를 사용해주세요.";
+    return ResponseEntity.ok(resultOfSending);
+  }
+
 }
