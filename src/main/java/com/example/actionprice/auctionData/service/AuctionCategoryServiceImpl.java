@@ -18,6 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -177,17 +178,17 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
 
     /**
+     * @param
      * @author homin
      * @created 2024. 11. 1. 오후 12:43
      * @updated 2024. 11. 1. 오후 12:43
-     * @param  transactionHistoryList AuctionBaseEntity 에 담긴 리스트 데이터
      * @info Excel 시트를 위한 로직
      */
     // 엑셀 파일 생성 메서드
     @Override
-    public byte[] createExcelFile(List<AuctionBaseEntity> transactionHistoryList) {
+    public byte[] createExcelFile(List<AuctionBaseEntity> categoryList) {
         // 거래 내역이 없을 경우 처리
-        if (transactionHistoryList == null || transactionHistoryList.isEmpty()) {
+        if (categoryList == null || categoryList.isEmpty()) {
             throw new IllegalArgumentException("거래 내역이 없습니다.");
         }
 
@@ -210,9 +211,10 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
             // 데이터 추가
             int rowNum = 1;
-            for (AuctionBaseEntity entity : transactionHistoryList) {
+            for (AuctionBaseEntity entity : categoryList) {
                 Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entity.getDelDate().toString());
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                row.createCell(0).setCellValue(entity.getDelDate().format(formatter));
                 row.createCell(1).setCellValue(entity.getMarket_name());
                 row.createCell(2).setCellValue(entity.getLarge());
                 row.createCell(3).setCellValue(entity.getMiddle());
@@ -231,6 +233,53 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
             throw new RuntimeException("엑셀 파일 생성 중 오류 발생");
         }
     }
+
+
+    @Override
+    public CategoryResultDTO getCategory(String large, String middle, String small, String rank, LocalDate startDate, LocalDate endDate) {
+        List<AuctionBaseEntity> categories; // 거래 내역을 담을 리스트
+
+        switch (large) {
+            case "축산물":
+                categories = convertListObject(aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
+                        large, middle, small, rank, startDate, endDate));
+                break;
+
+            case "수산물":
+                categories = convertListObject(fishEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
+                        large, middle, small, rank, startDate, endDate));
+                break;
+
+            case "식량작물":
+                categories = convertListObject(foodCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
+                        large, middle, small, rank, startDate, endDate));
+                break;
+
+            case "과일류":
+                categories = convertListObject(fruitEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
+                        large, middle, small, rank, startDate, endDate));
+                break;
+
+            case "특용작물":
+                categories = convertListObject(specialCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
+                        large, middle, small, rank, startDate, endDate));
+                break;
+
+            case "채소류":
+                categories = convertListObject(vegetableEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
+                        large, middle, small, rank, startDate, endDate));
+                break;
+
+            default:
+                throw new IllegalArgumentException("Invalid category: " + large);
+        }
+
+        // CategoryResultDTO 생성 후 반환
+        return CategoryResultDTO.builder()
+                .categoryList(categories)
+                .build();
+    }
+
 
 }
 

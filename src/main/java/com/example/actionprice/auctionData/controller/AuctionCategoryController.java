@@ -60,11 +60,15 @@ public class AuctionCategoryController {
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
         // 날짜 유효성 검사
-        if (startDate == null || endDate == null || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
+        if (startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
             // 기본값으로 오늘 날짜로 설정
             startDate = today;
-            endDate = today;
         }
+
+        if (endDate == null || endDate.isBefore(oneYearAgo)) {
+            endDate = today; // 기본값으로 오늘 날짜로 설정
+        }
+
 
         return auctionCategoryService.getCategoryAndPage(large, middle, small, rank,startDate, endDate, pageNum);
     }
@@ -77,14 +81,27 @@ public class AuctionCategoryController {
             @PathVariable String small,
             @PathVariable String rank,
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-            @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum) {
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
 
-        CategoryResultDTO resultDTO = auctionCategoryService.getCategoryAndPage(large, middle, small, rank, startDate, endDate, pageNum);
-        List<AuctionBaseEntity> transactionHistoryList = resultDTO.getTransactionHistoryList();
+        LocalDate today = LocalDate.now();
+        LocalDate oneYearAgo = today.minusYears(1);
+        // 날짜 유효성 검사
+        if (startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
+            // 기본값으로 오늘 날짜로 설정
+            startDate = today;
+        }
+
+        if (endDate == null || endDate.isBefore(oneYearAgo)) {
+            endDate = today; // 기본값으로 오늘 날짜로 설정
+        }
+
+        // 페이지 없이 데이터를 가져오는 서비스 메서드 호출
+        CategoryResultDTO resultDTO = auctionCategoryService.getCategory(large, middle, small, rank, startDate, endDate);
+        List<AuctionBaseEntity> categoryList = resultDTO.getCategoryList();
 
         // 엑셀 파일 생성
-        byte[] excelFile = auctionCategoryService.createExcelFile(transactionHistoryList);
+        byte[] excelFile = auctionCategoryService.createExcelFile(categoryList);
+
         // Content-Disposition 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=transaction_history.xlsx");
@@ -94,4 +111,5 @@ public class AuctionCategoryController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(excelFile);
     }
+
 }
