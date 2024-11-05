@@ -1,9 +1,6 @@
 package com.example.actionprice.myPage;
 
 import com.example.actionprice.customerService.post.dto.PostListDTO;
-import com.example.actionprice.exception.AccessTokenException;
-import com.example.actionprice.exception.AccessTokenException.TOKEN_ERROR;
-import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
 import com.example.actionprice.user.favorite.FavoriteService;
 import com.example.actionprice.user.favorite.FavoriteSimpleDTO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +36,7 @@ public class MyPageController {
      */
     @GetMapping(value = "/{username}/personalinfo")
     public Map<String, String> goPersonalInfo(
-        @PathVariable("username") String username,
+        @PathVariable("username") String username
     ) {
         return myPageService.getPersonalInfo(username);
     }
