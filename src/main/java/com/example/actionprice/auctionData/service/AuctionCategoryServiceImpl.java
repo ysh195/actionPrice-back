@@ -39,11 +39,13 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 중분류 갖고오기
     @Override
     public CategoryDTO getMiddleCategory(String large) {
+        log.info("[class] AuctionCategoryServiceImpl - [method] - getMiddleCategory - large : {}", large);
         List<CategoryItemDTO> list = categoryEntity_repo.findByLarge(large)
                 .stream()
                 .map(entity -> new CategoryItemDTO(entity.getMiddle()))
                 .distinct()
                 .toList();
+        list.stream().forEach(System.out::println);
         return CategoryDTO.builder()
                 .large(large)
                 .list(list)
@@ -53,12 +55,14 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 소분류 갖고오기
     @Override
     public CategoryDTO getSmallCategory(String large, String middle) {
-
+        log.info("[class] AuctionCategoryServiceImpl - [method] - getMiddleCategory : large : {} | middle : {}", large, middle);
         List<CategoryItemDTO> list = categoryEntity_repo.findByLargeAndMiddle(large, middle)
                 .stream()
                 .map(entity -> new CategoryItemDTO(entity.getProductName()))
                 .distinct()
                 .toList();
+
+        list.stream().forEach(System.out::println);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -69,12 +73,13 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     // 등급 갖고오기
     @Override
     public CategoryDTO getProductRankCategory(String large, String middle, String small) {
-
+        log.info("[class] AuctionCategoryServiceImpl - [method] - getMiddleCategory : large : {} | middle : {} | small : {}", large, middle, small);
         List<CategoryItemDTO> list = categoryEntity_repo.findByLargeAndMiddleAndProductName(large, middle, small)
                 .stream()
                 .map(entity -> new CategoryItemDTO(entity.getProductRank()))
                 .distinct()
                 .toList();
+        list.stream().forEach(System.out::println);
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
