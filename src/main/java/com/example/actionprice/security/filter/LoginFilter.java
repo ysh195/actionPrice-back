@@ -1,6 +1,7 @@
 package com.example.actionprice.security.filter;
 
 import com.example.actionprice.security.CustomUserDetailService;
+import com.example.actionprice.user.UserRepository;
 import com.example.actionprice.user.forms.UserLoginForm;
 import com.google.gson.Gson;
 import jakarta.servlet.FilterChain;
@@ -37,6 +38,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
   private final CustomUserDetailService userDetailService;
   private AuthenticationSuccessHandler successHandler;
+  private UserRepository userRepository;
 
   /**
    * LoginFilter 생성자
@@ -49,11 +51,13 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
       String defaultFilterProcessesUrl,
       CustomUserDetailService userDetailService,
       AuthenticationSuccessHandler successHandler,
+      UserRepository userRepository,
       AuthenticationManager authenticationManager
   ) {
     super(defaultFilterProcessesUrl);
     this.userDetailService = userDetailService;
     this.successHandler = successHandler;
+    this.userRepository = userRepository;
     setAuthenticationSuccessHandler(successHandler);
     setAuthenticationManager(authenticationManager);
   }
