@@ -5,6 +5,7 @@ import com.example.actionprice.auctionData.dto.CategoryDTO;
 import com.example.actionprice.auctionData.entity.AuctionBaseEntity;
 import com.example.actionprice.auctionData.service.AuctionCategoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -16,13 +17,15 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/category") //수정할거
+@RequestMapping("/api/category") //수정할거
+@Log4j2
 public class AuctionCategoryController {
 
     private final AuctionCategoryService auctionCategoryService;
 
     @GetMapping("/{large}") //이런것들도
     public CategoryDTO getCategoriesByLarge(@PathVariable String large) {
+        log.info("[class] AuctionCategoryController - [method] getCategoriesByLarge - large : {}", large);
         return auctionCategoryService.getMiddleCategory(large);
     }
 
@@ -30,6 +33,7 @@ public class AuctionCategoryController {
     public CategoryDTO getCategoriesByLargeAndMiddle(
             @PathVariable String large,
             @PathVariable String middle) {
+        log.info("[class] AuctionCategoryController - [method] getCategoriesByLargeAndMiddle - large : {} | middle : {}", large, middle);
         return auctionCategoryService.getSmallCategory(large, middle);
     }
 
@@ -38,6 +42,7 @@ public class AuctionCategoryController {
             @PathVariable String large,
             @PathVariable String middle,
             @PathVariable String small) {
+        log.info("[class] AuctionCategoryController - [method] getCategoriesMyLargeMiddleSmall - large : {} | middle : {} | small : {}", large, middle, small);
         return auctionCategoryService.getProductRankCategory(large, middle, small);
     }
 
