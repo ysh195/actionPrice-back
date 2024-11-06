@@ -231,7 +231,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("엑셀 파일 생성 중 오류 발생");
+            throw new TransactionDataNotFoundException("엑셀 파일 생성 중 오류 발생");
         }
     }
 
