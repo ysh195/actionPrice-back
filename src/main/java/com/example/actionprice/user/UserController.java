@@ -32,7 +32,7 @@ public class UserController {
    * @created 2024-10-25 오후 12:47
    * @see : 보안관련메서드 @GetMapping("/login")
    */
-  @GetMapping("/login")
+  @GetMapping("/goLogin")
   public String goLogin() {
     return "goLogin";
   }
