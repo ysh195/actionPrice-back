@@ -41,7 +41,7 @@ import java.util.Arrays;
 @SuppressWarnings("ALL")
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @RequiredArgsConstructor
 @Log4j2
 public class CustomSecurityConfig {
