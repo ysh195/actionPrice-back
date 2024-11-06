@@ -138,7 +138,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostSimpleDTO deletePost(Integer postId) {
 
-        log.info("[class] PostServiceImpl - [method] deletePost - postId : {} | username : {}", postId, logined_username);
+        log.info("[class] PostServiceImpl - [method] deletePost - postId : {}", postId);
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
 
