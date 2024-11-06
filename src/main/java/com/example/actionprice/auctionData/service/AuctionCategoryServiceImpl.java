@@ -5,8 +5,6 @@ import com.example.actionprice.auctionData.dto.CategoryResultDTO;
 import com.example.actionprice.auctionData.dto.CategoryDTO;
 import com.example.actionprice.auctionData.entity.*;
 import com.example.actionprice.auctionData.repository.*;
-import com.example.actionprice.exception.InvalidCategoryException;
-import com.example.actionprice.exception.TransactionDataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.poi.ss.usermodel.Row;
@@ -138,7 +136,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 break;
 
             default:
-                throw new InvalidCategoryException("Invalid category: " + large);
+                throw new IllegalArgumentException("Invalid category: " + large);
         }
 
         return convertPageToDTO(pageResult);
@@ -190,7 +188,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     public byte[] createExcelFile(List<AuctionBaseEntity> categoryList) {
         // 거래 내역이 없을 경우 처리
         if (categoryList == null || categoryList.isEmpty()) {
-            throw new TransactionDataNotFoundException("거래 내역이 없습니다.");
+            throw new IllegalArgumentException("거래 내역이 없습니다.");
         }
 
         // 엑셀 워크북 생성
@@ -231,7 +229,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            throw new TransactionDataNotFoundException("엑셀 파일 생성 중 오류 발생");
+            throw new RuntimeException("엑셀 파일 생성 중 오류 발생");
         }
     }
 
@@ -271,7 +269,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 break;
 
             default:
-                throw new InvalidCategoryException("Invalid category: " + large);
+                throw new IllegalArgumentException("Invalid category: " + large);
         }
 
         // CategoryResultDTO 생성 후 반환
