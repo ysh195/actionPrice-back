@@ -117,13 +117,13 @@ public class CustomRestAdvice {
   }
 
 
-  @ExceptionHandler(IllegalAccessError.class)
+  @ExceptionHandler(TransactionDataNotFoundException.class)
   @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerTransactionDataNotFoundException(TransactionDataNotFoundException e) {
     return ResponseEntity.badRequest().body(e.getMessage());
   }
 
-  @ExceptionHandler(IllegalAccessError.class)
+  @ExceptionHandler(InvalidCategoryException.class)
   @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerInvalidCategoryException(InvalidCategoryException e) {
     return ResponseEntity.badRequest().body(e.getMessage());
