@@ -77,11 +77,7 @@ public class CustomSecurityConfig {
                       .requestMatchers("/api/user/logout").authenticated() // 로그인을 한 사람만 로그아웃 창으로 이동 가능
                       .requestMatchers(
                               "/",
-                              "/api/user/register",
-                              "/api/user/sendVerificationCode",
-                              "/api/user/checkVerificationCode",
-                              "/api/user/generate/refreshToken",
-                              "/api/user/checkForDuplicateUsername",
+                              "/api/user/**",
                               "/api/post/**",
                               "/api/mypage/**",
                               "/api/category/**",
