@@ -262,7 +262,7 @@ public class CommentServiceImpl implements CommentService {
 
     private void checkCommentOwner(String owner_username, String logined_username) {
         if (!owner_username.equals(logined_username)) {
-            throw new AccessDeniedException("you are allowed to access this comment");
+            throw new AccessDeniedException("you are not allowed to access this comment");
         }
     }
 }
