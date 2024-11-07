@@ -78,7 +78,7 @@ public class CustomSecurityConfig {
           .csrf((csrfconfig) -> csrfconfig.disable()).exceptionHandling(exceptionHandler -> {
               exceptionHandler.accessDeniedHandler(((request, response, accessDeniedException) -> {
                   response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
-              })).accessDeniedPage("/");
+              }));
               })
           .authorizeHttpRequests((authz) -> authz
                       .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
