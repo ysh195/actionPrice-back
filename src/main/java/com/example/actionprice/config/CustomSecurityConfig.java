@@ -83,7 +83,7 @@ public class CustomSecurityConfig {
                           "/api/post/*/comment/admin/*" // 어드민 코멘트
                       ).hasRole("ADMIN")
                       .requestMatchers(
-                              "/api/user/login" // 로그인 요청
+                          "/api/user/login" // 로그인 요청
                       ).anonymous() // 로그인을 안 한 사람만 이동 가능
                       .requestMatchers(
                           "/api/user/logout",
@@ -103,8 +103,10 @@ public class CustomSecurityConfig {
                               "/api/user/**", // 사용자 관련 기능들
                               "/api/post/list",
                               "/api/post/list*",// 게시글 목록 열람 가능
-                              "/api/post/*/detail", // 게시글 내용 열람 가능
-                              "/api/post/comments", // 게시글 내 댓글 목록 열람 가능
+                              "/api/post/*/detail",
+                              "/api/post/*/detail*", // 게시글 내용 열람 가능
+                              "/api/post/comments",
+                              "/api/post/comments*", // 게시글 내 댓글 목록 열람 가능
                               "/api/category/**" // 카테고리
                       ).permitAll()
                       .anyRequest().authenticated())
