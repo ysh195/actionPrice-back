@@ -3,6 +3,7 @@ package com.example.actionprice.customerService.comment;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -104,7 +105,7 @@ public class CommentController {
         return commentService.deleteComment(commentId, getUsernameWithPrincipal());
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Secured("ROLE_ADMIN")
     @GetMapping("/{postId}/comment/admin/{answertype}")
     public String getAnswer(
         @PathVariable("postId") int postId,

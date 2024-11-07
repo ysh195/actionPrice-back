@@ -80,10 +80,9 @@ public class CustomSecurityConfig {
                       .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                       .requestMatchers(
                           "/api/admin/**", // 어드민페이지
-                          "/api/post/*/comment/admin/**" // 어드민 코멘트
+                          "/api/post/*/comment/admin/*" // 어드민 코멘트
                       ).hasRole("ADMIN")
                       .requestMatchers(
-                              "/api/user/goLogin", // 로그인 페이지
                               "/api/user/login" // 로그인 요청
                       ).anonymous() // 로그인을 안 한 사람만 이동 가능
                       .requestMatchers(

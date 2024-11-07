@@ -83,7 +83,10 @@ public class PostServiceImpl implements PostService{
 
         String owner_username = post.getUser().getUsername();
 
-        checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
+        // 비공개글이면
+        if (!post.isPublished()) {
+            checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
+        }
         
         // 게시글 수정하러 가는데, commentSize는 알 필요가 없으니 그냥 0으로 고정.
         // commentSet 불러 오는 것도 repository 조회가 필요하고, getSize()로 크기 계산하는 것도 다 코드 낭비임
@@ -114,7 +117,10 @@ public class PostServiceImpl implements PostService{
 
         String owner_username = post.getUser().getUsername();
 
-        checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
+        // 비공개글이면
+        if (!post.isPublished()) {
+            checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
+        }
 
         post.setTitle(postForm.getTitle());
         post.setContent(postForm.getContent());
@@ -148,8 +154,10 @@ public class PostServiceImpl implements PostService{
 
         String owner_username = post.getUser().getUsername();
 
-        checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
-
+        // 비공개글이면
+        if (!post.isPublished()) {
+            checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
+        }
         postRepository.delete(post);
 
         return PostSimpleDTO.builder()
@@ -252,7 +260,7 @@ public class PostServiceImpl implements PostService{
             return;
         }
 
-        throw new AccessDeniedException("you are allowed to access this post");
+        throw new AccessDeniedException("you are not allowed to access this post");
     }
 
 }
