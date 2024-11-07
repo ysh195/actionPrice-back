@@ -75,7 +75,11 @@ public class CustomSecurityConfig {
 
       http.sessionManagement(sessionPolicy -> sessionPolicy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
-          .csrf((csrfconfig) -> csrfconfig.disable())
+          .csrf((csrfconfig) -> csrfconfig.disable()).exceptionHandling(exceptionHandler -> {
+              exceptionHandler.accessDeniedHandler(((request, response, accessDeniedException) -> {
+                  response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
+              })).accessDeniedPage("/");
+              })
           .authorizeHttpRequests((authz) -> authz
                       .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                       .requestMatchers(
