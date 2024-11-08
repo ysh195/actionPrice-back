@@ -1,6 +1,7 @@
 package com.example.actionprice.security.filter;
 
 import com.example.actionprice.exception.AccessTokenException;
+import com.example.actionprice.exception.RefreshTokenException;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
 import jakarta.servlet.FilterChain;
@@ -72,13 +73,15 @@ public class TokenCheckFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(authenticationToken);
       log.info("Security Context : " + SecurityContextHolder.getContext());
 
+    } catch(RefreshTokenException e){
+      e.sendResponseError(response);
+      return;
     } catch(AccessTokenException e){
       e.sendResponseError(response);
       return;
     } catch (Exception e) {
       log.error("TokenCheckFilter 처리 중 예외 발생: {}", e.getMessage());
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      response.getWriter().println("인증 처리 실패");
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
       return;
     }
 
