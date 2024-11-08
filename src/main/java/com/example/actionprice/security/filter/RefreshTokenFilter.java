@@ -1,5 +1,6 @@
 package com.example.actionprice.security.filter;
 
+import com.example.actionprice.exception.AccessTokenException;
 import com.example.actionprice.exception.RefreshTokenException;
 import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -72,12 +73,13 @@ public class RefreshTokenFilter extends OncePerRequestFilter {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
       }
-    } catch (RefreshTokenException e) {
+    } catch(RefreshTokenException e){
+      e.sendResponseError(response);
+    } catch(AccessTokenException e){
       e.sendResponseError(response);
     } catch (Exception e) {
       log.error("리프레시 토큰 처리 중 오류 발생: {}", e.getMessage());
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      response.getWriter().println("토큰 처리 실패");
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, e.getMessage());
     }
   }
 
