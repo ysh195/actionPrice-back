@@ -1,6 +1,5 @@
 package com.example.actionprice.sendEmail;
 
-import com.example.actionprice.config.Pop3Properties;
 import com.example.actionprice.exception.InvalidEmailAddressException;
 import jakarta.mail.Address;
 import jakarta.mail.BodyPart;
@@ -35,7 +34,7 @@ import org.springframework.stereotype.Service;
  * @value senderEmail : 보낼 사람의 이메일. properties에 등록되어 있음. 현재 연상훈 이메일
  * @value javaMailSender : 자바에서 공식적으로 지원하는 이메일 발송 클래스.
  * @value verificationEmailRepository : 발송된 이메일 정보를 저장하는 레포지토리
- * @value pop3Properties : 이메일 발송 후 잘못된 이메일로 보내졌는지 체크하기 위한 일종의 컴포넌트(형식은 configuration
+ * @value pop3Configuration : 이메일 발송 후 잘못된 이메일로 보내졌는지 체크하기 위한 일종의 컴포넌트(형식은 configuration
  * @value random : 무작위 문자열을 만들어 주는 클래스
  * @value CHARACTERS : 인증코드 조합에 쓰일 문자열.
  * @value CODE_LENGTH : 인증코드의 길이 설정
@@ -51,7 +50,8 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 	private final JavaMailSender javaMailSender;
 	private final VerificationEmailRepository verificationEmailRepository;
-	private final Pop3Properties pop3Properties;
+	
+	private final Pop3Configuration pop3Configuration;
 
 	// 무작위 문자열을 만들기 위한 준비물
 	private final SecureRandom random = new SecureRandom();
@@ -158,7 +158,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 		boolean result = true;
 		log.info("이메일 발송이 완료되었는지 확인을 시작합니다.");
 
-		try (Store store = pop3Properties.getPop3Store()) {
+		try (Store store = pop3Configuration.getPop3Store()) {
 
 			if (store.isConnected()) {
 				store.close(); // 이미 연결된 경우 연결 닫기
@@ -167,7 +167,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 			store.connect(); // POP3 서버에 연결
 
 			// 지정한 이메일 폴더 열기
-			try (Folder emailFolder = store.getFolder(pop3Properties.getFolder())) {
+			try (Folder emailFolder = store.getFolder(pop3Configuration.getFolder())) {
 				emailFolder.open(Folder.READ_ONLY); // 읽기 전용으로 폴더 열기
 
 				log.info("이메일 폴더를 개방합니다. 아직 읽지 않은 메시지를 찾습니다.");
@@ -181,7 +181,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 				for (Message message : messages) {
 
 					// 현재 시간에서 지정된 시간만큼 이전 시간 계산
-					Instant untilTime = Instant.now().minusSeconds(pop3Properties.getUntilTime());
+					Instant untilTime = Instant.now().minusSeconds(pop3Configuration.getUntilTime());
 
 					// 메일의 발송 날짜가 지정된 시간 이내인지 확인
 					if (untilTime.isBefore(message.getSentDate().toInstant())) {
