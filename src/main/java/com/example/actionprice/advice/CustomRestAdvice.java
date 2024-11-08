@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -135,5 +136,18 @@ public class CustomRestAdvice {
   public ResponseEntity<String> handlerAccessDeniedException(Exception e) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
   }
-  
+
+  @ExceptionHandler(AccessTokenException.class)
+  public void handlerAccessTokenException(AccessTokenException e, HttpServletResponse response) {
+    // AccessTokenException의 sendResponseError 메서드 호출
+    // 얘는 이미 내부에 응답을 하는 메서드가 구현되어 있음
+    e.sendResponseError(response);
+  }
+
+  @ExceptionHandler(RefreshTokenException.class)
+  public void handlerRefreshTokenException(RefreshTokenException e, HttpServletResponse response) {
+    // AccessTokenException의 sendResponseError 메서드 호출
+    // 얘는 이미 내부에 응답을 하는 메서드가 구현되어 있음
+    e.sendResponseError(response);
+  }
 }
