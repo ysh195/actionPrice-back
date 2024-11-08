@@ -214,7 +214,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
    * 요청의 내용을 json 형태로 변환하는 메서드
    * @author : 연상훈
    * @created : 2024-10-06 오후 5:56
-   * @info 책과 달리 UserLoginForm을 사용하기 때문에 데이터를 UserLoginForm 형태에 맞추어 변환하고 반환함.
+   * @info UserLoginForm을 사용하기 때문에 데이터를 UserLoginForm 형태에 맞추어 변환하고 반환함.
    */
   private <T> T parseRequestJSON(HttpServletRequest request, Class<T> classObj) {
     try (Reader reader = new InputStreamReader(request.getInputStream())) {
