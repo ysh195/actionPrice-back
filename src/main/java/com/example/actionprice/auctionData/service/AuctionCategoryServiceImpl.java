@@ -38,7 +38,6 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
     private final VegetableEntity_repo vegetableEntity_repo;
     private final CategoryEntityRepo categoryEntity_repo;
 
-
     // 중분류 갖고오기
     @Override
     public CategoryDTO getMiddleCategory(String large) {
@@ -173,7 +172,6 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
             return Collections.emptyList();
         }
         return list.stream()
-                .filter(AuctionBaseEntity.class::isInstance) // AuctionBaseEntity 인스턴스만 필터링
                 .map(AuctionBaseEntity.class::cast) // 타입 캐스팅
                 .collect(Collectors.toList()); // 리스트로 수집
     }
