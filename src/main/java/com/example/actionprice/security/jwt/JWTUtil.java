@@ -58,7 +58,6 @@ public class JWTUtil {
    * @param token : 토큰 내용 [String]
    * @author : 연상훈
    * @created : 2024-10-06 오후 2:35
-   *
    */
   public String validateToken(String token) throws JwtException {
     log.info("token : " + token);
