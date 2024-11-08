@@ -33,12 +33,6 @@ public class HomeServiceImpl implements HomeService {
           "static/image/slide_ve.jpg"
   };
 
-//      "static/image/cookie.jpg",
-//      "static/image/egg.jpg",
-//          "static/image/slide_meat.jpg",
-//      "static/image/veggie.jpg",
-//      "static/image/salted.jpg",
-
   /**
    * 홈페이지에서 사용할 이미지를 인코딩해서 반환하는 fetch 메서드
    * @author 연상훈
