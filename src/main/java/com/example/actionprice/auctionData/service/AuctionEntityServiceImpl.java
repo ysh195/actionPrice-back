@@ -3,7 +3,6 @@ package com.example.actionprice.auctionData.service;
 import com.example.actionprice.auctionData.dto.CategoryResultDTO;
 import com.example.actionprice.auctionData.dto.ChartDataDTO;
 import com.example.actionprice.auctionData.dto.ChartDataElement;
-import com.example.actionprice.auctionData.dto.ChartDataListDTO;
 import com.example.actionprice.auctionData.entity.AuctionBaseEntity;
 import com.example.actionprice.auctionData.entity.AuctionEntity_ani;
 import com.example.actionprice.auctionData.entity.AuctionEntity_fish;
@@ -26,14 +25,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -106,10 +102,18 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
       }
     }
 
-    List<ChartDataListDTO> chartDataList =
+    List<Map<String, Object>> chartDataList =
         convertTransactionHistoryListToChartData(transactionHistoryList);
 
-    return new ChartDataDTO(timeIntervals, chartDataList);
+    List<String> countries = chartDataList.stream()
+        .flatMap(map -> map.entrySet()
+            .stream()
+            .filter(ele1 -> !ele1.getKey().equals("date"))
+            .map(ele2 -> ele2.getKey()))
+        .distinct()
+        .toList();
+
+    return new ChartDataDTO(timeIntervals, chartDataList, countries);
   }
 
   /**
@@ -342,9 +346,10 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
    * @info Collectors.toMap()을 사용할 때, 키값이 중복되는 것이 들어오면 에러가 발생하면서 그 에러를 해결하기 위한 추가적인 로직을 실행하게 됨
    * @info 그 추가적으로 실행하는 로직을 이용해서 중복값이 있으면 그것이 계속해서 누적되거나 병합되도록 구성함
    */
-  private List<ChartDataListDTO> convertTransactionHistoryListToChartData(List<AuctionBaseEntity> transactionHistoryList){
-
-    List<ChartDataListDTO> dataList = transactionHistoryList.stream()
+  private List<Map<String, Object>> convertTransactionHistoryListToChartData(List<AuctionBaseEntity> transactionHistoryList){
+    // List<Map<String,Obejct> 구성
+    // Map<String, Object> map = Map.of("date", date, "country", averagePrice);
+    List<Map<String, Object>> dataList = transactionHistoryList.stream()
         .collect(Collectors.groupingBy(
             AuctionBaseEntity::getDelDate, // 그룹으로 묶을 기준
             Collectors.toMap( // 그룹을 하나의 map으로 구성
@@ -353,20 +358,22 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
                 (existing, incoming) -> { // key 중복 시 발생할 에러의 해결 로직
                   existing.stackData(incoming); // 값 누적
                   return existing;
-                })))
+                })
+        ))
         .entrySet() // map의 특성을 이용한 중복값 거르기가 끝났으니, 리스트로 변환
         .stream()
-        .flatMap(entry -> entry.getValue()
-              .entrySet()
-              .stream()
-              .map(sub -> ChartDataListDTO.builder()
-                  .baseDay(entry.getKey())
-                  .country(sub.getKey())
-                  .averagePrice(sub.getValue().getPrice()/sub.getValue().getCount())
-                  .build()
-              )
-        )
-        .sorted()
+        .map(dateEntry -> {
+          // 각 날짜별로 맵을 구성함
+          // dateEntry[key : country, value = chartDataElement]
+          Map<String, Object> elementMap = new HashMap<>();
+          elementMap.put("date", dateEntry.getKey());
+          dateEntry.getValue()
+              .forEach((country, chartDataElement) ->
+                  elementMap.put(country, (chartDataElement.getPrice()/chartDataElement.getCount()))
+              );
+          return elementMap;
+        })
+        .sorted(Comparator.comparing(map -> (LocalDate) map.get("date")))
         .toList();
 
     dataList.stream().forEach(System.out::println);
