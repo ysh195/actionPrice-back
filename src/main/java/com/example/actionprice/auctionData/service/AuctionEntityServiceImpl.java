@@ -345,10 +345,10 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
    * @created 2024-11-09 오후 4:16
    * @info Collectors.toMap()을 사용할 때, 키값이 중복되는 것이 들어오면 에러가 발생하면서 그 에러를 해결하기 위한 추가적인 로직을 실행하게 됨
    * @info 그 추가적으로 실행하는 로직을 이용해서 중복값이 있으면 그것이 계속해서 누적되거나 병합되도록 구성함
+   * @info 최종적으로 List<Map<String,Obejct>> 형태로 구성해야 함
+   * @info 안에 들어가는 map은 Map<String, Object> map = Map.of("date", date, "country", averagePrice, ...); 형태로 구성해야 함
    */
   private List<Map<String, Object>> convertTransactionHistoryListToChartData(List<AuctionBaseEntity> transactionHistoryList){
-    // List<Map<String,Obejct> 구성
-    // Map<String, Object> map = Map.of("date", date, "country", averagePrice);
     List<Map<String, Object>> dataList = transactionHistoryList.stream()
         .collect(Collectors.groupingBy(
             AuctionBaseEntity::getDelDate, // 그룹으로 묶을 기준
@@ -359,24 +359,23 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
                   existing.stackData(incoming); // 값 누적
                   return existing;
                 })
-        ))
+        )) // 현 시점에서 객체 형태 Map<LocalDate, Map<String, ChartDataElement>>
         .entrySet() // map의 특성을 이용한 중복값 거르기가 끝났으니, 리스트로 변환
         .stream()
-        .map(dateEntry -> {
+        .map(entry -> {
           // 각 날짜별로 맵을 구성함
-          // dateEntry[key : country, value = chartDataElement]
+          // entry[key : delDate, value = Map<marketName, chartDataElement>]
           Map<String, Object> elementMap = new HashMap<>();
-          elementMap.put("date", dateEntry.getKey());
-          dateEntry.getValue()
-              .forEach((country, chartDataElement) ->
+          elementMap.put("date", entry.getKey()); // 날짜값 옮기기
+          entry.getValue() // = Map<marketName, chartDataElement>
+              .forEach((country, chartDataElement) -> // (key, value)
                   elementMap.put(country, (chartDataElement.getPrice()/chartDataElement.getCount()))
-              );
-          return elementMap;
+              ); // 그 외에는 [지역 이름 : 평균가격] 형태로 옮기기
+          return elementMap; // 그렇게 map 하나로 완성해서 리턴
         })
-        .sorted(Comparator.comparing(map -> (LocalDate) map.get("date")))
-        .toList();
+        .sorted(Comparator.comparing(map -> (LocalDate) map.get("date"))) // 정렬
+        .toList(); // List<Map<>>
 
-    dataList.stream().forEach(System.out::println);
     return dataList;
   }
 
