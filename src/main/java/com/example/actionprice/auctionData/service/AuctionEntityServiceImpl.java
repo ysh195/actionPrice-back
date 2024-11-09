@@ -401,7 +401,8 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
       return Collections.emptyList();
     }
     return list.stream()
-        .map(AuctionBaseEntity.class::cast) // 타입 캐스팅
+        .map(AuctionBaseEntity.class::cast)  // 타입 캐스팅
+        .sorted() // 정렬
         .collect(Collectors.toList()); // 리스트로 수집
   }
 
