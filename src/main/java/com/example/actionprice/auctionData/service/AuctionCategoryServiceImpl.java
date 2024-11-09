@@ -24,7 +24,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .map(entity -> new CategoryItemDTO(entity.getMiddle()))
                 .distinct()
                 .toList();
-        list.stream().forEach(System.out::println);
+        
         return CategoryDTO.builder()
                 .large(large)
                 .list(list)
@@ -41,7 +41,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .distinct()
                 .toList();
 
-        list.stream().forEach(System.out::println);
+        
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)
@@ -58,7 +58,7 @@ public class AuctionCategoryServiceImpl implements AuctionCategoryService {
                 .map(entity -> new CategoryItemDTO(entity.getProductRank()))
                 .distinct()
                 .toList();
-        list.stream().forEach(System.out::println);
+        
         return CategoryDTO.builder()
                 .large(large)
                 .middle(middle)

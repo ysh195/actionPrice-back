@@ -19,14 +19,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/category") //수정할거
+@RequestMapping("/api/category")
 @Log4j2
 public class AuctionCategoryController {
 
     private final AuctionCategoryService auctionCategoryService;
     private final AuctionEntityService auctionEntityService;
 
-    @GetMapping("/{large}") //이런것들도
+    @GetMapping("/{large}")
     public CategoryDTO getCategoriesByLarge(@PathVariable String large) {
         log.info("[class] AuctionCategoryController - [method] getCategoriesByLarge - large : {}", large);
         return auctionCategoryService.getMiddleCategory(large);
@@ -71,9 +71,15 @@ public class AuctionCategoryController {
             startDate = today;
         }
 
-        auctionEntityService.getChartData(large, middle, small, rank,startDate, endDate);
-
-        return auctionEntityService.getCategoryAndPage(large, middle, small, rank,startDate, endDate, pageNum);
+        return auctionEntityService.getCategoryAndPage(
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate,
+            pageNum
+        );
     }
 
     @GetMapping("/{large}/{middle}/{small}/{rank}/gragh")
@@ -98,7 +104,14 @@ public class AuctionCategoryController {
         }
 
         log.info("그래프 출력 완료");
-        return auctionEntityService.getChartData(large, middle, small, rank,startDate, endDate);
+        return auctionEntityService.getChartData(
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate
+        );
     }
 
     @GetMapping("/{large}/{middle}/{small}/{rank}/excel")
@@ -121,7 +134,15 @@ public class AuctionCategoryController {
             startDate = today;
         }
         // 페이지 없이 데이터를 가져오는 서비스 메서드 호출
-        List<AuctionBaseEntity> transactionHistoryList = auctionEntityService.fetchTransactionHistoryList(large, middle, small, rank, startDate, endDate);
+        List<AuctionBaseEntity> transactionHistoryList =
+            auctionEntityService.fetchTransactionHistoryList(
+                large,
+                middle,
+                small,
+                rank,
+                startDate,
+                endDate
+            );
 
         // 엑셀 파일 생성
         byte[] excelFile = auctionEntityService.createExcelFile(transactionHistoryList);
