@@ -70,7 +70,6 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
       LocalDate startDate,
       LocalDate endDate
   ) {
-    log.info("날짜 테스트");
     List<AuctionBaseEntity> transactionHistoryList = fetchTransactionHistoryList(large, middle, small, rank, startDate, endDate);
     int daysBetween = (int)ChronoUnit.DAYS.between(startDate, endDate);
     String timeIntervals = "일간";
@@ -78,7 +77,6 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     // 주간 또는 월간으로 표현해야 하면
     if(daysBetween >= 21){
       if(daysBetween >= 93){
-        log.info("월간으로 계산");
         timeIntervals = "월간";
         // 월간
         transactionHistoryList = transactionHistoryList.stream()
@@ -91,7 +89,6 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
       } else {
         // 주간
         timeIntervals = "주간";
-        log.info("주간으로 계산");
         transactionHistoryList = transactionHistoryList.stream()
             .map(entity -> {
               LocalDate currentDate = entity.getDelDate();
@@ -340,13 +337,14 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
   }
 
   /**
-   * 각 날짜별/지역별 데이터를 합쳐주는 메서드(그래프 데이터에 사용)
+   * DB에서 나온 거래내역 데이터를 그래프에 사용하기에 적합하도록 날짜별/지역별로 합쳐주는 메서드(그래프 데이터에 사용)
    * @author 연상훈
    * @created 2024-11-09 오후 4:16
+   * @info 그냥 List<Map<String, Object>> 형태가 그래프 만들기에 좋다고 해서 그거에 맞춰준 것뿐임.
+   * @info 최종적으로 List<Map<String,Obejct>> 형태로 구성해야 함
+   * @info 안에 들어가는 map은 Map<String, Object> map = Map.of("date", date, "country1", averagePrice1, ...); 형태로 구성해야 함
    * @info Collectors.toMap()을 사용할 때, 키값이 중복되는 것이 들어오면 에러가 발생하면서 그 에러를 해결하기 위한 추가적인 로직을 실행하게 됨
    * @info 그 추가적으로 실행하는 로직을 이용해서 중복값이 있으면 그것이 계속해서 누적되거나 병합되도록 구성함
-   * @info 최종적으로 List<Map<String,Obejct>> 형태로 구성해야 함
-   * @info 안에 들어가는 map은 Map<String, Object> map = Map.of("date", date, "country", averagePrice, ...); 형태로 구성해야 함
    */
   private List<Map<String, Object>> convertTransactionHistoryListToChartData(List<AuctionBaseEntity> transactionHistoryList){
     List<Map<String, Object>> dataList = transactionHistoryList.stream()
