@@ -129,7 +129,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
   ) {
 
     // 페이징 및 정렬 조건 설정
-    Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("delId")));
+    Pageable pageable = PageRequest.of(pageNum, 10, Sort.by(Sort.Order.desc("delDate")));
     Page<?> pageResult;
 
     // 대분류에 따라 적절한 리포지토리 메서드 호출
@@ -336,7 +336,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
   }
 
   /**
-   * 각 날짜별/지역별 데이터를 합쳐주는 메서드
+   * 각 날짜별/지역별 데이터를 합쳐주는 메서드(그래프 데이터에 사용)
    * @author 연상훈
    * @created 2024-11-09 오후 4:16
    * @info Collectors.toMap()을 사용할 때, 키값이 중복되는 것이 들어오면 에러가 발생하면서 그 에러를 해결하기 위한 추가적인 로직을 실행하게 됨
@@ -402,7 +402,6 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     }
     return list.stream()
         .map(AuctionBaseEntity.class::cast)  // 타입 캐스팅
-        .sorted() // 정렬
         .collect(Collectors.toList()); // 리스트로 수집
   }
 
