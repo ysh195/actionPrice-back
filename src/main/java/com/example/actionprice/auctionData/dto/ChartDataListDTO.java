@@ -16,7 +16,7 @@ public class ChartDataListDTO implements Comparable<ChartDataListDTO> {
 
   @Override
   public int compareTo(ChartDataListDTO other) {
-    return this.baseDay.compareTo(other.baseDay);
+    return this.baseDay.compareTo(other.getBaseDay());
   }
 
   @Override

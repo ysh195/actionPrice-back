@@ -23,7 +23,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @ToString
-public class AuctionBaseEntity {
+public class AuctionBaseEntity implements Comparable<AuctionBaseEntity>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,5 +51,8 @@ public class AuctionBaseEntity {
     @Column(nullable = true)
     private String del_unit; // 단위(중량 : kg 등)
 
-
+    @Override
+    public int compareTo(AuctionBaseEntity o) {
+        return o.getDelDate().compareTo(this.delDate);
+    }
 }
