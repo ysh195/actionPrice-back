@@ -30,6 +30,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -72,43 +73,19 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
   ) {
     List<AuctionBaseEntity> transactionHistoryList = fetchTransactionHistoryList(large, middle, small, rank, startDate, endDate);
     int daysBetween = (int)ChronoUnit.DAYS.between(startDate, endDate);
-    String timeIntervals = "일간";
 
-    // 주간 또는 월간으로 표현해야 하면
-    if(daysBetween >= 21){
-      if(daysBetween >= 93){
-        timeIntervals = "월간";
-        // 월간
-        transactionHistoryList = transactionHistoryList.stream()
-            .map(entity -> {
-              LocalDate currentDate = entity.getDelDate();
-              entity.setDelDate(currentDate.withDayOfMonth(1));
-              return entity;
-            })
-            .toList();
-      } else {
-        // 주간
-        timeIntervals = "주간";
-        transactionHistoryList = transactionHistoryList.stream()
-            .map(entity -> {
-              LocalDate currentDate = entity.getDelDate();
-              entity.setDelDate(currentDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)));
-              return entity;
-            })
-            .toList();
-      }
-    }
+    // 계산할 간격 기준을 결정하고, 그것에 맞춰서 리스트 내부의 날짜값들을 수정함
+    String timeIntervals = adjustDatesAndInterval(transactionHistoryList, daysBetween);
 
+    // 그래프 데이터로 사용하기에 적합한 형태로 리스트 내부의 데이터를 수정하여 반환
     List<Map<String, Object>> chartDataList =
         convertTransactionHistoryListToChartData(transactionHistoryList);
 
-    List<String> countries = chartDataList.stream()
-        .flatMap(map -> map.entrySet()
-            .stream()
-            .filter(ele1 -> !ele1.getKey().equals("date"))
-            .map(ele2 -> ele2.getKey()))
-        .distinct()
-        .toList();
+    // set을 사용하면 중복값은 알아서 거름
+    Set<String> countries = chartDataList.stream()
+        .flatMap(map -> map.keySet().stream())
+        .filter(key -> !key.equals("date"))
+        .collect(Collectors.toSet());
 
     return new ChartDataDTO(timeIntervals, chartDataList, countries);
   }
@@ -337,6 +314,49 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
   }
 
   /**
+   * 계산할 간격 기준을 결정하고, 그것에 맞춰서 리스트 내부의 날짜값들을 수정함
+   * @author 연상훈
+   * @created 2024-11-10 오후 6:23
+   * @info map.computeIfAbsent(key, method)는 키 값과 그 키 값이 없을 때에 동작할 메서드를 입력 받음
+   * @info 그리고 이미 존재하는 키 값이면 그에 해당하는 값을 반환하고, 그렇지 않으면 메서드를 실행함
+   * @info 이미 캐싱된 값을 반환하기 때문에 효율적임. 그래서 중복값이 많은 계산을 할 때 자주 쓰인다고 함.
+   * @info 최초의 값은 당연히
+   */
+  private String adjustDatesAndInterval(List<AuctionBaseEntity> list, int daysBetween){
+    // 기간이 21일 이상이면
+    if(daysBetween >= 21){
+
+      // 날짜 데이터를 캐싱 해둘 맵
+      Map<LocalDate, LocalDate> dateCache = new HashMap<>();
+
+      if(daysBetween >= 93){
+        // 기간이 93일 이상이면
+        list.forEach(entity ->
+            entity.setDelDate(
+                dateCache.computeIfAbsent(
+                  entity.getDelDate(),
+                  date -> date.withDayOfMonth(1))
+            )
+        );
+        return "월간";
+      } else {
+        // 기간이 21~93일 사이면
+        list.forEach(entity ->
+            entity.setDelDate(
+                dateCache.computeIfAbsent(
+                  entity.getDelDate(),
+                  date -> date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
+            )
+        );
+        return "주간";
+      }
+    }
+
+    // 기간이 21일 미만이면
+    return "일간";
+  }
+
+  /**
    * DB에서 나온 거래내역 데이터를 그래프에 사용하기에 적합하도록 날짜별/지역별로 합쳐주는 메서드(그래프 데이터에 사용)
    * @author 연상훈
    * @created 2024-11-09 오후 4:16
@@ -356,7 +376,8 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
                 (existing, incoming) -> { // key 중복 시 발생할 에러의 해결 로직
                   existing.stackData(incoming); // 값 누적
                   return existing;
-                })
+                }
+            )
         )) // 현 시점에서 객체 형태 Map<LocalDate, Map<String, ChartDataElement>>
         .entrySet() // map의 특성을 이용한 중복값 거르기가 끝났으니, 리스트로 변환
         .stream()
