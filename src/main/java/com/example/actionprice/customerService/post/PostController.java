@@ -59,7 +59,7 @@ public class PostController {
      * "/api/post/{postId}/detail?commentPageNum=0" 같은 방식으로 호출해야 함
      * commentPageNum은 선택사항. 없으면 0으로 처리
      */
-    @GetMapping("/{postId}/goDetail")
+    @GetMapping("/{postId}/detail")
     public PostSimpleDTO goDetailPost(
         @PathVariable("postId") Integer postId,
         @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
