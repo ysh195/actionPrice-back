@@ -19,7 +19,7 @@ public class RefreshTokenException extends RuntimeException {
     UNEXPECTED_REFRESH(HttpStatus.FORBIDDEN, "Unexpected refresh token"),
     BADSIGN_REFRESH(HttpStatus.FORBIDDEN, "Bad sign refresh token"),
     BLOCKED_REFRESH(HttpStatus.FORBIDDEN, "Blocked refresh token"),
-    EXPIRED_REFRESH(HttpStatus.UNAUTHORIZED, "Expired refresh token"),
+    EXPIRED_REFRESH(HttpStatus.UNAUTHORIZED, "Expired token"),
     INVALID_REFRESH(HttpStatus.FORBIDDEN, "Invalid refresh token format");
 
     private final HttpStatus status;
