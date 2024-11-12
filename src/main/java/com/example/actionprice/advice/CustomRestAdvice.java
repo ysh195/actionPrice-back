@@ -19,7 +19,6 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
@@ -40,7 +39,6 @@ public class CustomRestAdvice {
    * @updated : 2024-10-12 오전 12:54
    */
   @ExceptionHandler(BindException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED) // 상태코드 417 : 의도된 에러임을 의미한다고 함
   public ResponseEntity<Map<String, String>> handlerBindException(BindException e) {
 
     log.error(e);
@@ -54,11 +52,11 @@ public class CustomRestAdvice {
           .forEach(fieldError -> errorMap.put(fieldError.getField(), fieldError.getCode()));
     }
 
-    return ResponseEntity.badRequest().body(errorMap);
+    return ResponseEntity.unprocessableEntity()
+        .body(errorMap);
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<Map<String, String>> handlerFKException(Exception e) {
 
     log.error(e);
@@ -68,14 +66,12 @@ public class CustomRestAdvice {
     errorMap.put("time", "" + System.currentTimeMillis());
     errorMap.put("message", "constraint fails");
 
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(errorMap);
-
   }
 
   // 존재하지 않는 값을 가져올 때와 삭제할 때
   @ExceptionHandler({NoSuchElementException.class, EmptyResultDataAccessException.class})
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<Map<String, String>> handlerNoSuchElementException(Exception e) {
 
     log.error(e);
@@ -85,56 +81,43 @@ public class CustomRestAdvice {
     errorMap.put("time", "" + System.currentTimeMillis());
     errorMap.put("message", "No Such element Exception");
 
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(errorMap);
   }
 
   // 인증코드 발송에 실패했을 때
   @ExceptionHandler(InvalidEmailAddressException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerInvalidEmailAddressException(InvalidEmailAddressException e) {
     log.error(e);
-    return ResponseEntity.badRequest()
+    return ResponseEntity.unprocessableEntity()
         .body(e.getMessage());
   }
 
   // 부정한 방법으로 존재하지 않는 user 조회 시 발생하는 에러
   @ExceptionHandler(UserNotFoundException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerUserNotFoundException(UserNotFoundException e) {
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(e.getMessage());
   }
 
   // 부정한 방법으로 존재하지 않는 post 조회 시 발생하는 에러
   @ExceptionHandler(PostNotFoundException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerPostNotFoundException(PostNotFoundException e) {
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(e.getMessage());
   }
 
   // 부정한 방법으로 존재하지 않는 댓글 조회 시 발생하는 에러
   @ExceptionHandler(CommentNotFoundException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerCommentNotFoundException(CommentNotFoundException e) {
-    return ResponseEntity.badRequest()
-        .body(e.getMessage());
-  }
-
-  // 엑셀 파일로 다운 받을 때, 지정한 조건에 맞는 데이터가 없을 시
-  @ExceptionHandler(TransactionDataNotFoundException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
-  public ResponseEntity<String> handlerTransactionDataNotFoundException(TransactionDataNotFoundException e) {
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
         .body(e.getMessage());
   }
 
   // 존재하지 않는 카테고리를 부정한 방법으로 조회 시
   @ExceptionHandler(InvalidCategoryException.class)
-  @ResponseStatus(HttpStatus.EXPECTATION_FAILED)
   public ResponseEntity<String> handlerInvalidCategoryException(InvalidCategoryException e) {
-    return ResponseEntity.badRequest()
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(e.getMessage());
   }
 
@@ -153,9 +136,10 @@ public class CustomRestAdvice {
         .body(e.getMessage());
   }
 
+  // 더이상 즐겨찾기를 추가할 수 없을 때
   @ExceptionHandler(TooManyFavoritesException.class)
   public ResponseEntity<String> handlerTooMuchFavoritesError(Exception e) {
-    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+    return ResponseEntity.status(HttpStatus.CONFLICT)
         .body(e.getMessage());
   }
 
