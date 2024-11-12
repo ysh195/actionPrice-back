@@ -18,8 +18,8 @@ import com.example.actionprice.auctionData.repository.VegetableEntity_repo;
 import com.example.actionprice.auctionData.repository.SpecialCropsEntity_repo;
 import com.example.actionprice.auctionData.originAuctionData.originApiRequestObj.OriginAuctionDataRow;
 import com.example.actionprice.exception.InvalidCategoryException;
-import com.example.actionprice.exception.TransactionDataNotFoundException;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -233,10 +233,6 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
    */
   @Override
   public byte[] createExcelFile(List<AuctionBaseEntity> transactionHistoryList) {
-    // 거래 내역이 없을 경우 처리
-    if (transactionHistoryList == null || transactionHistoryList.isEmpty()) {
-      throw new TransactionDataNotFoundException("거래 내역이 없습니다.");
-    }
 
     // 엑셀 워크북 생성
     try (Workbook workbook = new XSSFWorkbook();
@@ -257,30 +253,34 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
 
       // 데이터 추가
       int rowNum = 1;
-      for (AuctionBaseEntity entity : transactionHistoryList) {
+
+      if (transactionHistoryList == null || transactionHistoryList.isEmpty()) {
         Row row = sheet.createRow(rowNum++);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        row.createCell(0).setCellValue(entity.getDelDate().format(formatter));
-        row.createCell(1).setCellValue(entity.getMarket_name());
-        row.createCell(2).setCellValue(entity.getLarge());
-        row.createCell(3).setCellValue(entity.getMiddle());
-        row.createCell(4).setCellValue(entity.getProductRank());
-        row.createCell(5).setCellValue(entity.getProductName());
-        row.createCell(6).setCellValue(entity.getDel_unit());
-        row.createCell(7).setCellValue(entity.getPrice());
+        row.createCell(0).setCellValue("검색하신 조건에 맞는 데이터가 없습니다.");
+      } else{
+        for (AuctionBaseEntity entity : transactionHistoryList) {
+          Row row = sheet.createRow(rowNum++);
+          row.createCell(0).setCellValue(entity.getDelDate().format(formatter));
+          row.createCell(1).setCellValue(entity.getMarket_name());
+          row.createCell(2).setCellValue(entity.getLarge());
+          row.createCell(3).setCellValue(entity.getMiddle());
+          row.createCell(4).setCellValue(entity.getProductRank());
+          row.createCell(5).setCellValue(entity.getProductName());
+          row.createCell(6).setCellValue(entity.getDel_unit());
+          row.createCell(7).setCellValue(entity.getPrice());
+        }
       }
 
       // 엑셀 파일 기록
       workbook.write(outputStream);
       return outputStream.toByteArray(); // 엑셀 파일 바이트 배열 반환
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new TransactionDataNotFoundException("엑셀 파일 생성 중 오류 발생");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 
-  /**
+    /**
    * 객체별로 저장하는 메서드
    * @param row
    * @param date : 날짜(String / 구분자 "-")
