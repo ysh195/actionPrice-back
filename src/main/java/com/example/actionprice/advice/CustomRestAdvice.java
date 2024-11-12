@@ -148,10 +148,17 @@ public class CustomRestAdvice {
   // 기타 보안 인증에 걸렸을 때
   // 어지간한 건 메서드에 붙은 로직 선에서 알아서 처리됨
   @ExceptionHandler({AuthenticationException.class, InsufficientAuthenticationException.class})
-  public ResponseEntity<String> handleAuthenticationError(Exception e) {
+  public ResponseEntity<String> handlerAuthenticationError(Exception e) {
     return ResponseEntity.status(HttpStatus.FORBIDDEN)
         .body(e.getMessage());
   }
+
+  @ExceptionHandler(TooManyFavoritesException.class)
+  public ResponseEntity<String> handlerTooMuchFavoritesError(Exception e) {
+    return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED)
+        .body(e.getMessage());
+  }
+
 
   // 엑세스 토큰 에러
   @ExceptionHandler(AccessTokenException.class)
