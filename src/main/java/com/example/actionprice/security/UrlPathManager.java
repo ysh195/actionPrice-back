@@ -26,7 +26,8 @@ public class UrlPathManager {
       "/api/post/*/update/*", // 게시글 생성, 수정, 삭제
       "/api/mypage/**", // 마이페이지(개인정보 열람, 내 게시글 목록, 내 즐겨찾기 목록, 사용자 삭제)
       "/api/category/favorite/**", // 즐겨찾기 삭제
-      "/api/category/*/*/*/*/favorite" // 즐겨찾기 생성
+      "/api/category/*/*/*/*/favorite", // 즐겨찾기 생성
+      "/api/token/refresh"
   };
 
   private final String[] PATH_ANONYMOUSE = {
