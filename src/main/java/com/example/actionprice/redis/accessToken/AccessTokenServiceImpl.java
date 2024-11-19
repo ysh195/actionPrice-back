@@ -15,11 +15,10 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @value jwtUtil
@@ -30,12 +29,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Transactional
 @Log4j2
 public class AccessTokenServiceImpl implements AccessTokenService {
 
   private final UserRepository userRepository;
   private final JWTUtil jwtUtil;
-  private final RedisTemplate<String, Object> redisTemplate;
+  private final AccessTokenRepository accessTokenRepository;
 
   /**
    * 리프레시 토큰 필터에서 엑세스 토큰만 발급함
@@ -50,29 +50,29 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     User user = userRepository.findById(username)
         .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
 
-    // checkRefreshFirst에서 문제 없었으니 엑세스 토큰 발급
     String accessToken = jwtUtil.generateToken(user, TemporaryEntities.ACCESS_TOKEN.getTtl());
 
-    TemporaryEntities temporaryEntities = TemporaryEntities.ACCESS_TOKEN;
-    String key = joinKeyTypeAndKeyValue(temporaryEntities.getGlobalName(), accessToken);
-
-    redisTemplate.opsForValue().set(key, username, temporaryEntities.getTtl(), TimeUnit.MILLISECONDS);
+    AccessTokenEntity accessTokenEntity = AccessTokenEntity.builder()
+        .username(username)
+        .accessToken(accessToken)
+        .build();
+    accessTokenRepository.save(accessTokenEntity);
 
     boolean isAdmin = user.getAuthorities().contains(UserRole.ROLE_ADMIN.name());
     String role = isAdmin ? UserRole.ROLE_ADMIN.name() : UserRole.ROLE_USER.name();
 
     Map<String, String> map = new HashMap<>();
-    map.put(temporaryEntities.getGlobalName(), accessToken);
+    map.put(TemporaryEntities.ACCESS_TOKEN.getGlobalName(), accessToken);
     map.put("username", username);
     map.put("role", role);
 
     return map;
   }
 
+  // 레디스에 저장된 게 있는지 확인해야 하기 때문에 예외처리 없이 null 반환
   @Override
-  public String getUsernameFromAccessToken(String accessToken) {
-    String key = joinKeyTypeAndKeyValue(TemporaryEntities.ACCESS_TOKEN.getGlobalName(), accessToken);
-    return (String) redisTemplate.opsForValue().get(key);
+  public AccessTokenEntity getAccessToken(String accessToken) {
+    return accessTokenRepository.findById(accessToken).orElse(null);
   }
 
   /**
@@ -109,9 +109,5 @@ public class AccessTokenServiceImpl implements AccessTokenService {
   @Override
   public String returnWithJson(Map<String, String> map){
     return new Gson().toJson(map);
-  }
-
-  private String joinKeyTypeAndKeyValue(String keyType, String keyValue) {
-    return String.format("%s:%s", keyType, keyValue);
   }
 }

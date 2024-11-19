@@ -2,6 +2,7 @@ package com.example.actionprice.security.filter;
 
 import com.example.actionprice.exception.AccessTokenException;
 import com.example.actionprice.exception.RefreshTokenException;
+import com.example.actionprice.redis.accessToken.AccessTokenEntity;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.redis.accessToken.AccessTokenService;
 import jakarta.servlet.FilterChain;
@@ -54,10 +55,19 @@ public class TokenCheckFilter extends OncePerRequestFilter {
     try{
       // 토큰에서 토큰의 내용을 추출함
       String tokenStr = extractTokenInHeaderStr(headerStr);
+      String username = null;
+
+      // 일단 레디스에 저장된 게 있는지 확인
+      AccessTokenEntity accessTokenEntity = accessTokenService.getAccessToken(tokenStr);
+      if (accessTokenEntity == null){
+        // 유효성 검증 중 토큰 만료 등의 문제가 발생하면 예외로 넘어감
+        username = accessTokenService.validateAccessTokenAndExtractUsername(tokenStr);
+      } else {
+        username = accessTokenEntity.getUsername();
+      }
 
       // 토큰 내용에서 username을 추출하면서 유효성(엄격한 검사) 검사 진행
       // 만약 이것저것 변조한 토큰이었다면 여기서 걸림
-      String username = accessTokenService.validateAccessTokenAndExtractUsername(tokenStr);
       log.info("username : " + username);
 
       // 인증 정보를 저장
