@@ -1,6 +1,7 @@
 package com.example.actionprice.security.jwt.refreshToken;
 
 
+import com.example.actionprice.redis.TemporaryEntities;
 import com.example.actionprice.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,9 +49,15 @@ public class RefreshTokenEntity {
   private User user;
 
   @Column(nullable = false)
-  private LocalDateTime expiresAt;
+  @Builder.Default
+  private LocalDateTime expiresAt =
+      LocalDateTime.now().plusSeconds(TemporaryEntities.REFRESH_TOKEN.getTtl()/1000);
 
   @Builder.Default
   private boolean blocked = false;
 
+  public void resetExpiresAt() {
+    this.expiresAt =
+        LocalDateTime.now().plusSeconds(TemporaryEntities.REFRESH_TOKEN.getTtl()/1000);
+  }
 }

@@ -1,9 +1,10 @@
 package com.example.actionprice.security;
 
+import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterEntity;
+import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterService;
 import com.example.actionprice.user.User;
 import com.example.actionprice.user.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailService implements UserDetailsService {
 
   private final UserRepository userRepository;
+  private final LoginFailureCounterService loginFailureCounterService;
 
   @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -48,14 +50,10 @@ public class CustomUserDetailService implements UserDetailsService {
 
       boolean isAccountNonLocked = true;
 
-      LocalDateTime accountLockedAt = user.getLockedAt();
-
-      // 계정이 잠긴 기록이 있다면
-      if(accountLockedAt != null) {
-        // 현재 시간이 잠긴 시간으로부터 5분이 지나지 않았다면
-        if(LocalDateTime.now().isBefore(accountLockedAt.plusMinutes(5))) {
-          isAccountNonLocked = false;
-        }
+      // 로그인 실패 카운트 로직
+      LoginFailureCounterEntity loginFailureCounter = loginFailureCounterService.getOrCreateCounterEntity(username);
+      if (loginFailureCounter.getFailureCount() >= 5){
+        isAccountNonLocked = false;
       }
 
       return new org.springframework.security.core.userdetails.User(

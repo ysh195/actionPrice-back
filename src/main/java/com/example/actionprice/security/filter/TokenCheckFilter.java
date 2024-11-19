@@ -3,7 +3,7 @@ package com.example.actionprice.security.filter;
 import com.example.actionprice.exception.AccessTokenException;
 import com.example.actionprice.exception.RefreshTokenException;
 import com.example.actionprice.security.CustomUserDetailService;
-import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
+import com.example.actionprice.redis.accessToken.AccessTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,27 +53,16 @@ public class TokenCheckFilter extends OncePerRequestFilter {
     // 정상적인 형태의 토큰이 존재한다면
     try{
       // 토큰에서 토큰의 내용을 추출함
-      String tokenStr = accessTokenService.extractTokenInHeaderStr(headerStr);
+      String tokenStr = extractTokenInHeaderStr(headerStr);
 
       // 토큰 내용에서 username을 추출하면서 유효성(엄격한 검사) 검사 진행
       // 만약 이것저것 변조한 토큰이었다면 여기서 걸림
-      String username = accessTokenService.validateAccessTokenAndExtractUsername_strictly(tokenStr);
+      String username = accessTokenService.validateAccessTokenAndExtractUsername(tokenStr);
       log.info("username : " + username);
 
-      // 인증 정보 생성
-      UserDetails userDetails = userDetailService.loadUserByUsername(username);
-      log.info("UserDetails : " + userDetails);
-
-      UsernamePasswordAuthenticationToken authenticationToken =
-          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-      authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 추가됨
-      log.info("Authentication Token : " + authenticationToken);
-
       // 인증 정보를 저장
-      SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+      SecurityContextHolder.getContext().setAuthentication(getAuthenticationToken(username, request));
       log.info("Security Context : " + SecurityContextHolder.getContext());
-    } catch(RefreshTokenException e){
-      request.setAttribute("filter.exception", e);
     } catch(AccessTokenException e){
       request.setAttribute("filter.exception", e);
     } catch (Exception e) {
@@ -83,6 +72,31 @@ public class TokenCheckFilter extends OncePerRequestFilter {
 
     // 뭐가 어찌됐든 필터는 이어줌. 그래야 인터셉터에서 넘겨 받아서 어드바이스로 처리가 됨
     filterChain.doFilter(request, response);
+  }
+
+  private String extractTokenInHeaderStr(String headerStr) {
+    log.info("headerStr : " + headerStr);
+
+    String tokenType = headerStr.substring(0,6);
+    String tokenStr = headerStr.substring(7);
+    log.info("tokenType : " + tokenType);
+    log.info("tokenStr : " + tokenStr);
+
+    // 엑세스 토큰에 대한 엄격한 검사 후 결과 반환
+    return tokenStr;
+  }
+
+  private UsernamePasswordAuthenticationToken getAuthenticationToken(String username, HttpServletRequest request){
+    // 인증 정보 생성
+    UserDetails userDetails = userDetailService.loadUserByUsername(username);
+    log.info("UserDetails : " + userDetails);
+
+    UsernamePasswordAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 추가됨
+    log.info("Authentication Token : " + authenticationToken);
+
+    return authenticationToken;
   }
 
 }

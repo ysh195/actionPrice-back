@@ -34,7 +34,7 @@ public class JWTUtil {
    * @created : 2024-10-06 오후 2:12
    * @info 일단위로 하고 싶으면 60*24*days 또는 plusDays(time).
    */
-  public String generateToken(User user, int time) {
+  public String generateToken(User user, long time) {
 
     // 헤더
     Map<String, Object> headers = new HashMap<>();
@@ -51,7 +51,7 @@ public class JWTUtil {
         .setClaims(claims)
         .setSubject(user.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + 1000*60*time))
+        .setExpiration(new Date(System.currentTimeMillis() + time))
         .signWith(SIGNATURE_ALGORITHM, secretKey.getBytes(StandardCharsets.UTF_8))
         .compact();
   }

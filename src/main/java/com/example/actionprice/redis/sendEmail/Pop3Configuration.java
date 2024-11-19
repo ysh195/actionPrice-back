@@ -1,4 +1,4 @@
-package com.example.actionprice.sendEmail;
+package com.example.actionprice.redis.sendEmail;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.Session;

@@ -1,4 +1,4 @@
-package com.example.actionprice.sendEmail;
+package com.example.actionprice.redis.sendEmail;
 
 /**
  * @author 연상훈

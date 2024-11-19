@@ -1,9 +1,11 @@
 package com.example.actionprice.security.handler;
 
-import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
+import com.example.actionprice.redis.accessToken.AccessTokenService;
+import com.example.actionprice.security.jwt.refreshToken.RefreshTokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -24,6 +26,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
   private final AccessTokenService accessTokenService;
+  private final RefreshTokenService refreshTokenService;
 
   /**
    * 인증이 성공하면 진행되는 절차
@@ -44,11 +47,13 @@ public class LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-    log.info(authentication + " : " + authentication.getName());
+    String username = authentication.getName();
+    log.info(authentication + " : " + username);
 
-    // 토큰(엑세스 토큰 + 리프레시 토큰) 발급
-    // 하지만 리프레시 토큰은 내부적으로만 관리하고, 반환되는 것은 엑세스 토큰만
-    String jsonStr = accessTokenService.issueJwt(authentication.getName());
+    refreshTokenService.issueRefreshTokenOnLoginSuccess(username);
+
+    Map<String, String> map = accessTokenService.issueAccessToken(username);
+    String jsonStr = accessTokenService.returnWithJson(map);
 
     log.info("Login Success Handler : " + jsonStr);
 

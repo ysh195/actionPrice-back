@@ -69,13 +69,6 @@ public class User {
   @Column(nullable=false, unique=true)
   private String email;
 
-  @Column(nullable = false)
-  @Builder.Default
-  private int loginFailureCount = 0;
-
-  @Column(nullable = true)
-  private LocalDateTime lockedAt;
-
   @OneToOne(mappedBy = "user",
       orphanRemoval = true,
       cascade = {CascadeType.ALL},
@@ -129,22 +122,6 @@ public class User {
 
   public void setPassword(String password) {
     this.password = password;
-  }
-
-  public int getLoginFailureCount() {
-    return loginFailureCount;
-  }
-
-  public void setLoginFailureCount(int loginFailureCount) {
-    this.loginFailureCount = loginFailureCount;
-  }
-
-  public LocalDateTime getLockedAt() {
-    return lockedAt;
-  }
-
-  public void setLockedAt(LocalDateTime lockedAt) {
-    this.lockedAt = lockedAt;
   }
 
   /**

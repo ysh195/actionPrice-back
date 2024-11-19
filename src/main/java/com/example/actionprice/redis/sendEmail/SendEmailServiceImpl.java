@@ -1,4 +1,4 @@
-package com.example.actionprice.sendEmail;
+package com.example.actionprice.redis.sendEmail;
 
 import com.example.actionprice.exception.InvalidEmailAddressException;
 import jakarta.mail.Address;
@@ -21,7 +21,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -72,14 +71,9 @@ public class SendEmailServiceImpl implements SendEmailService {
 		VerificationEmail verificationEmail = verificationEmailRepository.findById(email).orElse(null);
 
 		if (verificationEmail != null) { // 이미 존재하는지 체크
-			// 이미 있으면, 생성된 지 5분 이상 지났는지 체크
-			if (ChronoUnit.MINUTES.between(verificationEmail.getCreatedAt(), LocalDateTime.now()) > 5) {
-				// 5분이 지났으면 삭제함.
-				verificationEmailRepository.delete(verificationEmail);
-			} else{
-				log.info("최근에 발송된 인증코드가 존재합니다."); // 5분이 지나지 않았으면, 다시 보내지 않고 그냥 발송된 것으로 넘어감
-				return false;
-			}
+			// 레디스에 저장하기 때문에 5분 지나면 자동 삭제됨. 다시 말해, 객체가 있다 = 생성된 지 5분이 지나지 않은 객체가 있다
+			log.info("최근에 발송된 인증코드가 존재합니다.");
+			return false;
 		}
 
 		// 생성된 적 없거나 5분이 지났으면(위에서 지우고) 새로 생성됨
@@ -124,24 +118,17 @@ public class SendEmailServiceImpl implements SendEmailService {
 		}
 
 		// 정상적인 이메일이면
-		// 인증 코드 유효 시간 체크
-		if (ChronoUnit.MINUTES.between(verificationEmail.getCreatedAt(), LocalDateTime.now()) < 5) {
-
-			// 유효시간이 지나지 않았으면
-			// 인증코드 일치하는지 확인
-			if (!verificationEmail.getVerificationCode().equals(verificationCode)) {
-				// 불일치
-				return "인증코드가 일치하지 않습니다. 다시 입력해주세요.";
-			}
-
+		// 유효시간이 지나지 않았으면
+		// 인증코드 일치하는지 확인
+		if (verificationEmail.getVerificationCode().equals(verificationCode)) {
 			// 일치
 			verificationEmailRepository.delete(verificationEmail); // 인증 성공해서 더이상 필요 없으니 삭제
 			return "인증이 성공했습니다."; // 인증 성공
-
-		} else { // 유효시간이 지났으면
-			verificationEmailRepository.delete(verificationEmail); // 만료된 인증 코드 삭제
-			return "인증코드가 만료되었습니다. 다시 진행해주세요."; // 만료된 코드로 인증 실패
+		} else {
+			// 불일치
+			return "인증코드가 일치하지 않습니다. 다시 입력해주세요.";
 		}
+
 	}
 
 	/**

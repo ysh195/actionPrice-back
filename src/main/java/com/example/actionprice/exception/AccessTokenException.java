@@ -1,7 +1,5 @@
 package com.example.actionprice.exception;
 
-import org.springframework.http.HttpStatus;
-
 /**
  * 엑세스 토큰 에러
  * @author : 연상훈
@@ -12,40 +10,25 @@ import org.springframework.http.HttpStatus;
  */
 public class AccessTokenException extends RuntimeException {
 
-  private final TOKEN_ERROR token_error;
+  private final TokenErrors tokenErrors;
+  private String username;
 
-  public enum TOKEN_ERROR {
-    UNACCEPT(HttpStatus.UNAUTHORIZED, "Token is null or too short"),
-    BADTYPE(HttpStatus.UNAUTHORIZED, "Token type must be Bearer"),
-    EXPIRED(HttpStatus.UNAUTHORIZED, "Expired Token"),
-    MALFORM(HttpStatus.FORBIDDEN, "Malformed Token"),
-    UNEXPECTED(HttpStatus.FORBIDDEN, "Unexpected claim"),
-    BADSIGN(HttpStatus.FORBIDDEN, "Bad Signature Token");
-
-    private HttpStatus status;
-    private String message;
-
-    TOKEN_ERROR(HttpStatus status, String message) {
-      this.status = status;
-      this.message = message;
-    }
-
-    public HttpStatus getStatus() {
-      return status;
-    }
-
-    public String getMessage() {
-      return message;
-    }
+  public AccessTokenException(TokenErrors tokenErrors) {
+    super(tokenErrors.name());
+    this.tokenErrors = tokenErrors;
   }
 
-  public AccessTokenException(TOKEN_ERROR error) {
-    super(error.name());
-    this.token_error = error;
+  public AccessTokenException(TokenErrors tokenErrors, String username) {
+    super(tokenErrors.name());
+    this.tokenErrors = tokenErrors;
+    this.username = username;
   }
 
-  public TOKEN_ERROR getToken_error() {
-    return token_error;
+  public TokenErrors getTokenErrors() {
+    return tokenErrors;
   }
 
+  public String getUsername() {
+    return username;
+  }
 }

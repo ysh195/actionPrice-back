@@ -43,6 +43,7 @@ dependencies {
     implementation 'io.projectreactor:reactor-core:3.4.18' // flux
     implementation 'com.google.code.gson:gson:2.10.1' // gson
     implementation 'jakarta.annotation:jakarta.annotation-api'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis' // redis
 
     runtimeOnly 'mysql:mysql-connector-java:8.0.30'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2' // jwt

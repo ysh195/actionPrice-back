@@ -1,6 +1,8 @@
 package com.example.actionprice.security.filter;
 
 import com.example.actionprice.exception.UserNotFoundException;
+import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterEntity;
+import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterService;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.user.User;
 import com.example.actionprice.user.UserRepository;
@@ -43,6 +45,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
   private final CustomUserDetailService userDetailService;
   private final AuthenticationSuccessHandler loginSuccessHandler;
   private final UserRepository userRepository;
+  private final LoginFailureCounterService loginFailureCounterService;
 
   /**
    * LoginFilter 생성자
@@ -56,12 +59,14 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
       CustomUserDetailService userDetailService,
       AuthenticationSuccessHandler loginSuccessHandler,
       UserRepository userRepository,
+      LoginFailureCounterService loginFailureCounterService,
       AuthenticationManager authenticationManager
   ) {
     super(defaultFilterProcessesUrl);
     this.userDetailService = userDetailService;
     this.loginSuccessHandler = loginSuccessHandler;
     this.userRepository = userRepository;
+    this.loginFailureCounterService = loginFailureCounterService;
     setAuthenticationSuccessHandler(loginSuccessHandler);
     setAuthenticationManager(authenticationManager);
   }
@@ -132,14 +137,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
       return;
     }
 
-    User user = userRepository.findById(username)
-            .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
-
-    // 로그인 성공하면 관련 기록 삭제
-    user.setLoginFailureCount(0);
-    user.setLockedAt(null);
-
-    userRepository.save(user);
+    loginFailureCounterService.deleteCounterEntity(username);
 
     log.info("[class] LoginFilter - [method] successfulAuthentication > 종료");
     loginSuccessHandler.onAuthenticationSuccess(request, response, authResult);
@@ -176,39 +174,10 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
       return;
     }
 
-    User user = userRepository.findById(username).orElse(null);
-    if(user == null) {
-      log.info("존재하지 않는 사용자입니다.");
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-      response.getWriter().println("[loginFailure] Incorrect username");
-      log.info("[class] LoginFilter - [method] unsuccessfulAuthentication > 종료");
-      return;
-    }
-
-    log.info("존재하는 사용자입니다.");
-
-    int loginFailureCount = user.getLoginFailureCount()+1;
-    StringBuilder responseMessage = new StringBuilder();
-    responseMessage.append("Incorrect password. Current failure count : ");
-    responseMessage.append(loginFailureCount);
-
-    // 실패횟수가 5 이상이면
-    if(loginFailureCount >= 5) {
-      log.info("실패횟수가 5회 이상입니다. 계정 잠금 처리 및 실패횟수 초기화를 진행합니다.");
-      responseMessage.append(" | Login failed more than 5 times. Your account will be locked for 5 minutes.");
-      // 계정 잠금처리
-      user.setLockedAt(LocalDateTime.now());
-      // 실패횟수를 놔두면 무한히 잠금 시간이 갱싱될 수 있으니 초기화 해줌
-      // 그런데 이 상태에서 또 5번 틀려서 갱신되면 어쩔 수 없는 거고
-      loginFailureCount = 0;
-    }
-
-    user.setLoginFailureCount(loginFailureCount);
-    userRepository.save(user);
-    log.info("로그인 실패 횟수를 갱신합니다. 현재 {}회입니다.", loginFailureCount);
+    loginFailureCounterService.addOnePoint(username);
 
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    response.getWriter().println(responseMessage.toString());
+    response.getWriter().println("[loginFailure] Incorrect username or password");
     log.info("[class] LoginFilter - [method] unsuccessfulAuthentication > 종료");
   }
 

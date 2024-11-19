@@ -1,7 +1,5 @@
 package com.example.actionprice.exception;
 
-import org.springframework.http.HttpStatus;
-
 /**
  * 리프레시 토큰 에러
  * @author : 연상훈
@@ -11,41 +9,26 @@ import org.springframework.http.HttpStatus;
  */
 public class RefreshTokenException extends RuntimeException {
 
-  private ErrorCase errorCase;
+  private TokenErrors tokenErrors;
+  private String username;
 
-  public enum ErrorCase {
-    NO_ACCESS(HttpStatus.UNAUTHORIZED, "No access with refresh token"),
-    NO_REFRESH(HttpStatus.BAD_REQUEST, "No refresh token"),
-    UNEXPECTED_REFRESH(HttpStatus.FORBIDDEN, "Unexpected refresh token"),
-    BADSIGN_REFRESH(HttpStatus.FORBIDDEN, "Bad sign refresh token"),
-    BLOCKED_REFRESH(HttpStatus.FORBIDDEN, "Blocked refresh token"),
-    EXPIRED_REFRESH(HttpStatus.UNAUTHORIZED, "Expired token"),
-    INVALID_REFRESH(HttpStatus.FORBIDDEN, "Invalid refresh token format");
-
-    private final HttpStatus status;
-    private final String message;
-
-    ErrorCase(HttpStatus status, String message) {
-      this.status = status;
-      this.message = message;
-    }
-
-    public HttpStatus getStatus() {
-      return status;
-    }
-
-    public String getMessage() {
-      return message;
-    }
+  public RefreshTokenException(TokenErrors tokenErrors) {
+    super(tokenErrors.name());
+    this.tokenErrors = tokenErrors;
   }
 
-  public RefreshTokenException(ErrorCase errorCase) {
-    super(errorCase.name());
-    this.errorCase = errorCase;
+  public RefreshTokenException(TokenErrors tokenErrors, String username) {
+    super(tokenErrors.name());
+    this.tokenErrors = tokenErrors;
+    this.username = username;
   }
 
-  public ErrorCase getErrorCase() {
-    return errorCase;
+  public TokenErrors getTokenErrors() {
+    return tokenErrors;
+  }
+
+  public String getUsername() {
+    return username;
   }
 
 }

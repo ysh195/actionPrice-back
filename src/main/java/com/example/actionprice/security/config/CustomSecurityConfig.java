@@ -1,12 +1,13 @@
 package com.example.actionprice.security.config;
 
+import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterService;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.security.UrlPathManager;
 import com.example.actionprice.security.handler.LoginSuccessHandler;
 import com.example.actionprice.security.filter.LoginFilter;
-import com.example.actionprice.security.filter.RefreshTokenFilter;
 import com.example.actionprice.security.filter.TokenCheckFilter;
-import com.example.actionprice.security.jwt.accessToken.AccessTokenService;
+import com.example.actionprice.redis.accessToken.AccessTokenService;
+import com.example.actionprice.security.jwt.refreshToken.RefreshTokenService;
 import com.example.actionprice.user.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,6 +63,8 @@ public class CustomSecurityConfig {
     private final CustomUserDetailService userDetailsService;
     private final UserRepository userRepository;
     private final AccessTokenService accessTokenService;
+    private final RefreshTokenService refreshTokenService;
+    private final LoginFailureCounterService loginFailureCounterService;
 
     /**
      * @author : 연상훈
@@ -102,7 +105,6 @@ public class CustomSecurityConfig {
                       .anyRequest().authenticated())
           .authenticationManager(authenticationManager)
           .addFilterBefore(new TokenCheckFilter(userDetailsService, accessTokenService), UsernamePasswordAuthenticationFilter.class)
-          .addFilterBefore(new RefreshTokenFilter(accessTokenService), TokenCheckFilter.class)
           .addFilterBefore(loginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(logoutFilter(), UsernamePasswordAuthenticationFilter.class) // 필터 순서에 주의. 기본적으로 나중에 입력한 것일수록 뒤에 실행됨
           .formLogin((formLogin) -> formLogin.disable());
@@ -133,8 +135,9 @@ public class CustomSecurityConfig {
       return new LoginFilter(
               "/api/user/login",
               userDetailsService,
-              new LoginSuccessHandler(accessTokenService),
+              new LoginSuccessHandler(accessTokenService, refreshTokenService),
               userRepository,
+              loginFailureCounterService,
               authenticationManager
       );
     }

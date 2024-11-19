@@ -2,8 +2,6 @@ package com.example.actionprice.advice;
 
 import com.example.actionprice.exception.*;
 
-import com.example.actionprice.exception.AccessTokenException.TOKEN_ERROR;
-import com.example.actionprice.exception.RefreshTokenException.ErrorCase;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -149,19 +147,12 @@ public class CustomRestAdvice {
         .body(e.getMessage());
   }
 
-  // 엑세스 토큰 에러
+  // 토큰 에러
   @ExceptionHandler(AccessTokenException.class)
   public ResponseEntity<String> handlerAccessTokenException(AccessTokenException e) {
-    TOKEN_ERROR token_error = e.getToken_error();
+    TokenErrors token_error = e.getTokenErrors();
     return ResponseEntity.status(token_error.getStatus())
         .body(token_error.getMessage());
   }
 
-  // 리프레시 토큰 에러
-  @ExceptionHandler(RefreshTokenException.class)
-  public ResponseEntity<String> handlerRefreshTokenException(RefreshTokenException e) {
-    ErrorCase errorCase = e.getErrorCase();
-    return ResponseEntity.status(errorCase.getStatus())
-        .body(errorCase.getMessage());
-  }
 }

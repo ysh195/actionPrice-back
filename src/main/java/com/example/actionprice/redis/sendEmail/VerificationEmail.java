@@ -1,15 +1,16 @@
-package com.example.actionprice.sendEmail;
+package com.example.actionprice.redis.sendEmail;
 
 
 import com.example.actionprice.customerService.BaseEntity;
+import com.example.actionprice.redis.TemporaryEntities;
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
 /**
  * 회원 가입 시 이메일로 인증코드를 발송하고, 그것을 이후에 대조하기 위해 DB에 저장하는 객체
@@ -20,10 +21,9 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @Builder
-@Entity
-@Table(name = "verification_email")
 @AllArgsConstructor
 @NoArgsConstructor
+@RedisHash(value = "verification_email")
 public class VerificationEmail extends BaseEntity {
 
   @Id
@@ -31,4 +31,8 @@ public class VerificationEmail extends BaseEntity {
 
   @Column(nullable=false, length = 8)
   private String verificationCode;
+
+  @TimeToLive
+  @Builder.Default
+  private long ttl = TemporaryEntities.VERIFICATION_EMAIL.getTtl();
 }

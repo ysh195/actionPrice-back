@@ -1,6 +1,6 @@
 package com.example.actionprice.user;
 
-import com.example.actionprice.sendEmail.SendEmailService;
+import com.example.actionprice.redis.sendEmail.SendEmailService;
 import com.example.actionprice.user.forms.UserRegisterForm;
 import jakarta.validation.Valid;
 import java.util.Map;
