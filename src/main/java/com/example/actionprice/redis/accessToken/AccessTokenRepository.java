@@ -5,4 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface AccessTokenRepository extends CrudRepository<AccessTokenEntity, String> {
   Optional<AccessTokenEntity> findById(String accessToken);
+  Optional<AccessTokenEntity> findByUsername(String username);
 }

@@ -110,4 +110,14 @@ public class AccessTokenServiceImpl implements AccessTokenService {
   public String returnWithJson(Map<String, String> map){
     return new Gson().toJson(map);
   }
+
+  @Override
+  public void deleteAccessToken(String username) {
+    AccessTokenEntity accessTokenEntity = accessTokenRepository.findByUsername(username).orElse(null);
+    if (accessTokenEntity == null) {
+      return;
+    }
+
+    accessTokenRepository.delete(accessTokenEntity);
+  }
 }

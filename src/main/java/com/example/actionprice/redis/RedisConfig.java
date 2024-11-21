@@ -1,8 +1,5 @@
 package com.example.actionprice.redis;
 
-import com.example.actionprice.redis.accessToken.AccessTokenRepository;
-import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterRepository;
-import com.example.actionprice.redis.sendEmail.VerificationEmailRepository;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -13,13 +10,16 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+/**
+ * 레디스 설정
+ * @author 연상훈
+ * @created 2024-11-21 오후 8:08
+ * @info 참고로 redis repository에 사용되는 entity는 @Id를 사용할 때
+ * [jakarta.persistence.Id] 대신 [org.springframework.data.annotation.Id] 를 사용해야 함
+ */
 @Configuration
 @ConfigurationProperties(prefix = "spring.data.redis")
-@EnableRedisRepositories(basePackageClasses = {
-    VerificationEmailRepository.class,
-    LoginFailureCounterRepository.class,
-    AccessTokenRepository.class
-})
+@EnableRedisRepositories(basePackages = "com.example.actionprice.redis")
 @Setter
 public class RedisConfig {
 

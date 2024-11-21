@@ -186,6 +186,9 @@ public class CustomSecurityConfig {
       LogoutSuccessHandler logoutSuccessHandler = new LogoutSuccessHandler() {
         @Override
         public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+            String username = authentication.getName();
+            accessTokenService.deleteAccessToken(username);
+
             SecurityContextHolder.clearContext();
             log.info("----------------- 로그아웃 ----------------------");
             response.setStatus(HttpServletResponse.SC_OK);  // 200 OK 응답

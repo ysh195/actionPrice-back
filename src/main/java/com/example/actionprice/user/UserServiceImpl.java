@@ -1,5 +1,6 @@
 package com.example.actionprice.user;
 
+import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterService;
 import com.example.actionprice.user.dto.UserListDTO;
 import com.example.actionprice.user.forms.UserRegisterForm;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
+  private final LoginFailureCounterService loginFailureCounterService;
 
   /**
    * 유저 생성 기능. 대체로 회원가입
@@ -198,8 +200,7 @@ public class UserServiceImpl implements UserService {
     user.setPassword(passwordEncoder.encode(newPassword));
 
     // 로그인 실패해서 바꾸는 것일 수도 있으니, 기존 기록 초기화
-    user.setLoginFailureCount(0);
-    user.setLockedAt(null);
+    loginFailureCounterService.deleteCounterEntity(username);
     userRepository.save(user);
 
     return true;

@@ -1,14 +1,12 @@
 package com.example.actionprice.redis.sendEmail;
 
-
-import com.example.actionprice.customerService.BaseEntity;
 import com.example.actionprice.redis.TemporaryEntities;
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
@@ -19,12 +17,12 @@ import org.springframework.data.redis.core.TimeToLive;
  * @value email
  * @value verificationCode
  */
-@Data
+@Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @RedisHash(value = "verification_email")
-public class VerificationEmail extends BaseEntity {
+public class VerificationEmail {
 
   @Id
   private String email;
