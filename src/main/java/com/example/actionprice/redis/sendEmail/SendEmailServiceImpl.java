@@ -165,7 +165,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 				// 각 메시지의 내용을 뜯어보기
 				log.info("30초 내로 반송된 이메일이 있는지 검색합니다.");
-				for (Message message : messages) {
+				CheckingInbox : for (Message message : messages) {
 
 					// 현재 시간에서 지정된 시간만큼 이전 시간 계산
 					Instant untilTime = Instant.now().minusSeconds(pop3Configuration.getUntilTime());
@@ -221,7 +221,8 @@ public class SendEmailServiceImpl implements SendEmailService {
 												} catch (MessagingException e) {
 													log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
 												}
-
+												
+												break CheckingInbox;
 											}
 
 										}
