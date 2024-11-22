@@ -1,7 +1,7 @@
 package com.example.actionprice.security.filter;
 
 import com.example.actionprice.exception.AccessTokenException;
-import com.example.actionprice.exception.RefreshTokenException;
+import com.example.actionprice.exception.TokenErrors;
 import com.example.actionprice.redis.accessToken.AccessTokenEntity;
 import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.redis.accessToken.AccessTokenService;
@@ -31,20 +31,30 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Log4j2
 @RequiredArgsConstructor
-public class TokenCheckFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final CustomUserDetailService userDetailService;
   private final AccessTokenService accessTokenService;
 
+  // url이 equals 일 때만 취급하고 있음. 필요하면 startWith로 바꿔야 함
+  private final String[] URL_WITH_UNAVOIDABLE_REASON = {
+      "/api/auth/refresh",
+      "/api/auth/refresh"
+  };
+
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      FilterChain filterChain
+  ) throws ServletException, IOException {
     log.info("토큰 체크 필터 실행");
 
     String headerStr = request.getHeader("Authorization");
     log.info("url : {} | headerStr : {}", request.getRequestURI(), headerStr);
 
     // 토큰이 없거나 Bearer로 시작하지 않으면
-    if(headerStr == null || headerStr.contains("undefined") || !headerStr.startsWith("Bearer ")) {
+    if(isHeaderWithoutToken(headerStr)) {
       log.info("익명 사용자로 처리");
       // 익명 사용자로 처리
       filterChain.doFilter(request, response);
@@ -60,9 +70,18 @@ public class TokenCheckFilter extends OncePerRequestFilter {
       // 일단 레디스에 저장된 게 있는지 확인
       AccessTokenEntity accessTokenEntity = accessTokenService.getAccessToken(tokenStr);
       if (accessTokenEntity == null){
+        log.info("레디스에 저장된 토큰이 없음");
         // 유효성 검증 중 토큰 만료 등의 문제가 발생하면 예외로 넘어감
-        username = accessTokenService.validateAccessTokenAndExtractUsername(tokenStr);
+
+        if(hasUnavoidableReason(request)){
+          log.info("로그아웃 또는 토큰 재발급 중에는 토큰 만료에 대해 검증하지 않음");
+          username = accessTokenService.validateAccessTokenAndExtractUsernameWithoutEXP(tokenStr);
+        } else {
+          username = accessTokenService.validateAccessTokenAndExtractUsername(tokenStr);
+        }
+
       } else {
+        log.info("레디스에 저장된 토큰이 있음");
         username = accessTokenEntity.getUsername();
       }
 
@@ -74,7 +93,15 @@ public class TokenCheckFilter extends OncePerRequestFilter {
       SecurityContextHolder.getContext().setAuthentication(getAuthenticationToken(username, request));
       log.info("Security Context : " + SecurityContextHolder.getContext());
     } catch(AccessTokenException e){
-      request.setAttribute("filter.exception", e);
+      log.info("엑세스 토큰 문제 발생");
+      TokenErrors tokenErrors = e.getTokenErrors();
+      if (tokenErrors.getStatus().value() == 418){
+        response.setStatus(418);  // 418 상태 코드 반환
+        response.getWriter().write(tokenErrors.getMessage());
+        return;
+      } else {
+        request.setAttribute("filter.exception", e);
+      }
     } catch (Exception e) {
       log.error("TokenCheckFilter 처리 중 예외 발생: {}", e.getMessage());
       request.setAttribute("filter.exception", e);
@@ -107,6 +134,22 @@ public class TokenCheckFilter extends OncePerRequestFilter {
     log.info("Authentication Token : " + authenticationToken);
 
     return authenticationToken;
+  }
+
+  private boolean isHeaderWithoutToken(String headerStr) {
+    return headerStr == null || headerStr.contains("undefined") || !headerStr.startsWith("Bearer ");
+  }
+
+  private boolean hasUnavoidableReason(HttpServletRequest request){
+    if (request.getMethod().equals("POST")){
+      for(String url : URL_WITH_UNAVOIDABLE_REASON){
+        if (request.getRequestURI().equals(url)){
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
 }

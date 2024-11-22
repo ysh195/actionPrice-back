@@ -6,6 +6,7 @@ public interface AccessTokenService {
   Map<String, String> issueAccessToken(String username);
   AccessTokenEntity getAccessToken(String accessToken);
   String validateAccessTokenAndExtractUsername(String accessToken);
+  String validateAccessTokenAndExtractUsernameWithoutEXP(String accessToken);
   String returnWithJson(Map<String, String> map);
   void deleteAccessToken(String username);
 }

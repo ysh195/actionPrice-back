@@ -51,7 +51,7 @@ public class JWTUtil {
         .setClaims(claims)
         .setSubject(user.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + time))
+        .setExpiration(new Date(System.currentTimeMillis() + (time*1000))) // redis는 s고, jwt는 ms라서 이렇게 됨
         .signWith(SIGNATURE_ALGORITHM, secretKey.getBytes(StandardCharsets.UTF_8))
         .compact();
   }

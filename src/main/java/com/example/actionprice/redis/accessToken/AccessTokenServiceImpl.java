@@ -100,6 +100,27 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     }
   }
 
+  @Override
+  public String validateAccessTokenAndExtractUsernameWithoutEXP(String accessToken) {
+    String username = null;
+    try {
+      username = jwtUtil.validateToken(accessToken);
+    } catch (MalformedJwtException e) {
+      log.error("잘못된 형식입니다. 위변조 가능성이 있는 엑세스 토큰입니다.");
+      throw new AccessTokenException(TokenErrors.MALFORM);
+    } catch (UnsupportedJwtException e) {
+      log.error("잘못된 형식입니다. 위변조 가능성이 있는 엑세스 토큰입니다.");
+      throw new AccessTokenException(TokenErrors.UNEXPECTED);
+    } catch (SignatureException e) {
+      log.error("잘못된 서명입니다. 위변조 가능성이 있는 엑세스 토큰입니다.");
+      throw new AccessTokenException(TokenErrors.BADSIGN);
+    } catch (ExpiredJwtException e) {
+      username = e.getClaims().getSubject();
+    }
+
+    return username;
+  }
+
   /**
    * 토큰 발급 후 결과를 json 형태로 반환
    * @author 연상훈
@@ -117,6 +138,8 @@ public class AccessTokenServiceImpl implements AccessTokenService {
     if (accessTokenEntity == null) {
       return;
     }
+
+    log.info("로그아웃 - 엑세스 토큰 삭제");
 
     accessTokenRepository.delete(accessTokenEntity);
   }

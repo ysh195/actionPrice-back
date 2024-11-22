@@ -51,13 +51,13 @@ public class RefreshTokenEntity {
   @Column(nullable = false)
   @Builder.Default
   private LocalDateTime expiresAt =
-      LocalDateTime.now().plusSeconds(TemporaryEntities.REFRESH_TOKEN.getTtl()/1000);
+      LocalDateTime.now().plusSeconds(TemporaryEntities.REFRESH_TOKEN.getTtl());
 
   @Builder.Default
   private boolean blocked = false;
 
   public void resetExpiresAt() {
     this.expiresAt =
-        LocalDateTime.now().plusSeconds(TemporaryEntities.REFRESH_TOKEN.getTtl()/1000);
+        LocalDateTime.now().plusSeconds(TemporaryEntities.REFRESH_TOKEN.getTtl());
   }
 }

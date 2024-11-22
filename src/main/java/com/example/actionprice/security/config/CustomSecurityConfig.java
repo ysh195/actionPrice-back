@@ -5,7 +5,7 @@ import com.example.actionprice.security.CustomUserDetailService;
 import com.example.actionprice.security.UrlPathManager;
 import com.example.actionprice.security.handler.LoginSuccessHandler;
 import com.example.actionprice.security.filter.LoginFilter;
-import com.example.actionprice.security.filter.TokenCheckFilter;
+import com.example.actionprice.security.filter.JwtAuthenticationFilter;
 import com.example.actionprice.redis.accessToken.AccessTokenService;
 import com.example.actionprice.security.jwt.refreshToken.RefreshTokenService;
 import com.example.actionprice.user.UserRepository;
@@ -104,7 +104,7 @@ public class CustomSecurityConfig {
                       .requestMatchers(urlPathManager.getPATH_PERMIT_ALL()).permitAll()
                       .anyRequest().authenticated())
           .authenticationManager(authenticationManager)
-          .addFilterBefore(new TokenCheckFilter(userDetailsService, accessTokenService), UsernamePasswordAuthenticationFilter.class)
+          .addFilterBefore(new JwtAuthenticationFilter(userDetailsService, accessTokenService), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(loginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(logoutFilter(), UsernamePasswordAuthenticationFilter.class) // 필터 순서에 주의. 기본적으로 나중에 입력한 것일수록 뒤에 실행됨
           .formLogin((formLogin) -> formLogin.disable());
