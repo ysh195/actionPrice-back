@@ -34,9 +34,7 @@ public class UserServiceImpl implements UserService {
    * @author 연상훈
    * @created 2024-10-10 오전 11:05
    * @updated 2024-10-22 오후 2:13 : 반환 타입을 boolean으로 변경
-   * @throw UsernameAlreadyExistsException
    */
-  @Transactional
   @Override
   public boolean createUser(UserRegisterForm userRegisterForm) {
     log.info("--------------- [UserService] createUser ----------------");

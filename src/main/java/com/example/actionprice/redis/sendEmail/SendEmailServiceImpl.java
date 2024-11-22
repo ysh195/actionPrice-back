@@ -67,6 +67,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 		// 해당 이메일로 발급 받은 verificationEmail이 있으면 가져오고, 없으면 null 반환 DB에 있음
 		VerificationEmail verificationEmail = verificationEmailRepository.findById(email).orElse(null);
+		log.info("레포지토리에 존재하는지 확인");
 
 		if (verificationEmail != null) { // 이미 존재하는지 체크
 			// 레디스에 저장하기 때문에 5분 지나면 자동 삭제됨. 다시 말해, 객체가 있다 = 생성된 지 5분이 지나지 않은 객체가 있다
@@ -82,18 +83,22 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 		// 이메일 내용 구성.
 		String subject = "[actionPrice] 회원가입 인증코드입니다.";
-		String content = String.format("""
-						인증코드
-						-------------------------------------------
-						%s
-						-------------------------------------------
-						""", verificationEmail.getVerificationCode());
+		String content = String.format(
+				"""
+				인증코드
+				-------------------------------------------
+				%s
+				-------------------------------------------
+				""",
+				verificationEmail.getVerificationCode()
+		);
 
 		// 이메일 발송. 존재하지 않는 이메일로 발송 시 자동으로 예외 처리.
 		// 그 경우에는 해당 객체가 DB에 저장되지 않으니 따로 삭제해줄 필요가 없음
 		sendSimpleMail(email, subject, content);
 
 		verificationEmailRepository.save(verificationEmail);
+		log.info("전송 및 레디스에 저장 완료");
 
 		return true;
 	}
@@ -141,15 +146,20 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 */
 	private boolean isCompleteSentEmail(String email) throws MessagingException, IOException {
 		boolean result = true;
+
 		log.info("이메일 발송이 완료되었는지 확인을 시작합니다.");
 
 		try (Store store = pop3Configuration.getPop3Store()) {
+
+			log.info("pop3 store");
 
 			if (store.isConnected()) {
 				store.close(); // 이미 연결된 경우 연결 닫기
 			}
 
 			store.connect(); // POP3 서버에 연결
+
+			log.info("pop3 서버 연결");
 
 			// 지정한 이메일 폴더 열기
 			try (Folder emailFolder = store.getFolder(pop3Configuration.getFolder())) {
@@ -259,6 +269,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 		simpleMailMessage.setText(content);
 
 		javaMailSender.send(simpleMailMessage);
+		log.info("이메일 전송");
 
 		if (!isCompleteSentEmail(receiverEmail)){
 			throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");

@@ -104,10 +104,10 @@ public class UserController {
    * @created : 2024-10-06 오후 8:24
    */
   @PostMapping("/checkVerificationCode")
-  public Map<String, String> checkVerificationCode(@Validated(UserRegisterForm.CheckValidityOfVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm){
+  public String checkVerificationCode(@Validated(UserRegisterForm.CheckValidityOfVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm){
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     String resultOfVerification = sendEmailService.checkVerificationCode(userRegisterForm.getEmail(), userRegisterForm.getVerificationCode());
-    return Map.of("resultOfVerification", resultOfVerification);
+    return resultOfVerification;
   }
 
   /**
@@ -192,6 +192,7 @@ public class UserController {
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     log.info("[class] UserController - [method] sendVerificationCode");
+    log.info(userRegisterForm.toString());
 
     String email = userRegisterForm.getEmail();
 

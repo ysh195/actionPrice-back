@@ -40,7 +40,7 @@ public class TokenRefreshController {
 
         // 리프레시 토큰 검증 후 아무 일 없었다면
         Map<String, String> map = accessTokenService.issueAccessToken(username);
-        String newAccessToken = map.get(TemporaryEntities.ACCESS_TOKEN.name());
+        String newAccessToken = map.get(TemporaryEntities.ACCESS_TOKEN.getGlobalName());
 
         return newAccessToken;
       }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * @author 연상훈
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class UserRegisterForm {
 
   // 현재 정규식 : 6~20자, 영어+숫자
