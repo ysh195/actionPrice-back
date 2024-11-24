@@ -51,9 +51,11 @@ public class CustomUserDetailService implements UserDetailsService {
       boolean isAccountNonLocked = true;
 
       // 로그인 실패 카운트 로직
-      LoginFailureCounterEntity loginFailureCounter = loginFailureCounterService.getOrCreateCounterEntity(username);
-      if (loginFailureCounter.getFailureCount() >= 5){
-        isAccountNonLocked = false;
+      LoginFailureCounterEntity loginFailureCounter = loginFailureCounterService.getCounterEntity(username);
+      if (loginFailureCounter != null) {
+        if (loginFailureCounter.getFailureCount() >= 5){
+          isAccountNonLocked = false;
+        }
       }
 
       return new org.springframework.security.core.userdetails.User(

@@ -29,6 +29,11 @@ public class LoginFailureCounterServiceImpl implements LoginFailureCounterServic
   }
 
   @Override
+  public LoginFailureCounterEntity getCounterEntity(String username) {
+    return repository.findById(username).orElse(null);
+  }
+
+  @Override
   public void addOnePoint(String username) {
     LoginFailureCounterEntity entity = getOrCreateCounterEntity(username);
 
