@@ -71,8 +71,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       AccessTokenEntity accessTokenEntity = accessTokenService.getAccessToken(tokenStr);
       if (accessTokenEntity == null){
         log.info("레디스에 저장된 토큰이 없음");
-        // 유효성 검증 중 토큰 만료 등의 문제가 발생하면 예외로 넘어감
 
+        // 유효성 검증 중 토큰 만료 등의 문제가 발생하면 예외로 넘어감
         if(hasUnavoidableReason(request)){
           log.info("로그아웃 또는 토큰 재발급 중에는 토큰 만료에 대해 검증하지 않음");
           username =
@@ -87,8 +87,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         username = accessTokenEntity.getUsername();
       }
 
-      // 토큰 내용에서 username을 추출하면서 유효성(엄격한 검사) 검사 진행
-      // 만약 이것저것 변조한 토큰이었다면 여기서 걸림
       log.info("username : " + username);
 
       // 인증 정보를 저장
@@ -96,15 +94,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       log.info("Security Context : " + SecurityContextHolder.getContext());
     } catch(AccessTokenException e){
       log.info("엑세스 토큰 문제 발생");
+
+      // 토큰 만료를 일부러 넘어가 주는 경로가 아닌 이상 토큰 만료 시 에러가 발생함.
       TokenErrors tokenErrors = e.getTokenErrors();
+
+      // 만약 에러 코드가 418(토큰 만료)면
       if (tokenErrors.getStatus().value() == 418){
-        response.setStatus(418);  // 418 상태 코드 반환
+        // 여기서 로직을 중단하고 에러를 반환
+        response.setStatus(418);
         response.getWriter().write(tokenErrors.getMessage());
+
         return;
       } else {
+        // 에러를 인터셉터에 넘김
         request.setAttribute("filter.exception", e);
       }
     } catch (Exception e) {
+      // 에러를 인터셉터에 넘김
       log.error("TokenCheckFilter 처리 중 예외 발생: {}", e.getMessage());
       request.setAttribute("filter.exception", e);
     }
@@ -113,6 +119,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     filterChain.doFilter(request, response);
   }
 
+  /**
+   * 헤더에서 토큰값 추출
+   * @author 연상훈
+   * @created 2024-11-26 오후 5:46
+   */
   private String extractTokenInHeaderStr(String headerStr) {
     log.info("headerStr : " + headerStr);
 
@@ -125,6 +136,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return tokenStr;
   }
 
+  /**
+   * 인증 정보 생성
+   * @author 연상훈
+   * @created 2024-11-26 오후 5:47
+   * @info 로직이 중요한 것도 아닌데 지저분해서 그냥 메서드로 뺌. 메서드로 안 빼도 상관 없음
+   */
   private UsernamePasswordAuthenticationToken getAuthenticationToken(String username, HttpServletRequest request){
     // 인증 정보 생성
     UserDetails userDetails = userDetailService.loadUserByUsername(username);
@@ -138,10 +155,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return authenticationToken;
   }
 
+  /**
+   * 헤더가 정상적인 토큰을 포함하고 있는지 체크
+   * @author 연상훈
+   * @created 2024-11-26 오후 5:47
+   */
   private boolean isHeaderWithoutToken(String headerStr) {
-    return headerStr == null || headerStr.contains("undefined") || !headerStr.startsWith("Bearer ");
+    return (headerStr == null || headerStr.contains("undefined") || !headerStr.startsWith("Bearer "));
   }
 
+  /**
+   * 요청된 url이 토큰 만료 검사의 면제 대상인지 확인
+   * @author 연상훈
+   * @created 2024-11-26 오후 5:48
+   * @info equals로 검사하는 것에 유의
+   */
   private boolean hasUnavoidableReason(HttpServletRequest request){
     if (request.getMethod().equals("POST")){
       for(String url : URL_WITH_UNAVOIDABLE_REASON){

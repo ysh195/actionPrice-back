@@ -2,8 +2,6 @@ package com.example.actionprice.myPage;
 
 import com.example.actionprice.customerService.post.PostService;
 import com.example.actionprice.customerService.post.dto.PostListDTO;
-import com.example.actionprice.exception.RefreshTokenException;
-import com.example.actionprice.exception.TokenErrors;
 import com.example.actionprice.exception.UserNotFoundException;
 import com.example.actionprice.security.jwt.refreshToken.RefreshTokenEntity;
 import com.example.actionprice.user.User;

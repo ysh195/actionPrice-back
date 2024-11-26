@@ -1,6 +1,5 @@
 package com.example.actionprice.security;
 
-import com.example.actionprice.exception.UserNotFoundException;
 import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterEntity;
 import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterService;
 import com.example.actionprice.user.User;
@@ -34,13 +33,13 @@ public class CustomUserDetailService implements UserDetailsService {
   private final LoginFailureCounterService loginFailureCounterService;
 
   @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
 
       log.info("[class] CustomUserDetailService - [method] loadUserByUsername > 시작");
 
-      // id = username
+      // 로그인 실패 시 발생하는 AuthenticationException과의 호환성을 위해 UsernameNotFoundException 사용이 강제됨
       User user = userRepository.findById(username)
-          .orElseThrow(() -> new UserNotFoundException(username));
+          .orElseThrow(() -> new UsernameNotFoundException(username + "does not exist"));
 
       log.info("[class] CustomUserDetailService - [method] loadUserByUsername > : " + user.toString());
 

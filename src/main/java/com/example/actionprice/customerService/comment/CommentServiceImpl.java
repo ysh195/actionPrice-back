@@ -76,7 +76,7 @@ public class CommentServiceImpl implements CommentService {
      * @throws CommentNotFoundException 해당 id를 가진 comment가 존재하지 않음
      */
     @Override
-    public CommentSimpleDTO updateComment(Integer commentId, String content, String logined_username) {
+    public CommentSimpleDTO updateComment(Integer commentId, String logined_username, String content) {
         log.info("[class] CommentServiceImpl - [method] updateComment - commentId : {} | commentId : {}", commentId, commentId);
 
         Comment comment = getCommentOrThrowException(commentId);

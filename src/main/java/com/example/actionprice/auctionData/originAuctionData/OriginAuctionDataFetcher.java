@@ -50,20 +50,6 @@ public class OriginAuctionDataFetcher {
         this.gson = new Gson();
     }
 
-    public String getAuctionData_String(String countryCode, String regday, String category_code) throws Exception {
-
-        URI uri = composeUri(countryCode, regday, category_code);
-
-        ResponseEntity<String> responseEntity = webClient.get()
-                .uri(uri)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .toEntity(String.class)
-                .block();
-
-        return responseEntity.getBody();
-    }
-
     /**
      * 메인데이터 추출(flux)
      * @param countryCode : 지역 코드
@@ -71,7 +57,12 @@ public class OriginAuctionDataFetcher {
      * @param category_code : 대분류 코드
      * @author 연상훈
      * @created 2024-10-25 오전 12:03
-     * @info
+     * @info api를 제공하는 측에서 "text" 타입으로만 데이터를 전달하고, 그 변형을 막아뒀기 때문에 무조건 일단은 text(String)으로 받고,
+     * 그 다음에 jsonObject를 사용해서 데이터의 구조를 조사해야 함.
+     * 바로 객체로 변환하지 않고 먼저 데이터의 구조를 조사하는 이유는,
+     * jsonObject 내부에 data라는 객체의 타입이 무엇이냐에 따라 [조회데이터 없음] 오류가 발생하는지, 아니면 정상적으로 조회가 되는지가 달라짐
+     * [조회데이터 없음] 오류 발생 시 이 메서드를 실행하는 것 자체에서부터 문제가 발생하기 때문에 이 메서드를 사용하는 로직 내에서는 처리하기가 까다로워짐
+     * 그러니 여기서에서 문제를 다 해결해줘야 하는 것이고, jsonObject 조사를 통해 문제가 발생하지 않도록 대응하는 것.
      */
     public Flux<OriginAuctionDataRow> getAuctionData_Flux(String countryCode, String regday, String category_code) throws Exception {
         URI uri = composeUri(countryCode, regday, category_code);
@@ -98,6 +89,10 @@ public class OriginAuctionDataFetcher {
             });
     }
 
+    /**
+     * 요청에 필요한 url을 구성하는 메서드
+     * @author 연상훈
+     */
     private URI composeUri(String countryCode, String regday, String category_code) throws URISyntaxException {
 
         String p_cert_id = "lhm3052@naver.com"; // 요청자 id

@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
   private final LoginFailureCounterService loginFailureCounterService;
 
   /**
-   * 유저 생성 기능. 대체로 회원가입
+   * 유저 생성 기능
    * @param userRegisterForm
    * @author 연상훈
    * @created 2024-10-10 오전 11:05

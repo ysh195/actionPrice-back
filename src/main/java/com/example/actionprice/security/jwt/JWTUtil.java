@@ -29,10 +29,9 @@ public class JWTUtil {
   /**
    * 토큰 생성
    * @param user
-   * @param time 토큰의 유효시간(분).
+   * @param time 토큰의 유효시간(초).
    * @author : 연상훈
    * @created : 2024-10-06 오후 2:12
-   * @info 일단위로 하고 싶으면 60*24*days 또는 plusDays(time).
    */
   public String generateToken(User user, long time) {
 
@@ -51,7 +50,7 @@ public class JWTUtil {
         .setClaims(claims)
         .setSubject(user.getUsername())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(new Date(System.currentTimeMillis() + (time*1000))) // redis는 s고, jwt는 ms라서 이렇게 됨
+        .setExpiration(new Date(System.currentTimeMillis() + (time*1000))) // redis는 초 단위고, jwt는 밀리초 단위라서 이렇게 됨
         .signWith(SIGNATURE_ALGORITHM, secretKey.getBytes(StandardCharsets.UTF_8))
         .compact();
   }
@@ -65,7 +64,7 @@ public class JWTUtil {
   public String validateToken(String token) throws JwtException {
     return Jwts.parserBuilder()
         .setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)) // 설정한 secret key
-        .setAllowedClockSkewSeconds(60) // 1분의 오차는 허용
+        .setAllowedClockSkewSeconds(60) // 60초의 오차는 허용
         .build()
         .parseClaimsJws(token)
         .getBody()

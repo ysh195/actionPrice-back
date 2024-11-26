@@ -126,12 +126,20 @@ public class AccessTokenServiceImpl implements AccessTokenService {
    * @author 연상훈
    * @created 2024-10-20 오후 1:27
    * @info 리프레시 토큰은 내부적으로만 관리하고, 반환하는 건 엑세스 토큰만
+   * @info 엑세스 토큰 발급 결과를 반환한 뒤 그것을 활용하는 로직이 필요하기 때문에 바로 json으로 변환하지 않고
+   * 이렇게 따로 json으로 변환하는 로직을 마련해서 로직 진행 후 최종적으로 json 변환이 가능하도록 함
    */
   @Override
   public String returnWithJson(Map<String, String> map){
     return new Gson().toJson(map);
   }
 
+  /**
+   * 토큰 엑세스 삭제
+   * @author 연상훈
+   * @created 2024-11-26 오후 5:06
+   * @info 불필요한 토큰 정리를 위해 로그아웃 시 엑세스 토큰을 삭제하도록 함
+   */
   @Override
   public void deleteAccessToken(String username) {
     AccessTokenEntity accessTokenEntity = accessTokenRepository.findByUsername(username).orElse(null);

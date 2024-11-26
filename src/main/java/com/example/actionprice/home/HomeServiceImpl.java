@@ -44,14 +44,6 @@ public class HomeServiceImpl implements HomeService {
           "static/image/meat.jpg",
           "static/image/scrop.jpg",
           "static/image/ve.jpg",
-          "static/image/slide_blue.jpg",
-          "static/image/slide_cherry.jpg",
-          "static/image/slide_chicken.jpg",
-          "static/image/slide_grape.jpg",
-          "static/image/slide_lab.jpg",
-          "static/image/slide_lemon.jpg",
-          "static/image/slide_meat.jpg",
-          "static/image/slide_ve.jpg"
   };
 
   /**

@@ -147,9 +147,17 @@ public class CustomRestAdvice {
         .body(e.getMessage());
   }
 
-  // 토큰 에러
+  // 엑세스 토큰 에러
   @ExceptionHandler(AccessTokenException.class)
   public ResponseEntity<String> handlerAccessTokenException(AccessTokenException e) {
+    TokenErrors token_error = e.getTokenErrors();
+    return ResponseEntity.status(token_error.getStatus())
+        .body(token_error.getMessage());
+  }
+
+  // 리프레시 토큰 에러
+  @ExceptionHandler(RefreshTokenException.class)
+  public ResponseEntity<String> handlerRefreshTokenException(RefreshTokenException e) {
     TokenErrors token_error = e.getTokenErrors();
     return ResponseEntity.status(token_error.getStatus())
         .body(token_error.getMessage());

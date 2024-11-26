@@ -11,9 +11,6 @@ import java.util.Map;
  * @created 2024-10-16 오후 3:01
  * @updated 2024-10-16 오후 3:01
  * @info : 추후 라이브서비스 때 scheduler에 넣기 위해 컴포넌트로 만듬
- * @see :
- * 표로 정리된 구글 시트 링크
- * https://docs.google.com/spreadsheets/d/1v83UPPUlm5D36oOcQTuxpi7xn1DBw-OsUCiFhKff2-M/edit?gid=0#gid=0
  */
 @Component
 @Getter
@@ -52,6 +49,11 @@ public class AllSortingComponent {
         Map.entry("3818", "김해")
     );
 
+    /**
+     * 대분류 카테고리
+     * @author 연상훈
+     * @created 2024-11-26 오후 4:02
+     */
     private final Map<String, String> grand_sort = Map.of(
         "100", "식량작물",
         "200", "채소류",

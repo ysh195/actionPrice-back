@@ -25,13 +25,6 @@ public class OriginAuctionDataTests {
     @Autowired
     private AuctionEntityService auctionEntityService;
 
-    @Test
-    @Disabled
-    void auctionDataPrintTest() throws Exception {
-        String reponseBody = originAuctionDataFetcher.getAuctionData_String("1101", "2024-10-20", "100");
-        System.out.println(reponseBody);
-    }
-    
     /**
      * @author 연상훈
      * @created 2024-11-09 오후 11:19

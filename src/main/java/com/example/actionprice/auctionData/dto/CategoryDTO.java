@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
 
+/**
+ * 카테고리 정보 전달에 사용되는 dto
+ */
 @Getter
 @Builder
 public class CategoryDTO {

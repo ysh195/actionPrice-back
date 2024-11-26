@@ -1,6 +1,7 @@
 package com.example.actionprice.home;
 
 import java.io.IOException;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,12 +29,12 @@ public class HomeController {
     @GetMapping("/")
     public Map<String, Object> fetchHomeImages() {
         log.info("fetch images");
-        Map<String, String> images = null;
+        Map<String, String> images = new HashMap<>();
 
         try {
             images = homeService.fetchImages();
         } catch (IOException e) {
-            throw new RuntimeException("Failed to load images");
+            throw new RuntimeException(e.getCause());
         }
 
         return Map.of("images", images);

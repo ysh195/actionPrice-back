@@ -5,9 +5,11 @@ import lombok.Builder;
 import lombok.Getter;
 import java.util.List;
 
+/**
+ * 거래 내역 조회에 사용되는 dt
+ */
 @Getter
 @Builder
-
 public class CategoryResultDTO {
 
     private List<AuctionBaseEntity> categoryList;

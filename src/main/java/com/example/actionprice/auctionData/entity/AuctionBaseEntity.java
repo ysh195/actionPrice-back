@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
@@ -16,7 +15,7 @@ import java.time.LocalDate;
  * @created 2024-11-08 오후 2:46
  * @updated 2024-11-10 오후 9:45 : delDate의 set 메서드 추가
  * @info MappedSuperclass와 SuperBuilder로 엔티티 변환이 자유롭도록 함
- * @info 그래프 객체 때문에 날짜에 대한 delDate의 set 메서드가 반드시 필요
+ * @info 그래프 객체 때문에 delDate의 set 메서드가 반드시 필요
  */
 @MappedSuperclass
 @SuperBuilder

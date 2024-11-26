@@ -105,7 +105,7 @@ public class FavoriteServiceImpl implements FavoriteService {
    * @author 연상훈
    * @created 2024-11-08 오후 2:38
    * @info 마이페이지 목록이 보안이 필요한 것도 아니고,
-   * 이걸 사용하는 것 자체가 로그인한 사용자 혹은 마이페이지 내부라서 기본적으로 이미 보안이 깔려 있음
+   * 이걸 사용하는 것 자체가 로그인 한 사용자 혹은 마이페이지 내부라서 기본적으로 이미 보안이 깔려 있음
    */
   @Override
   public List<FavoriteSimpleDTO> getFavoriteList(String logined_username) {

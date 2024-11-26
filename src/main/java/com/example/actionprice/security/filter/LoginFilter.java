@@ -1,11 +1,7 @@
 package com.example.actionprice.security.filter;
 
-import com.example.actionprice.exception.UserNotFoundException;
-import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterEntity;
 import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterService;
 import com.example.actionprice.security.CustomUserDetailService;
-import com.example.actionprice.user.User;
-import com.example.actionprice.user.UserRepository;
 import com.example.actionprice.user.forms.UserLoginForm;
 import com.google.gson.Gson;
 import jakarta.servlet.FilterChain;
@@ -16,7 +12,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.time.LocalDateTime;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -44,7 +40,6 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
   private final CustomUserDetailService userDetailService;
   private final AuthenticationSuccessHandler loginSuccessHandler;
-  private final UserRepository userRepository;
   private final LoginFailureCounterService loginFailureCounterService;
 
   /**
@@ -58,14 +53,12 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
       String defaultFilterProcessesUrl,
       CustomUserDetailService userDetailService,
       AuthenticationSuccessHandler loginSuccessHandler,
-      UserRepository userRepository,
       LoginFailureCounterService loginFailureCounterService,
       AuthenticationManager authenticationManager
   ) {
     super(defaultFilterProcessesUrl);
     this.userDetailService = userDetailService;
     this.loginSuccessHandler = loginSuccessHandler;
-    this.userRepository = userRepository;
     this.loginFailureCounterService = loginFailureCounterService;
     setAuthenticationSuccessHandler(loginSuccessHandler);
     setAuthenticationManager(authenticationManager);
@@ -169,13 +162,20 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     String username = (String)request.getAttribute("username");
-    log.info("[class] LoginFilter - [method] successfulAuthentication > username : {}", username);
+    log.info("[class] LoginFilter - [method] unsuccessfulAuthentication > username : {}", username);
     if(username == null) {
       return;
     }
 
-    loginFailureCounterService.addOnePoint(username);
+    // username을 잘못 입력해서 해당 사용자가 존재하지 않을 때 발생하는 게 UsernameNotFoundException
+    // 최소한 존재하는 사용자에 대한 로그인이 실패했을 때만 레디스에 로그인실패 카운트가 생성되도록 함
+    // 안 그러면 존재하지 않는 사용자로 계속해서 로그인 실패를 반복해서 레디스에 불필요한 데이터가 대량으로 생성될 수도 있음
+    if (!(failed instanceof UsernameNotFoundException)) {
+      // 적어도 "그러한 사용자가 존재하지 않음"이 아닐 때(= 그러한 사용자가 존재할 때) 로그인 실패 카운트 생성
+      loginFailureCounterService.addOnePoint(username);
+    }
 
+    // 아이디와 비밀번호 중 뭐가 잘못된 것인지 모르게 해서 부정 사용을 통한 username 때려 맞추기 방지
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     response.getWriter().println("[loginFailure] Incorrect username or password");
     log.info("[class] LoginFilter - [method] unsuccessfulAuthentication > 종료");

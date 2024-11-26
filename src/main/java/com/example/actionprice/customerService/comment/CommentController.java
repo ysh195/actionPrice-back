@@ -34,8 +34,6 @@ public class CommentController {
      * 댓글 생성 기능
      * @param postId 당연히 PostDetail에서 댓글 추가/수정/삭제 등이 있을 테니, path에 이미 포함되어 있을 거임. 그리고 어느 post의 댓글로 추가될 지도 파악하기 위해 필요함
      * @param requestBody "logined_username"와 "content"가 맵 형태로 전달되어야 함
-     * @value logined_username : 로그인 된 username
-     * @value content : 댓글 내용
      * @author 연상훈
      * @created 2024-10-27 오후 12:14
      * @info 어차피 댓글 생성/수정/삭제는 PostDetail 안에서 이루어지고,
@@ -80,7 +78,7 @@ public class CommentController {
         String content = requestBody.get("content");
         log.info("[class] CommentController - [method] updateComment - content : {}",  content);
 
-        return commentService.updateComment(commentId, content, getUsernameWithPrincipal());
+        return commentService.updateComment(commentId, getUsernameWithPrincipal(), content);
     }
 
     /**
@@ -154,6 +152,10 @@ public class CommentController {
     }
 
     private String getUsernameWithPrincipal(){
-        return ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+            .getAuthentication()
+            .getPrincipal();
+
+        return userDetails.getUsername();
     }
 }

@@ -14,21 +14,6 @@ public class LoginFailureCounterServiceImpl implements LoginFailureCounterServic
   private final LoginFailureCounterRepository repository;
 
   @Override
-  public LoginFailureCounterEntity getOrCreateCounterEntity(String username) {
-    LoginFailureCounterEntity entity = repository.findById(username).orElse(null);
-
-    if (entity == null){
-      entity = LoginFailureCounterEntity.builder()
-          .username(username)
-          .build();
-
-      entity = repository.save(entity);
-    }
-
-    return entity;
-  }
-
-  @Override
   public LoginFailureCounterEntity getCounterEntity(String username) {
     return repository.findById(username).orElse(null);
   }
@@ -53,5 +38,19 @@ public class LoginFailureCounterServiceImpl implements LoginFailureCounterServic
     }
 
     repository.delete(entity);
+  }
+
+  private LoginFailureCounterEntity getOrCreateCounterEntity(String username) {
+    LoginFailureCounterEntity entity = repository.findById(username).orElse(null);
+
+    if (entity == null){
+      entity = LoginFailureCounterEntity.builder()
+          .username(username)
+          .build();
+
+      entity = repository.save(entity);
+    }
+
+    return entity;
   }
 }

@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * 도매시장 거래내역 조회에 필요한, 카테고리 검색에 사용되는 컨트롤러
+ * @info 우리가 확보한 데이터가 현재로부터 1년 전이기 때문에 1년을 초과하는 기간은 조회할 수 없음
+ * @info 그렇기 때문에 데이터 조회 시 1년을 초과하는 조회가 불가능하도록 설정
+ */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/category")
@@ -26,22 +31,37 @@ public class AuctionCategoryController {
     private final AuctionCategoryService auctionCategoryService;
     private final AuctionEntityService auctionEntityService;
 
+    /**
+     * 중분류 카테고리 조회
+     * @param large 대분류 카테고리
+     */
     @GetMapping("/{large}")
-    public CategoryDTO getCategoriesByLarge(@PathVariable String large) {
+    public CategoryDTO getMiddleCategoriesByLarge(@PathVariable String large) {
         log.info("[class] AuctionCategoryController - [method] getCategoriesByLarge - large : {}", large);
         return auctionCategoryService.getMiddleCategory(large);
     }
 
+    /**
+     * 소분류 카테고리 조회
+     * @param large 대분류 카테고리
+     * @param middle 중분류 카테고리
+     */
     @GetMapping("/{large}/{middle}")
-    public CategoryDTO getCategoriesByLargeAndMiddle(
+    public CategoryDTO getSmallCategoriesByLargeAndMiddle(
             @PathVariable String large,
             @PathVariable String middle) {
         log.info("[class] AuctionCategoryController - [method] getCategoriesByLargeAndMiddle - large : {} | middle : {}", large, middle);
         return auctionCategoryService.getSmallCategory(large, middle);
     }
 
+    /**
+     * 상품등급 카테고리 조회
+     * @param large 대분류 카테고리
+     * @param middle 중분류 카테고리
+     * @param small 소분류 카테고리
+     */
     @GetMapping("/{large}/{middle}/{small}")
-    public CategoryDTO getCategoriesMyLargeMiddleSmall(
+    public CategoryDTO getRankCategoriesByLargeMiddleSmall(
             @PathVariable String large,
             @PathVariable String middle,
             @PathVariable String small) {
@@ -49,8 +69,18 @@ public class AuctionCategoryController {
         return auctionCategoryService.getProductRankCategory(large, middle, small);
     }
 
+    /**
+     * 거래내역 조회(리스트)
+     * @param large 대분류 카테고리
+     * @param middle 중분류 카테고리
+     * @param small 소분류 카테고리
+     * @param rank 상품등급 카테고리
+     * @param startDate 조회할 날짜(시작)
+     * @param endDate 조회할 날짜(종료)
+     * @param pageNum 페이지 번호(pagenation)
+     */
     @GetMapping("/{large}/{middle}/{small}/{rank}")
-    public CategoryResultDTO getPriceMySmallMiddleSmallRank(
+    public CategoryResultDTO getPriceBySmallMiddleSmallRank(
             @PathVariable String large,
             @PathVariable String middle,
             @PathVariable String small,
@@ -62,11 +92,15 @@ public class AuctionCategoryController {
 
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
-        // 날짜 유효성 검사
-        if (endDate == null || endDate.isBefore(oneYearAgo)) {
+
+        boolean isEndDateIncorrect = endDate == null || endDate.isBefore(oneYearAgo);
+        if (isEndDateIncorrect) {
             endDate = today; // 기본값으로 오늘 날짜로 설정
         }
-        if (startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
+
+        boolean isStartDateIncorrect =
+            startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate);
+        if (isStartDateIncorrect) {
             // 기본값으로 오늘 날짜로 설정
             startDate = today;
         }
@@ -82,6 +116,15 @@ public class AuctionCategoryController {
         );
     }
 
+    /**
+     * 거래내역 조회(그래프)
+     * @param large 대분류 카테고리
+     * @param middle 중분류 카테고리
+     * @param small 소분류 카테고리
+     * @param rank 상품등급 카테고리
+     * @param startDate 조회할 날짜(시작)
+     * @param endDate 조회할 날짜(종료)
+     */
     @GetMapping("/{large}/{middle}/{small}/{rank}/gragh")
     public ChartDataDTO getPriceDataWithGragh(
         @PathVariable String large,
@@ -94,11 +137,15 @@ public class AuctionCategoryController {
         log.info("그래프 출력 시작");
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
-        // 날짜 유효성 검사
-        if (endDate == null || endDate.isBefore(oneYearAgo)) {
+
+        boolean isEndDateIncorrect = endDate == null || endDate.isBefore(oneYearAgo);
+        if (isEndDateIncorrect) {
             endDate = today; // 기본값으로 오늘 날짜로 설정
         }
-        if (startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
+
+        boolean isStartDateIncorrect =
+            startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate);
+        if (isStartDateIncorrect) {
             // 기본값으로 오늘 날짜로 설정
             startDate = today;
         }
@@ -114,6 +161,15 @@ public class AuctionCategoryController {
         );
     }
 
+    /**
+     * 거래내역 엑셀 파일로 다운로드
+     * @param large 대분류 카테고리
+     * @param middle 중분류 카테고리
+     * @param small 소분류 카테고리
+     * @param rank 상품등급 카테고리
+     * @param startDate 조회할 날짜(시작)
+     * @param endDate 조회할 날짜(종료)
+     */
     @GetMapping("/{large}/{middle}/{small}/{rank}/excel")
     public ResponseEntity<byte[]> downloadExcel(
             @PathVariable String large,
@@ -125,14 +181,19 @@ public class AuctionCategoryController {
 
         LocalDate today = LocalDate.now();
         LocalDate oneYearAgo = today.minusYears(1);
-        // 날짜 유효성 검사
-        if (endDate == null || endDate.isBefore(oneYearAgo)) {
+
+        boolean isEndDateIncorrect = endDate == null || endDate.isBefore(oneYearAgo);
+        if (isEndDateIncorrect) {
             endDate = today; // 기본값으로 오늘 날짜로 설정
         }
-        if (startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate)) {
+
+        boolean isStartDateIncorrect =
+            startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate);
+        if (isStartDateIncorrect) {
             // 기본값으로 오늘 날짜로 설정
             startDate = today;
         }
+
         // 페이지 없이 데이터를 가져오는 서비스 메서드 호출
         List<AuctionBaseEntity> transactionHistoryList =
             auctionEntityService.fetchTransactionHistoryList(

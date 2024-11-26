@@ -45,11 +45,6 @@ import java.util.Arrays;
  * 보안 관련된 거의 모든 설정이 있는 곳
  * @author 연상훈
  * @created 24/10/01 13:46
- * @updated 24/10/14 05:26 LoginSuccessHandler가 rememberMe 토큰 생성을 막고 있어서 제거. 그것을 대체하는 LoginFilter - successfulAuthentication 생성함
- * @updated 2024-10-14 오후 12:05 LoginSuccessHandler가 없으면 또 로그인에 문제 생겨서 다시 생성함. 그리고 대부분의 객체를 Bean으로 관리하도록 수정
- * @updated 2024-10-17 오후 7:15 : 리멤버미 삭제
- * @updated 2024-10-19 오후 5:19 : logoutSuccessHandler 추가. jwtUtil을 RefreshTokenService로 통합. RefreshTokenService 안에 jwtUtil 있음
- * @updated 2024-11-07 오후 11:30 : 보안을 적극적으로 적용하면서 대폭 수정. url path 수정, 필터 수정 등
  * @updated 2024-11-13 오전 1:23 [연상훈] : bean과 url path 정리. 지나치게 길고 많은 url들을 UrlPathManager에서 관리하도록 함
  */
 @SuppressWarnings("ALL")
@@ -136,7 +131,6 @@ public class CustomSecurityConfig {
               "/api/user/login",
               userDetailsService,
               new LoginSuccessHandler(accessTokenService, refreshTokenService),
-              userRepository,
               loginFailureCounterService,
               authenticationManager
       );
@@ -186,13 +180,14 @@ public class CustomSecurityConfig {
       LogoutSuccessHandler logoutSuccessHandler = new LogoutSuccessHandler() {
         @Override
         public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-            String username = authentication.getName();
-            accessTokenService.deleteAccessToken(username);
+          // 엑세스 토큰 삭제
+          String username = authentication.getName();
+          accessTokenService.deleteAccessToken(username);
 
-            SecurityContextHolder.clearContext();
-            log.info("----------------- 로그아웃 ----------------------");
-            response.setStatus(HttpServletResponse.SC_OK);  // 200 OK 응답
-            response.getWriter().write("logout success");  // JSON 응답
+          SecurityContextHolder.clearContext();
+          log.info("----------------- 로그아웃 ----------------------");
+          response.setStatus(HttpServletResponse.SC_OK);  // 200 OK 응답
+          response.getWriter().write("logout success");  // JSON 응답
         }
       };
   
