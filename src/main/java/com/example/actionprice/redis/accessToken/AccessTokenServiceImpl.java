@@ -48,7 +48,7 @@ public class AccessTokenServiceImpl implements AccessTokenService {
   @Override
   public Map<String, String> issueAccessToken(String username) {
     User user = userRepository.findById(username)
-        .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+        .orElseThrow(() -> new UserNotFoundException(username));
 
     String accessToken = jwtUtil.generateToken(user, TemporaryEntities.ACCESS_TOKEN.getTtl());
 

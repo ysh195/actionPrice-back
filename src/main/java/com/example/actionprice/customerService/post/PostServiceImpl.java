@@ -44,7 +44,7 @@ public class PostServiceImpl implements PostService{
     public PostSimpleDTO createPost(PostForm postForm) {
         log.info("[class] PostServiceImpl - [method] createPost - postForm : " + postForm.toString());
         User user = userRepository.findById(postForm.getUsername())
-            .orElseThrow(() -> new UserNotFoundException("user(" + postForm.getUsername() + ") does not exist"));
+            .orElseThrow(() -> new UserNotFoundException(postForm.getUsername()));
 
         Post post = Post.builder()
                 .user(user)
@@ -78,8 +78,7 @@ public class PostServiceImpl implements PostService{
      */
     @Override
     public PostSimpleDTO goUpdatePost(Integer postId, String logined_username, boolean isAdmin) {
-        Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        Post post = getPostOrThrowException(postId);
 
         String owner_username = post.getUser().getUsername();
 
@@ -112,8 +111,7 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostSimpleDTO updatePost(Integer postId, PostForm postForm, String logined_username, boolean isAdmin) {
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        Post post = getPostOrThrowException(postId);
 
         String owner_username = post.getUser().getUsername();
 
@@ -149,8 +147,7 @@ public class PostServiceImpl implements PostService{
     public PostSimpleDTO deletePost(Integer postId, String logined_username, boolean isAdmin) {
 
         log.info("[class] PostServiceImpl - [method] deletePost - postId : {}", postId);
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        Post post = getPostOrThrowException(postId);
 
         String owner_username = post.getUser().getUsername();
 
@@ -186,8 +183,7 @@ public class PostServiceImpl implements PostService{
                 isAdmin
         );
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        Post post = getPostOrThrowException(postId);
 
         String owner_username = post.getUser().getUsername();
 
@@ -275,6 +271,11 @@ public class PostServiceImpl implements PostService{
         log.info("인증 실패");
 
         throw new AccessDeniedException("you are not allowed to access this post");
+    }
+
+    private Post getPostOrThrowException(Integer postId){
+        return postRepository.findById(postId)
+            .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
 }

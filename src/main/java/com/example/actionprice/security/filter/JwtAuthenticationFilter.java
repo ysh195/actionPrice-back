@@ -39,7 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   // url이 equals 일 때만 취급하고 있음. 필요하면 startWith로 바꿔야 함
   private final String[] URL_WITH_UNAVOIDABLE_REASON = {
       "/api/auth/refresh",
-      "/api/auth/refresh"
+      "/api/user/logout"
   };
 
   @Override
@@ -75,9 +75,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if(hasUnavoidableReason(request)){
           log.info("로그아웃 또는 토큰 재발급 중에는 토큰 만료에 대해 검증하지 않음");
-          username = accessTokenService.validateAccessTokenAndExtractUsernameWithoutEXP(tokenStr);
+          username =
+              accessTokenService.validateAccessTokenAndExtractUsernameWithoutEXP(tokenStr);
         } else {
-          username = accessTokenService.validateAccessTokenAndExtractUsername(tokenStr);
+          username =
+              accessTokenService.validateAccessTokenAndExtractUsername(tokenStr);
         }
 
       } else {

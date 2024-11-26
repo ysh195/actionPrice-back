@@ -46,10 +46,9 @@ public class CommentServiceImpl implements CommentService {
     public CommentSimpleDTO createComment(Integer postId, String logined_username, String content) {
 
         User user = userRepository.findById(logined_username)
-                .orElseThrow(() -> new UserNotFoundException("user(" + logined_username + ") does not exist"));
+                .orElseThrow(() -> new UserNotFoundException(logined_username));
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        Post post = getPostOrThrowException(postId);
 
         Comment comment = Comment.builder()
                 .content(content)
@@ -80,8 +79,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentSimpleDTO updateComment(Integer commentId, String content, String logined_username) {
         log.info("[class] CommentServiceImpl - [method] updateComment - commentId : {} | commentId : {}", commentId, commentId);
 
-        Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new CommentNotFoundException("comment(id : " + commentId + ") does not exist"));
+        Comment comment = getCommentOrThrowException(commentId);
 
         String owner_username = comment.getUser().getUsername();
 
@@ -107,8 +105,7 @@ public class CommentServiceImpl implements CommentService {
     public CommentSimpleDTO deleteComment(Integer commentId, String logined_username, boolean isAdmin) {
         log.info("[class] CommentServiceImpl - [method] deleteComment - commentId : {}", commentId);
 
-        Comment comment = commentRepository.findById(commentId)
-            .orElseThrow(() -> new CommentNotFoundException("comment(id : " + commentId + ") does not exist"));
+        Comment comment = getCommentOrThrowException(commentId);
 
         String owner_username = comment.getUser().getUsername();
 
@@ -135,8 +132,7 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public CommentListDTO getCommentListByPostId(Integer postId, Integer pageNum, String logined_username, boolean isAdmin) {
-        Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        Post post = getPostOrThrowException(postId);
 
         // 게시글이 공개글이 아니고(= 비밀글이고)
         if (!post.isPublished()) {
@@ -229,8 +225,7 @@ public class CommentServiceImpl implements CommentService {
      */
     @Override
     public String generateAnswer(Integer postId, String answerType) {
-        Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new PostNotFoundException("post(" + postId + ") does not exist"));
+        Post post = getPostOrThrowException(postId);
 
         String post_writer = post.getUser().getUsername();
         String post_content = post.getContent();
@@ -291,5 +286,15 @@ public class CommentServiceImpl implements CommentService {
             .stream()
             .map(comment -> convertCommentToCommentSimpleDTO(comment, comment.getUser().getUsername()))
             .toList();
+    }
+
+    private Post getPostOrThrowException(Integer postId){
+        return postRepository.findById(postId)
+            .orElseThrow(() -> new PostNotFoundException(postId));
+    }
+
+    private Comment getCommentOrThrowException(Integer commentId){
+        return commentRepository.findById(commentId)
+            .orElseThrow(() -> new CommentNotFoundException(commentId));
     }
 }

@@ -6,5 +6,7 @@ package com.example.actionprice.exception;
  * @created 2024-11-08 오전 11:03
  */
 public class InvalidCategoryException extends RuntimeException {
-    public InvalidCategoryException(String message) {super(message);}
+    public InvalidCategoryException(String category) {
+        super(String.format("Invalid category: %s", category));
+    }
 }

@@ -42,7 +42,7 @@ public class FavoriteServiceImpl implements FavoriteService {
       String favorite_name
   ) {
     User user = userRepository.findById(logined_username)
-        .orElseThrow(() -> new UserNotFoundException("user(" +logined_username + ") does not exist"));
+        .orElseThrow(() -> new UserNotFoundException(logined_username));
 
     String favoriteUrl = String.format(
             "http://localhost:3000/api/category/%s/%s/%s/%s",
@@ -53,7 +53,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     );
 
     if(user.getFavoriteSet().size() >= maxFavoriteSize) {
-      throw new TooManyFavoritesException("max size of favorite : " + maxFavoriteSize);
+      throw new TooManyFavoritesException(maxFavoriteSize);
     }
 
     Favorite favorite = Favorite.builder()

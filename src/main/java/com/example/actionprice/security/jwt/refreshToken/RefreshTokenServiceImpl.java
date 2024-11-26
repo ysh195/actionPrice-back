@@ -39,7 +39,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
   @Override
   public User issueRefreshTokenOnLoginSuccess(String username) {
     User user = userRepository.findById(username)
-        .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+        .orElseThrow(() -> new UserNotFoundException(username));
 
     RefreshTokenEntity refreshToken = user.getRefreshToken();
 

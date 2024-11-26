@@ -7,7 +7,7 @@ package com.example.actionprice.exception;
  * @info
  */
 public class UserNotFoundException extends RuntimeException{
-  public UserNotFoundException(String message){
-    super(message);
+  public UserNotFoundException(String inputedStr){
+    super(String.format("User(%s) does not exists", inputedStr));
   }
 }

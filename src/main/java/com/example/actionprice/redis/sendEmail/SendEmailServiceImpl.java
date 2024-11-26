@@ -272,7 +272,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 		log.info("이메일 전송");
 
 		if (!isCompleteSentEmail(receiverEmail)){
-			throw new InvalidEmailAddressException("[" + receiverEmail + "] does not exist");
+			throw new InvalidEmailAddressException(receiverEmail);
 		}
 	}
 

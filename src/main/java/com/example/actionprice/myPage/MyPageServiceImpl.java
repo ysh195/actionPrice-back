@@ -43,7 +43,7 @@ public class MyPageServiceImpl implements MyPageService {
     public Map<String, String> getPersonalInfo(String username) {
         log.info("[class] MyPageServiceImpl - [method] getPersonalInfo > 실행");
         User user = userRepository.findById(username)
-            .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+            .orElseThrow(() -> new UserNotFoundException(username));
 
         return Map.of("username", username, "email", user.getEmail());
     }
@@ -61,7 +61,7 @@ public class MyPageServiceImpl implements MyPageService {
     public void deleteUser(String username) {
         log.info("[class] MyPageServiceImpl - [method] deleteUser > 실행");
         User user = userRepository.findById(username)
-            .orElseThrow(() -> new UserNotFoundException("user(" + username + ") does not exist"));
+            .orElseThrow(() -> new UserNotFoundException(username));
 
         RefreshTokenEntity refreshTokenEntity = user.getRefreshToken();
         if (refreshTokenEntity != null) {

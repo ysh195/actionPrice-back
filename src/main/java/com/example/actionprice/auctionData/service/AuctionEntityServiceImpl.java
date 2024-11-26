@@ -143,7 +143,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         break;
 
       default:
-        throw new InvalidCategoryException("Invalid category: " + large);
+        throw new InvalidCategoryException(large);
     }
 
     // 마지막에 페이지네이션 시키면서 resultDTO로 변환. 자잘한 계산은 메서드 안에서 처리됨
@@ -222,7 +222,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
             endDate)
         );
       default:
-        throw new InvalidCategoryException("Invalid category: " + large);
+        throw new InvalidCategoryException(large);
     }
   }
 
@@ -276,7 +276,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
       return outputStream.toByteArray(); // 엑셀 파일 바이트 배열 반환
 
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException(e.getCause());
     }
   }
 

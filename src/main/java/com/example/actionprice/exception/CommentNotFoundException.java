@@ -8,7 +8,7 @@ package com.example.actionprice.exception;
  */
 public class CommentNotFoundException extends RuntimeException {
 
-  public CommentNotFoundException(String message) {
-    super(message);
+  public CommentNotFoundException(Integer commentId) {
+    super(String.format("Comment(%d) does not exists", commentId));
   }
 }

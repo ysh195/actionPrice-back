@@ -6,7 +6,7 @@ package com.example.actionprice.exception;
  * @created 2024-10-10 오전 11:08
  */
 public class InvalidEmailAddressException extends RuntimeException {
-    public InvalidEmailAddressException(String message) {
-        super(message);
+    public InvalidEmailAddressException(String email) {
+        super(String.format("Invalid email address: %s", email));
     }
 }

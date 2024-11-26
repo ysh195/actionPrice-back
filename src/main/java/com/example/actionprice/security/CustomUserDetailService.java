@@ -1,5 +1,6 @@
 package com.example.actionprice.security;
 
+import com.example.actionprice.exception.UserNotFoundException;
 import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterEntity;
 import com.example.actionprice.redis.loginFailureCounter.LoginFailureCounterService;
 import com.example.actionprice.user.User;
@@ -39,7 +40,7 @@ public class CustomUserDetailService implements UserDetailsService {
 
       // id = username
       User user = userRepository.findById(username)
-          .orElseThrow(() -> new UsernameNotFoundException("유저[" + username + "]가 존재하지 않습니다."));
+          .orElseThrow(() -> new UserNotFoundException(username));
 
       log.info("[class] CustomUserDetailService - [method] loadUserByUsername > : " + user.toString());
 
@@ -51,7 +52,8 @@ public class CustomUserDetailService implements UserDetailsService {
       boolean isAccountNonLocked = true;
 
       // 로그인 실패 카운트 로직
-      LoginFailureCounterEntity loginFailureCounter = loginFailureCounterService.getCounterEntity(username);
+      LoginFailureCounterEntity loginFailureCounter =
+          loginFailureCounterService.getCounterEntity(username);
       if (loginFailureCounter != null) {
         if (loginFailureCounter.getFailureCount() >= 5){
           isAccountNonLocked = false;

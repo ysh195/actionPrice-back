@@ -7,7 +7,7 @@ package com.example.actionprice.exception;
  * @info
  */
 public class PostNotFoundException extends RuntimeException {
-    public PostNotFoundException(String message) {
-        super(message);
+    public PostNotFoundException(Integer postId) {
+        super(String.format("Post(%d) does not exists", postId));
     }
 }
