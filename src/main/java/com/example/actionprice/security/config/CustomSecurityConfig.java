@@ -8,7 +8,6 @@ import com.example.actionprice.security.filter.LoginFilter;
 import com.example.actionprice.security.filter.JwtAuthenticationFilter;
 import com.example.actionprice.redis.accessToken.AccessTokenService;
 import com.example.actionprice.security.jwt.refreshToken.RefreshTokenService;
-import com.example.actionprice.user.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,7 +55,6 @@ import java.util.Arrays;
 public class CustomSecurityConfig {
 
     private final CustomUserDetailService userDetailsService;
-    private final UserRepository userRepository;
     private final AccessTokenService accessTokenService;
     private final RefreshTokenService refreshTokenService;
     private final LoginFailureCounterService loginFailureCounterService;
@@ -65,12 +63,16 @@ public class CustomSecurityConfig {
      * @author : 연상훈
      * @created : 2024-10-05 오후 9:27
      * @info component나 configuration으로 등록하기엔 자잘한 것들을 여기서 bean으로 설정해서 관리함 
-     * @info 세션 비활성화
-     * @info cors 활성화
-     * @info accessDeniedHandler - 접근 거절 시 리다이렉트 비활성화
-     * @info 토큰 필터 순서에 주의. 리프레시 토큰 필터 > 토큰 체크 필터 > 로그인/로그아웃 필터 > UsernamePasswordAuthenticationFilter
-     * @info 폼로그인 비활성화 - 접근 거절 시 리다이렉트 비활성화
      * @info 요청 url path 설정에 주의
+     * @info 토큰 필터 순서에 주의. jwtAuthentication 필터 > 로그인/로그아웃 필터 > UsernamePasswordAuthenticationFilter
+     * @see : 설정 목록
+     * [활성화]
+     * 1. cors
+     * [비활성화]
+     * 1. 세션
+     * 2. csrf
+     * 3. formLogin(로그인페이지 접근 거절 시 리다이렉트 비활성화 / 프론트에서 알아서 처리함)
+     * 4. accessDeniedHandler(권한 없음으로 인한 접근 거절 시 리다이렉트 비활성화 / 프론트에서 알아서 처리함)
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -84,14 +86,11 @@ public class CustomSecurityConfig {
 
       http.sessionManagement(sessionPolicy -> sessionPolicy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
-          .csrf((csrfconfig) -> csrfconfig.disable())
-          .exceptionHandling(exceptionHandler -> {
-            // accessDeniedHandler가 리다이렉트하지 않도록 만들어서 인증 실패 후 계속 이상한 곳으로 요청 보내지 않도록 함
-            exceptionHandler.accessDeniedHandler(accessDeniedHandler());
-            // 사용자가 허락되지 않은 경로로 강제 이동 시의 처리를 진행
-            exceptionHandler.authenticationEntryPoint(new Http403ForbiddenEntryPoint());
-          })
-          .authorizeHttpRequests((authz) -> authz
+          .csrf(csrfconfig -> csrfconfig.disable())
+          .exceptionHandling(exceptionHandler -> exceptionHandler
+              .accessDeniedHandler(accessDeniedHandler()) // 인증 실패 후 리다이렉트하지 않도록 만들어서 계속 이상한 곳으로 요청 보내지 않도록 함
+              .authenticationEntryPoint(new Http403ForbiddenEntryPoint())) // 사용자가 허락되지 않은 경로로 강제 이동 시의 처리를 진행
+          .authorizeHttpRequests(authz -> authz
                       .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
                       .requestMatchers(urlPathManager.getPATH_ADMIN()).hasRole("ADMIN")
                       .requestMatchers(urlPathManager.getPATH_ANONYMOUSE()).anonymous() // 로그인을 안 한 사람만 이동 가능
@@ -102,20 +101,28 @@ public class CustomSecurityConfig {
           .addFilterBefore(new JwtAuthenticationFilter(userDetailsService, accessTokenService), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(loginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(logoutFilter(), UsernamePasswordAuthenticationFilter.class) // 필터 순서에 주의. 기본적으로 나중에 입력한 것일수록 뒤에 실행됨
-          .formLogin((formLogin) -> formLogin.disable());
+          .formLogin(formLogin -> formLogin.disable());
       return http.build();
 
     }
 
     @Bean
-    AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
       AuthenticationManagerBuilder authenticationManagerBuilder =
               http.getSharedObject(AuthenticationManagerBuilder.class);
+
       authenticationManagerBuilder.userDetailsService(userDetailsService)
               .passwordEncoder(passwordEncoder());
 
       return authenticationManagerBuilder.build();
     }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+      return new BCryptPasswordEncoder();
+    }
+
+    // 재사용도 안 하고 어디서 주입 받거나 주입할 일이 없는 것들은 모두 @bean이 아닌 priavte로 관리.
 
     /**
      * 로그인 필터. 로그인 절차를 임의로 수정하기 위해서 필요함
@@ -123,10 +130,8 @@ public class CustomSecurityConfig {
      * @created 2024-11-07 오후 11:37
      * @info 인증을 위해서 userDetailsService와 authenticationManager는 필수
      * @info 로그인 후의 로직을 임의로 구성하려면 loginSuccessHandler 필요
-     * @info userRepository는 로그인 실패 횟수 체크하려고 쓰는 것
      */
-    @Bean
-    LoginFilter loginFilter(AuthenticationManager authenticationManager) throws Exception {
+    private LoginFilter loginFilter(AuthenticationManager authenticationManager) throws Exception {
       return new LoginFilter(
               "/api/user/login",
               userDetailsService,
@@ -136,16 +141,10 @@ public class CustomSecurityConfig {
       );
     }
 
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler(){
+    private AccessDeniedHandler accessDeniedHandler(){
       return (request, response, accessDeniedException) -> {
         response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied");
       };
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-      return new BCryptPasswordEncoder();
     }
 
     /**
@@ -179,7 +178,11 @@ public class CustomSecurityConfig {
       SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
       LogoutSuccessHandler logoutSuccessHandler = new LogoutSuccessHandler() {
         @Override
-        public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        public void onLogoutSuccess(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            Authentication authentication
+        ) throws IOException, ServletException {
           // 엑세스 토큰 삭제
           String username = authentication.getName();
           accessTokenService.deleteAccessToken(username);
