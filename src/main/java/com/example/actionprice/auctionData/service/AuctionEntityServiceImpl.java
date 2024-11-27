@@ -301,7 +301,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
       case "채소류":
         return convertRowToVegetable_andSave(row, date, marketName, category);
       case "특용작물":
-        return convertSpecialCrops_andSave(row, date, marketName, category);
+        return convertRowToSpecialCrops_andSave(row, date, marketName, category);
       case "과일류":
         return convertRowToFruit_andSave(row, date, marketName, category);
       case "축산물":
@@ -505,7 +505,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     return vegetableEntity_repo.save(produce);
   }
 
-  private AuctionBaseEntity convertSpecialCrops_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
+  private AuctionBaseEntity convertRowToSpecialCrops_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
     AuctionEntity_specialCrop specialCrop = AuctionEntity_specialCrop.builder()
         .delDate(convertStrToLocalDate(date))
         .large(category)
