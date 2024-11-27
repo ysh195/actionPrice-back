@@ -24,6 +24,9 @@ public class UrlPathManager {
       "/api/post/*/update",
       "/api/post/*/delete",
       "/api/post/*/update/*", // 게시글 생성, 수정, 삭제
+      "/api/post/*/detail/createComment",
+      "/api/post/*/detail/*/update",
+      "/api/post/*/detail/*/delete", // 댓글 생성, 수정, 삭제
       "/api/mypage/**", // 마이페이지(개인정보 열람, 내 게시글 목록, 내 즐겨찾기 목록, 사용자 삭제)
       "/api/category/favorite/**", // 즐겨찾기 삭제
       "/api/category/*/*/*/*/favorite", // 즐겨찾기 생성
@@ -39,12 +42,10 @@ public class UrlPathManager {
       "/v3/api-docs/**", // 스웨거
       "/", // 홈
       "/api/user/**", // 사용자 관련 기능들
-      "/api/post/list",
-      "/api/post/list*",// 게시글 목록 열람 가능
-      "/api/post/*/detail",
-      "/api/post/*/detail*", // 게시글 내용 열람 가능
-      "/api/post/comments",
-      "/api/post/comments*", // 게시글 내 댓글 목록 열람 가능
+      "/api/post/list", // 게시글 목록 열람 가능
+      "/api/post/list*",
+      "/api/post/*/detail", // 게시글 내용 열람 가능
+      "/api/post/comments", // 게시글 내 댓글 목록 열람 가능
       "/api/category/**" // 카테고리
   };
 
