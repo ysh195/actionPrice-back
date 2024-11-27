@@ -1,6 +1,8 @@
 package com.example.actionprice;
 
 import lombok.extern.log4j.Log4j2;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
@@ -14,5 +16,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = {ActionPriceApplication.class})
 @Log4j2
 class ActionPriceApplicationTests {
+
+  @Test
+  void encryptTest(){
+    String id = "root";
+    String password = "9423";
+
+    System.out.println(jasyptEncoding(id));
+    System.out.println(jasyptEncoding(password));
+  }
+
+  public String jasyptEncoding(String value){
+    String key = "password";
+    StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+    encryptor.setAlgorithm("PBEWithMD5AndDES");
+    encryptor.setPassword(key);
+
+    return encryptor.encrypt(value);
+  }
 
 }
