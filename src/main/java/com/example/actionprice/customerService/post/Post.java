@@ -72,14 +72,14 @@ public class Post extends BaseEntity implements Comparable<Post> {
 
   // field - relationship
   @JsonBackReference
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "username", nullable = false)
   private User user;
 
   @JsonManagedReference
   @OneToMany(mappedBy = "post",
       orphanRemoval = true,
-      cascade = {CascadeType.ALL},
+      cascade = CascadeType.ALL,
       fetch = FetchType.LAZY)
   @BatchSize(size = 10)
   @Builder.Default

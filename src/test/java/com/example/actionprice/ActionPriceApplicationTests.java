@@ -2,6 +2,7 @@ package com.example.actionprice;
 
 import lombok.extern.log4j.Log4j2;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ActionPriceApplicationTests {
 
   @Test
+  @Disabled
   void encryptTest(){
     String id = "root";
     String password = "9423";

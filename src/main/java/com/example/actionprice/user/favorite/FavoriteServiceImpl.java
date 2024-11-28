@@ -62,9 +62,6 @@ public class FavoriteServiceImpl implements FavoriteService {
         .user(user)
         .build();
 
-    // 레포지토리에 저장해야만 id가 발급되고, 그래야 user에 추가 가능
-    favorite = favoriteRepository.save(favorite);
-
     user.addFavorite(favorite);
     userRepository.save(user);
 

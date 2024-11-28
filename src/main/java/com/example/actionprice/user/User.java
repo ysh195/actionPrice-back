@@ -30,8 +30,6 @@ import org.hibernate.annotations.BatchSize;
  * @updated 2024-10-06 오후 12:29 : 간편한 권한 관리를 위해 Set<String> authorities 사용
  * @updated 2024-10-20 오전 10:16 : set 객체들의 add와 remove 로직 간략화.
  * @updated 2024-10-20 오후 12:33 : RefreshTokenEntity 객체와 연결함
- * 중복된 것을 추가하거나 없는 것을 삭제하면 오류가 난다고 알고 있었는데, 다시 조사해 보니 그냥 true/false만 반환함.
- * 그러면 검사 로직이 따로 필요가 없으니 다 빼버림
  * @updated 2024-11-08 오후 2:41 : 로그인 실패 체크 및 잠금 처리를 위해 필드에 loginFailureCount와 lockedAt 추가
  * @info 1. 순환참조의 문제를 피하기 위해 @ToString(exclude={})와 @JsonManagedReference를 사용했습니다.
  * @info 2. 원활한 하위 객체 관리를 위해 orphanRemoval = true과 cascade = {CascadeType.ALL}를 사용했습니다.
@@ -68,7 +66,7 @@ public class User {
 
   @OneToOne(mappedBy = "user",
       orphanRemoval = true,
-      cascade = {CascadeType.ALL},
+      cascade = CascadeType.ALL,
       fetch = FetchType.LAZY)
   @JoinColumn(name = "refresh_token_id", nullable = true) //유저 생성당시는 null일 수 밖에 없음 로그인시 생성되기에
   private RefreshTokenEntity refreshToken;
@@ -80,7 +78,7 @@ public class User {
    * @updated : 2024-10-11 오후 11:33
    * @info : 권한 관리를 간편하게 하기 위해 Set<String>으로 변경
    */
-  @ElementCollection(fetch = FetchType.EAGER)
+  @ElementCollection(fetch = FetchType.LAZY)
   @Builder.Default
   private Set<String> authorities = new HashSet<>(); // 권한 객체를 별도로 관리해서 유저 생성할 때마다 권한이 쓸데없이 늘어나는 것을 방지
 
@@ -88,7 +86,7 @@ public class User {
   @JsonManagedReference //부모객체에서 자식객체 관리 json형태로 반환될때 이게 부모라는것을 알려줌
   @OneToMany(mappedBy = "user",
       orphanRemoval = true, //유저에게서 나가면 삭제가 됨
-      cascade = {CascadeType.ALL}, //유저객체에서 포스트를 불러옴 ,포스트 내용을 수정 그것을 세이브 (전체반영)
+      cascade = CascadeType.ALL, //유저객체에서 포스트를 불러옴 ,포스트 내용을 수정 그것을 세이브 (전체반영)
       fetch = FetchType.LAZY)
   @BatchSize(size = 10) //한번에 불러오는 양
   @Builder.Default //만들때 빌더를 사용해 자신의 필드를 다 설정해야하지만 안하면 null 이기에 dafault는 new HashSet<>() 이다
@@ -97,7 +95,7 @@ public class User {
   @JsonManagedReference
   @OneToMany(mappedBy = "user",
       orphanRemoval = true,
-      cascade = {CascadeType.ALL}, //변환할떄
+      cascade = CascadeType.ALL, //변환할떄
       fetch = FetchType.LAZY) //유저를 불러올떄 포스트는 나중에 불러오게 함
   @BatchSize(size = 10)
   @Builder.Default
@@ -106,7 +104,7 @@ public class User {
   @JsonManagedReference
   @OneToMany(mappedBy = "user",
       orphanRemoval = true,
-      cascade = {CascadeType.ALL},
+      cascade = CascadeType.ALL,
       fetch = FetchType.LAZY)
   @BatchSize(size = 10)
   @Builder.Default

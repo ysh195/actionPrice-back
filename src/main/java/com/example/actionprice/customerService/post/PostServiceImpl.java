@@ -52,7 +52,6 @@ public class PostServiceImpl implements PostService{
                 .content(postForm.getContent())
                 .published(postForm.isPublished())
                 .build();
-        post = postRepository.save(post); // 레포지토리에 save 해야만 postId가 발급됨
 
         user.addPost(post); // 그리고 postId가 있어야만 user의 postSet에 등록 가능
         userRepository.save(user); // post가 연결된 상태를 save

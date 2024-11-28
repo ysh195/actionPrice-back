@@ -17,6 +17,19 @@ public class PostTest {
 
     @Test
     @Disabled
+    void testCreatePost() {
+        PostForm postForm = new PostForm("adminadmin", "공지 제목", "공지 내용", true);
+        postService.createPost(postForm);
+    }
+
+    @Test
+    @Disabled
+    void testDeletePost() {
+        postService.deletePost(1, "adminadmin", true);
+    }
+
+    @Test
+    @Disabled
     void testCreatePostsALot() {
         for (int i = 0; i < 150; i++) {
             String title = String.format("post title %d", i);

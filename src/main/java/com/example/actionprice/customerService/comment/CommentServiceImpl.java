@@ -56,8 +56,6 @@ public class CommentServiceImpl implements CommentService {
                 .post(post)
                 .build();
 
-        comment = commentRepository.save(comment);
-
         user.addComment(comment);
         userRepository.save(user);
 
