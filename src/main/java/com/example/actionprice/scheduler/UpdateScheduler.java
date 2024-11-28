@@ -5,13 +5,13 @@ package com.example.actionprice.scheduler;
  * @author : 연상훈
  * @created : 2024-10-12 오전 11:45
  * @updated : 2024-10-12 오전 11:45
- * @info : 현재는 사용되지 않습니다.
+ * @deprecated 현재는 사용되지 않습니다.
  */
 //@Component
 //@RequiredArgsConstructor
 //@Log4j2
 //@Transactional
-public class NewDataCheckScheduler {
+public class UpdateScheduler {
 
   // private final AuctionDataService
 

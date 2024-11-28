@@ -40,7 +40,6 @@ public class UrlPathManager {
   private final String[] PATH_PERMIT_ALL = {
       "/swagger-ui/**", // 스웨거
       "/v3/api-docs/**", // 스웨거
-      "/", // 홈
       "/api/user/**", // 사용자 관련 기능들
       "/api/post/list", // 게시글 목록 열람 가능
       "/api/post/list*",

@@ -1,29 +1,3 @@
-package com.example.actionprice.home;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
-
-/**
- * 홈페이지 화면에 출력될 정보들을 전달하는 서비스
- * @author 연상훈
- * @created 2024-11-28 오후 5:33
- * @info 이미지를 프론트에서 랜더링하는 건 오래 걸리니까 백에서 전달
- * @info 단순히 이미지가 캐싱되는 위치가 레디스일 뿐이라서 레디스와의 관계성이 약함. 따라서 레디스 패키지에는 넣지 않음
- */
-@Service
-@RequiredArgsConstructor
-@Log4j2
-public class HomeServiceImpl implements HomeService {
-
-  // 이미지들을 static에 다 저장하고 경로를 입력해야 함
-  // 홈페이지에 반환할 이미지들의 경로
   private final String[] imagePaths = {
           "static/image/crop.jpg",
           "static/image/fish.jpg",
@@ -62,4 +36,3 @@ public class HomeServiceImpl implements HomeService {
 
     return images;
   }
-}
