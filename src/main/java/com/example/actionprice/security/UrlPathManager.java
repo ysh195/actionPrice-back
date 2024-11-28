@@ -3,6 +3,7 @@ package com.example.actionprice.security;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+// TODO url 정리하기
 /**
  * url path만 관리하는 곳
  * @author 연상훈
@@ -24,9 +25,8 @@ public class UrlPathManager {
       "/api/post/*/update",
       "/api/post/*/delete",
       "/api/post/*/update/*", // 게시글 생성, 수정, 삭제
-      "/api/post/*/detail/createComment",
       "/api/post/*/detail/*/update",
-      "/api/post/*/detail/*/delete", // 댓글 생성, 수정, 삭제
+      "/api/post/*/detail/*/delete", // 댓글 수정, 삭제
       "/api/mypage/**", // 마이페이지(개인정보 열람, 내 게시글 목록, 내 즐겨찾기 목록, 사용자 삭제)
       "/api/category/favorite/**", // 즐겨찾기 삭제
       "/api/category/*/*/*/*/favorite", // 즐겨찾기 생성
@@ -43,7 +43,7 @@ public class UrlPathManager {
       "/api/user/**", // 사용자 관련 기능들
       "/api/post/list", // 게시글 목록 열람 가능
       "/api/post/list*",
-      "/api/post/*/detail", // 게시글 내용 열람 가능
+      "/api/post/*/detail", // 게시글 내용 열람 가능(url이 같은 댓글 생성은 컨트롤러에서만 보안 설정됨)
       "/api/post/comments", // 게시글 내 댓글 목록 열람 가능
       "/api/category/**" // 카테고리
   };

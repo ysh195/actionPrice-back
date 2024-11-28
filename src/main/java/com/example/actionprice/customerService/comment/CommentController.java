@@ -42,7 +42,7 @@ public class CommentController {
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{postId}/detail/createComment")
+    @PostMapping("/{postId}/detail")
     public CommentSimpleDTO createComment(
             @PathVariable("postId") int postId,
             @RequestBody Map<String, String> requestBody
