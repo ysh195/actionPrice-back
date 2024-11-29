@@ -28,7 +28,8 @@ public class OriginAuctionDataTests {
     /**
      * @author 연상훈
      * @created 2024-11-09 오후 11:19
-     * @updated 2024-11-14 오전 10:56 [연상훈] : 데이터 저장 완료
+     * @updated 2024-11-29 오후 8:27 [연상훈] : 메서드가 비동기적으로 실행되도록 하여 실행 속도 향상
+     * @info 2024-11-14 오전 10:56 [연상훈] : 데이터 저장 완료
      */
     @Test
     void auctionDataFluxTest() throws Exception {
@@ -43,34 +44,40 @@ public class OriginAuctionDataTests {
             String date = String.format("%s-%s-%s", year, month, day);
             log.info("date : " + date);
 
-            allSortingComponent.getMarket_code_map().entrySet().stream().forEach(marketCodeEntry -> {
+            allSortingComponent.getMarket_code_map()
+                .entrySet()
+                .parallelStream()
+                .forEach(marketCodeEntry -> {
                 // key : 지역 코드, value : 지역 이름
-                log.info("marketCode : {} | marketName : {}", marketCodeEntry.getKey(), marketCodeEntry.getValue());
+                    log.info("marketCode : {} | marketName : {}", marketCodeEntry.getKey(), marketCodeEntry.getValue());
 
-                allSortingComponent.getGrand_sort().entrySet().stream().forEach(grandSortEntry -> {
-                    // key : 대분류 코드, value : 대분류 이름
-                    log.info("grandSortCode : {} | grandSortName : {}", grandSortEntry.getKey(), grandSortEntry.getValue());
+                    allSortingComponent.getGrand_sort()
+                        .entrySet()
+                        .parallelStream()
+                        .forEach(grandSortEntry -> {
+                            // key : 대분류 코드, value : 대분류 이름
+                            log.info("grandSortCode : {} | grandSortName : {}", grandSortEntry.getKey(), grandSortEntry.getValue());
 
-                    CountDownLatch latch = new CountDownLatch(1); // 이 객체는 비동기 작업이 완료될 때까지 메인 스레드를 차단
+                            CountDownLatch latch = new CountDownLatch(1); // 이 객체는 비동기 작업이 완료될 때까지 메인 스레드를 차단
 
-                    try {
-                        log.info("flux");
-                        Flux<OriginAuctionDataRow> flux = originAuctionDataFetcher.getAuctionData_Flux(marketCodeEntry.getKey(), date, grandSortEntry.getKey());
-                        flux.subscribe(row -> {
-                            log.info("flux - row");
-                            log.info("row : " + row.toString());
-                            auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
-                        }, error -> {
-                            log.error("Error retrieving auction data: {}", error.getMessage());
-                            latch.countDown(); // 에러 발생 시 대기중인 스레드 헤제
-                        }, latch::countDown); // 완료 시 대기중인 스레드 헤제
+                            try {
+                                log.info("flux");
+                                Flux<OriginAuctionDataRow> flux = originAuctionDataFetcher.getAuctionData_Flux(marketCodeEntry.getKey(), date, grandSortEntry.getKey());
+                                flux.subscribe(row -> {
+                                    log.info("flux - row");
+                                    log.info("row : " + row.toString());
+                                    auctionEntityService.saveEntityByCategory(row, date, marketCodeEntry.getValue(), grandSortEntry.getValue());
+                                }, error -> {
+                                    log.error("Error retrieving auction data: {}", error.getMessage());
+                                    latch.countDown(); // 에러 발생 시 대기중인 스레드 헤제
+                                }, latch::countDown); // 완료 시 대기중인 스레드 헤제
 
-                        latch.await(); // 비동기 작업이 완료될 때까지 메인 스레드를 대기
-                    } catch (Exception e) {
-                        log.error("Exception occurred: {}", e.getMessage());
-                        throw new RuntimeException(e);
-                    }
-                });
+                                latch.await(); // 비동기 작업이 완료될 때까지 메인 스레드를 대기
+                            } catch (Exception e) {
+                                log.error("Exception occurred: {}", e.getMessage());
+                                throw new RuntimeException(e);
+                            }
+                        });
             });
         }
     }
