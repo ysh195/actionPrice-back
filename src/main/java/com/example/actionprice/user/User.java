@@ -78,7 +78,7 @@ public class User {
    * @updated : 2024-10-11 오후 11:33
    * @info : 권한 관리를 간편하게 하기 위해 Set<String>으로 변경
    */
-  @ElementCollection(fetch = FetchType.LAZY)
+  @ElementCollection(fetch = FetchType.EAGER)
   @Builder.Default
   private Set<String> authorities = new HashSet<>(); // 권한 객체를 별도로 관리해서 유저 생성할 때마다 권한이 쓸데없이 늘어나는 것을 방지
 

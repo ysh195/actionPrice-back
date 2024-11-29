@@ -125,7 +125,7 @@ public class AuctionCategoryController {
      * @param startDate 조회할 날짜(시작)
      * @param endDate 조회할 날짜(종료)
      */
-    @GetMapping("/{large}/{middle}/{small}/{rank}/gragh")
+    @GetMapping("/gragh/{large}/{middle}/{small}/{rank}")
     public ChartDataDTO getPriceDataWithGragh(
         @PathVariable String large,
         @PathVariable String middle,
@@ -170,7 +170,7 @@ public class AuctionCategoryController {
      * @param startDate 조회할 날짜(시작)
      * @param endDate 조회할 날짜(종료)
      */
-    @GetMapping("/{large}/{middle}/{small}/{rank}/excel")
+    @GetMapping("/excel/{large}/{middle}/{small}/{rank}")
     public ResponseEntity<byte[]> downloadExcel(
             @PathVariable String large,
             @PathVariable String middle,

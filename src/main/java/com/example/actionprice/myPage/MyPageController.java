@@ -25,7 +25,7 @@ import java.util.Map;
  * 그리고 그렇게 하니까 양쪽 따 훨씬 깔끔함
  */
 @RestController
-@RequestMapping("/api/mypage")
+@RequestMapping("/api/myPage")
 @Log4j2
 @RequiredArgsConstructor
 public class MyPageController {
@@ -88,7 +88,7 @@ public class MyPageController {
      * @created 2024-10-27 오후 3:34
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping(value = "/{username}/deleteUser")
+    @DeleteMapping(value = "/{username}")
     public String deleteUser(@PathVariable("username") String username){
         log.info("[class] MyPageController - [method] deleteUser > 실행");
         checkQualification(username);

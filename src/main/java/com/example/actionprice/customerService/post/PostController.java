@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-@RequestMapping("/api/post")
+@RequestMapping("/api")
 public class PostController {
 
     private final PostService postService;
@@ -36,7 +36,7 @@ public class PostController {
      * postId만 반환함
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/create")
+    @PostMapping("/post")
     public PostSimpleDTO createPost(@RequestBody @Validated(PostForm.PostCreateGroup.class) PostForm postForm){
         // 애초에 컨트롤러 접근 조건이 isAuthenticated()라서 인증이 되어야만 접근 가능함.
         // 인증이 안 되어 있어서 principal 불러오는 것조차 문제 있는 놈이었으면 진즉에 걸러졌음
@@ -59,7 +59,7 @@ public class PostController {
      * "/api/post/{postId}/detail?commentPageNum=0" 같은 방식으로 호출해야 함
      * commentPageNum은 선택사항. 없으면 0으로 처리
      */
-    @GetMapping("/{postId}/detail")
+    @GetMapping("/post/{postId}")
     public PostSimpleDTO goDetailPost(
         @PathVariable("postId") Integer postId,
         @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
@@ -92,7 +92,7 @@ public class PostController {
      * @info 그냥 post 객체를 반환하면 안 되니까 PostSimpleDTO를 반환
      */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/{postId}/update/{username}")
+    @GetMapping("/post/{postId}/username/{username}")
     public PostSimpleDTO goUpdatePost(
         @PathVariable("postId") Integer postId,
         @PathVariable("username") String username
@@ -126,7 +126,7 @@ public class PostController {
      * @info 게시글 수정 후 Map<String, Object> 형태로 처리 결과 messege와 postId를 반환함.
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{postId}/update")
+    @PatchMapping("/post/{postId}")
     public PostSimpleDTO updatePost(
         @PathVariable("postId") Integer postId,
         @RequestBody @Validated(PostForm.PostUpdateGroup.class) PostForm postForm
@@ -151,7 +151,7 @@ public class PostController {
      * @info 게시글 수정 후 처리 결과 messege를 반환함
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{postId}/delete")
+    @DeleteMapping("/post/{postId}")
     public PostSimpleDTO deletePost(
         @PathVariable("postId") Integer postId
     ) {
@@ -175,7 +175,7 @@ public class PostController {
      * @created 2024-10-27 오후 2:47
      * @see "/api/post/list?pageNum=0&keyword=abc" 형태로 입력해야 함.
      */
-    @GetMapping("/list")
+    @GetMapping("/post/list")
     public PostListDTO getPostList(
         @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum,
         @RequestParam(name = "keyword", defaultValue = "", required = false) String keyword

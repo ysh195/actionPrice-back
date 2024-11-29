@@ -37,7 +37,7 @@ public class FavoriteController {
    * @info 로그인 한 사용자만 이용 가능
    */
   @PreAuthorize("isAuthenticated()")
-  @PostMapping("/{large}/{middle}/{small}/{rank}/favorite")
+  @PostMapping("/favorite/{large}/{middle}/{small}/{rank}")
   public FavoriteSimpleDTO createFavorite(
       @PathVariable("large") String large,
       @PathVariable("middle") String middle,
@@ -71,7 +71,7 @@ public class FavoriteController {
    * @info 인증은 내부적으로 알아서 진행함
    */
   @PreAuthorize("isAuthenticated()")
-  @PostMapping("/favorite/{favoriteId}/delete")
+  @DeleteMapping("/favorite/{favoriteId}")
   public Map<String, Object> deleteFavorite(@PathVariable("favoriteId") Integer favoriteId){
     log.info("[class] deleteFavorite - [method] deleteFavorite > 실행");
 

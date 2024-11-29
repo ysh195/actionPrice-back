@@ -82,21 +82,15 @@ public class CustomSecurityConfig {
       //유저 권한 password 검증
       AuthenticationManager authenticationManager = authenticationManager(http);
 
-      UrlPathManager urlPathManager = new UrlPathManager();
-
       http.sessionManagement(sessionPolicy -> sessionPolicy.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
           .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())) // corsConfigurationSource
           .csrf(csrfconfig -> csrfconfig.disable())
           .exceptionHandling(exceptionHandler -> exceptionHandler
               .accessDeniedHandler(accessDeniedHandler()) // 인증 실패 후 리다이렉트하지 않도록 만들어서 계속 이상한 곳으로 요청 보내지 않도록 함
               .authenticationEntryPoint(new Http403ForbiddenEntryPoint())) // 사용자가 허락되지 않은 경로로 강제 이동 시의 처리를 진행
-          .authorizeHttpRequests(authz -> authz
-                      .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                      .requestMatchers(urlPathManager.getPATH_ADMIN()).hasRole("ADMIN")
-                      .requestMatchers(urlPathManager.getPATH_ANONYMOUSE()).anonymous() // 로그인을 안 한 사람만 이동 가능
-                      .requestMatchers(urlPathManager.getPATH_AUTHENTICATED()).authenticated() // 로그인을 한 사람만 이동 가능
-                      .requestMatchers(urlPathManager.getPATH_PERMIT_ALL()).permitAll()
-                      .anyRequest().authenticated())
+          .authorizeHttpRequests(authz -> {
+            new UrlPathManager().configureAllEndpoints(authz);
+          })
           .authenticationManager(authenticationManager)
           .addFilterBefore(new JwtAuthenticationFilter(userDetailsService, accessTokenService), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(loginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)

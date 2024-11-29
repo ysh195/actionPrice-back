@@ -74,7 +74,7 @@ public class UserController {
    * 근데 고작 컨트롤러 하나에서 딱 한 번 쓰이는 예외를 위해 따로 만들어주기에는 낭비라서 이건 그냥 통합하지 않고 그대로 두기로 함
    * @see : https://www.knotend.com/g/a#N4IgzgpgTglghgGxgLwnARgiAxA9lAWxAC5QA7XAEwjBPIEYAmRgVkYBZ6AOOkBDCAhIhALuOAVLsA+4wAJAOD2BCwZABfADQgy7AJwAGAMwA2DU1790g4SMAf3bLmAcFqniJIqYBcJwDXjAfiWqyAdh1cNDUYfLWMBIWIQAHkvNQ0Weno9PXYfMNMIkHk7QAHJqRZAEN6pHMAKhs8VNXp2FnZgrRZ0s0iADViyYJ16Qy4G0j5w4RiK9RZAxK0ePpMmkFbh0a4fdi4jKYHIwAmBwB0O2UBIOqlAEbX7SWs2vS16H0WORszABjrnKUAHGqlAB5HAH3bAA5qpQAtVtsCND4fIleqBpplACATcikgEZBwCvNeVvPF2OwdEC9LdhAAzRCQNo9apAiaYyJDbxAnSseok2ZtHRsDQpPT0GnwqRiQA7Qzk2okDHpGIyaQ4pIAM8cA3V2ACha2lclnp9OwaQAXKAAVwgdJYWkYXD0aTWGWEEAAHgBjCAAB0VMFwZCkgAyZwA1nUoKhBKABzGgkADaXsqzDYnB43k0ugMRgAuspfeptPpDIwQOT-IE6iBI9GQ3GjN4qjU6g102o-AEgiFE3EEkkUmlC2R4rzq+X2n4utwC1GKw3Uk3qmN6MTa7naiEGt4FksVgnax1Wz0m+PlhGOyM+8TvOdLtcFbWF5OmwCgSC08uNzKbkiaqj0cfowfgfRR2oCSwiTxa3ej+S-FT29Hn6+m3pAUmRZWsKR-JteUZYCbzUIDGXYZkmxlRD5VgsgoP5QVvHpLUdRrcMKjNBAEAAdRgShFQACxIeh6VUYiEAACQgGA3SoxUSGWBjBAQAAFOBKEoGAyDdEh6LUKgICiKBqFgUTvT9VgOG4HtYzDBMkxLVMLy7NIc2qYdqW8GdukfFdDH7IM1F3bM1FPLd90CQ8H33S80R8DFvH-EJrN8b9NXM+CQMgpJoOwotFlQlJAM1bVdTTRQgA
    */
-  @PostMapping("/sendVerificationCode") //요청을 json 타입으로 받음
+  @PostMapping("/verificationCode/sending") //요청을 json 타입으로 받음
   public ResponseEntity<String> sendVerificationCode(@Validated(UserRegisterForm.SendVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm) throws Exception {
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
@@ -101,8 +101,9 @@ public class UserController {
    * @param userRegisterForm : UserRegisterForm을 사용해야 함
    * @author : 연상훈
    * @created : 2024-10-06 오후 8:24
+   * @info 보안 및 requestBody와 UserRegisterForm을 사용하기 위해서 post로 함
    */
-  @PostMapping("/checkVerificationCode")
+  @PostMapping("/verificationCode/checking")
   public String checkVerificationCode(@Validated(UserRegisterForm.CheckValidityOfVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm){
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     String resultOfVerification = sendEmailService.checkVerificationCode(userRegisterForm.getEmail(), userRegisterForm.getVerificationCode());
@@ -118,9 +119,10 @@ public class UserController {
    * @group CheckForDuplicateUsernameGroup
    * @info 응답 방식을 통일하고 싶었으나, 이 로직은 HttpStatus가 중요하고, 그걸 수정하려면 따로 예외 처리를 해야 함.
    * 근데 고작 컨트롤러 하나에서 딱 한 번 쓰이는 예외를 위해 따로 만들어주기에는 낭비라서 이건 그냥 통합하지 않고 그대로 두기로 함
+   * @info 보안 및 requestBody와 UserRegisterForm을 사용하기 위해서 post로 함
    */
-  @PostMapping("/checkForDuplicateUsername")
-  public ResponseEntity<String> checkForDuplicateUsername(@Validated(UserRegisterForm.CheckDuplicationOfUsernameGroup.class) @RequestBody UserRegisterForm userRegisterForm){
+  @PostMapping("/duplicationChecking")
+  public ResponseEntity<String> checkForDuplicatedUsername(@Validated(UserRegisterForm.CheckDuplicationOfUsernameGroup.class) @RequestBody UserRegisterForm userRegisterForm){
 
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     log.info("[class] UserController - [method] checkForDuplicateUsername - operate");
@@ -143,7 +145,7 @@ public class UserController {
    * @created 2024-11-05 오후 3:28
    * @info checkForDuplicateUsername의 반대
    */
-  @PostMapping("/checkUserExists")
+  @PostMapping("/password/userChecking")
   public ResponseEntity<String> checkUserExists(@Validated(UserRegisterForm.CheckDuplicationOfUsernameGroup.class) @RequestBody UserRegisterForm userRegisterForm){
     log.info("[class] UserController - [method] checkUserExists");
 
@@ -164,7 +166,7 @@ public class UserController {
    * @info 검증에 UserRegisterForm을 그대로 사용함
    * @info 비밀번호 분실 상태일 수도 있으니 따로 보안은 걸지 않았음
    */
-  @PostMapping("/changePassword")
+  @PatchMapping("/password/changing")
   public ResponseEntity<String> changePassword(@Valid @RequestBody UserRegisterForm userRegisterForm){
     log.info("[class] UserController - [method] changePassword");
 
@@ -182,9 +184,8 @@ public class UserController {
    * 비밀번호 변경 시 인증코드 발송 메서드
    * @author 연상훈
    * @created 2024-11-08 오후 2:43
-   * @info
    */
-  @PostMapping("/sendVerificationCodeForChangingPW")
+  @PostMapping("/password/verificationCode/sending/forPW")
   public ResponseEntity<String> sendVerificationCodeForChangingPW(
           @Validated(UserRegisterForm.SendVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm
   ) throws Exception {

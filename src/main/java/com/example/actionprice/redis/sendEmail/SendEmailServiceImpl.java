@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Instant;
 
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -140,12 +142,14 @@ public class SendEmailServiceImpl implements SendEmailService {
 	 * @author : 연상훈
 	 * @created : 2024-10-10 오후 9:44
 	 * @updated 2024-10-12 오전 11:39 : 기능적으로는 차이가 없지만, 읽지 않은 메시지만 검색함으로써 메모리 사용량을 크게 줄임
+	 * @updated 2024-11-29 오후 7:32 [연상훈] : 반송 확인 로직을 비동기적으로 동작하도록 변경하여 메서드 실행 시간을 30% ~ 50% 단축함
 	 * @info store와 folder를 try() 안에 넣어서 try가 실패하면 자연스럽게 닫히게 함
 	 * @info result 변수를 사용하여 folder와 store가 닫히고 나서 메서드가 종료하도록 합니다.
 	 * @info 너무 길어서 별도의 메서드로 내부 로직을 분리하려다가, 그러면 이게 너무 짧아져서 그대로 둠
 	 */
-	private boolean isCompleteSentEmail(String email) throws MessagingException, IOException {
-		boolean result = true;
+	private boolean isSentEmail(String email) throws MessagingException {
+		// AtomicBoolean으로 해야 병렬 처리 과정에서 값을 지킬 수 있음
+		AtomicBoolean result = new AtomicBoolean(true);
 
 		log.info("이메일 발송이 완료되었는지 확인을 시작합니다.");
 
@@ -167,86 +171,29 @@ public class SendEmailServiceImpl implements SendEmailService {
 
 				log.info("이메일 폴더를 개방합니다. 아직 읽지 않은 메시지를 찾습니다.");
 
+				// 현재 시간에서 지정된 시간만큼 이전 시간 계산
+				Instant untilTime = Instant.now().minusSeconds(pop3Configuration.getUntilTime());
+
 				// 아직 읽지 않은 메시지만 찾기
-				//FlagTerm 메세지 표시 ,
 				Message[] messages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
 
-				// 각 메시지의 내용을 뜯어보기
 				log.info("30초 내로 반송된 이메일이 있는지 검색합니다.");
-				CheckingInbox : for (Message message : messages) {
-
-					// 현재 시간에서 지정된 시간만큼 이전 시간 계산
-					Instant untilTime = Instant.now().minusSeconds(pop3Configuration.getUntilTime());
-
-					// 메일의 발송 날짜가 지정된 시간 이내인지 확인
-					if (untilTime.isBefore(message.getSentDate().toInstant())) {
-
-						log.info("30초 내로 반송된 이메일이 존재합니다.");
-
-						// 반송된 이메일 확인
-						Address[] fromAddresses = message.getFrom();
-
-						log.info("이메일이 어디서 왔는지 확인합니다.");
-
-						if(fromAddresses != null || fromAddresses.length > 0){
-							log.info("이메일 발신자 체크");
-							String from = fromAddresses[0].toString();
-							if (from != null || !from.isEmpty()) {
-								// 누구한테서 온 이메일인지 확인하고, 그게 Mail Delivery Subsystem <mailer-daemon@googlemail.com>이라면 반송된 메일이 맞습니다.
-								// X-Failed-Recipients를 사용하면 훨씬 간결하지만 X-Failed-Recipients가 존재하지 않는 경우도 많아서 안정성이 매우 떨어집니다.
-								if (from != null && from.contains("mailer-daemon") || from.contains("postmaster")) {
-									log.info("이메일 발신자 체크 : mailer-daemon");
-
-									// 이번에는 그 이메일의 내용물을 확인합니다.
-									MimeMultipart multipart = (MimeMultipart) message.getContent();
-
-									for (int i = 0; i < multipart.getCount(); i++) {
-										BodyPart bodyPart = multipart.getBodyPart(i);
-
-										// 이메일이 누구한테 보냈다가 반송된 것인지는 message/rfc822 안에만 있습니다.
-										if (bodyPart.isMimeType("message/rfc822")) {
-
-											log.info("이메일 내용 체크");
-
-											MimeMessage originalMessage = (MimeMessage) bodyPart.getContent();
-
-											// 반송된 이메일의 주인을 출력합니다.
-											String originalTo = originalMessage.getRecipients(Message.RecipientType.TO)[0].toString();
-
-											// 방금 보낸 이메일과 반송된 이메일의 주인이 일치하는지 확인합니다.
-											if(originalTo.equals(email)) {
-
-												log.info("이메일의 본래 수신자 : " + originalTo);
-
-												log.info("[{}]로 전송한 이메일이 반송되었습니다.", email);
-												result = false; // 반송된 이메일이므로, 이메일 전송은 실패입니다.
-
-												try {
-													// 반송된 이메일을 이메일 수신함에서 삭제
-													log.info("반송된 이메일은 삭제합니다.");
-													message.setFlag(Flags.Flag.DELETED, true);
-
-												} catch (MessagingException e) {
-													log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
-												}
-												
-												break CheckingInbox;
-											}
-
-										}
-
-									}
-
-								}
+				Arrays.asList(messages)
+						.parallelStream()
+						.forEach(message -> {
+							if (!result.get()) {
+								return; // 이미 조건이 만족되면 조기 종료
 							}
-						}
 
-					}
-				}
+							if(isReturnedMail(email, message, untilTime)){
+								result.set(false);
+							}
+						});
+
 			} // Folder 자동으로 닫힘
 		} // Store 자동으로 닫힘
 
-		return result;
+		return result.get();
 	}
 
 	/**
@@ -271,7 +218,7 @@ public class SendEmailServiceImpl implements SendEmailService {
 		javaMailSender.send(simpleMailMessage);
 		log.info("이메일 전송");
 
-		if (!isCompleteSentEmail(receiverEmail)){
+		if (!isSentEmail(receiverEmail)){
 			throw new InvalidEmailAddressException(receiverEmail);
 		}
 	}
@@ -290,4 +237,81 @@ public class SendEmailServiceImpl implements SendEmailService {
 		}
 		return code.toString();
 	}
+
+	private boolean isReturnedMail(String email, Message message, Instant untilTime) {
+		boolean result = false;
+
+		// 메일의 발송 날짜가 지정된 시간 이내인지 확인
+    try {
+      if (untilTime.isBefore(message.getSentDate().toInstant())) {
+
+        log.info("30초 내로 반송된 이메일이 존재합니다.");
+
+        // 반송된 이메일 확인
+        Address[] fromAddresses = message.getFrom();
+
+        log.info("이메일이 어디서 왔는지 확인합니다.");
+
+        if(fromAddresses != null || fromAddresses.length > 0){
+          log.info("이메일 발신자 체크");
+          String from = fromAddresses[0].toString();
+          if (from != null || !from.isEmpty()) {
+            // 누구한테서 온 이메일인지 확인하고, 그게 Mail Delivery Subsystem <mailer-daemon@googlemail.com>이라면 반송된 메일이 맞습니다.
+            // X-Failed-Recipients를 사용하면 훨씬 간결하지만 X-Failed-Recipients가 존재하지 않는 경우도 많아서 안정성이 매우 떨어집니다.
+            if (from != null && from.contains("mailer-daemon") || from.contains("postmaster")) {
+              log.info("이메일 발신자 체크 : mailer-daemon");
+
+              // 이번에는 그 이메일의 내용물을 확인합니다.
+              MimeMultipart multipart = (MimeMultipart) message.getContent();
+
+              for (int i = 0; i < multipart.getCount(); i++) {
+                BodyPart bodyPart = multipart.getBodyPart(i);
+
+                // 이메일이 누구한테 보냈다가 반송된 것인지는 message/rfc822 안에만 있습니다.
+                if (bodyPart.isMimeType("message/rfc822")) {
+
+                  log.info("이메일 내용 체크");
+
+                  MimeMessage originalMessage = (MimeMessage) bodyPart.getContent();
+
+                  // 반송된 이메일의 주인을 출력합니다.
+                  String originalTo = originalMessage.getRecipients(Message.RecipientType.TO)[0].toString();
+
+                  // 방금 보낸 이메일과 반송된 이메일의 주인이 일치하는지 확인합니다.
+                  if(originalTo.equals(email)) {
+
+                    log.info("이메일의 본래 수신자 : " + originalTo);
+
+                    log.info("[{}]로 전송한 이메일이 반송되었습니다.", email);
+                    result = true; // 반송된 이메일이므로, 이메일 전송은 실패입니다.
+
+                    try {
+                      // 반송된 이메일을 이메일 수신함에서 삭제
+                      log.info("반송된 이메일은 삭제합니다.");
+                      message.setFlag(Flags.Flag.DELETED, true);
+
+                    } catch (MessagingException e) {
+                      log.error("반송 이메일 삭제 중 에러 발생. error : {}", e.getMessage());
+                    }
+
+                    break;
+                  }
+
+                }
+
+              }
+
+            }
+          }
+        }
+
+      }
+    } catch (MessagingException e) {
+      throw new RuntimeException(e);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
+		return result;
+  }
 }

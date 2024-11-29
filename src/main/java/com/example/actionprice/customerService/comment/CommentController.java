@@ -10,7 +10,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @created 2024-10-27 오후 12:13
  */
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Log4j2
 public class CommentController {
@@ -42,7 +44,7 @@ public class CommentController {
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{postId}/detail")
+    @PostMapping("/post/{postId}/comment")
     public CommentSimpleDTO createComment(
             @PathVariable("postId") int postId,
             @RequestBody Map<String, String> requestBody
@@ -69,7 +71,7 @@ public class CommentController {
      * 차라리 postId만 반환하고 그 postId 가지고 리다이렉트해서 기존의 PostDetail에 대한 GetMapping으로 처리하게 두는 게 편하고 효율적임.
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{postId}/detail/{commentId}/update")
+    @PatchMapping("/post/{postId}/comment/{commentId}")
     public CommentSimpleDTO updateComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId,
@@ -96,7 +98,7 @@ public class CommentController {
      * 이미 삭제된 comment 다시 삭제 못 하게 리다이렉트하는 게 좋을 것 같기는데 한데
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/{postId}/detail/{commentId}/delete")
+    @DeleteMapping("/post/{postId}/comment/{commentId}")
     public CommentSimpleDTO deleteComment(
             @PathVariable("postId") int postId,
             @PathVariable("commentId") int commentId
@@ -113,12 +115,12 @@ public class CommentController {
     }
 
     @Secured("ROLE_ADMIN")
-    @GetMapping("/{postId}/comment/admin/{answertype}")
+    @GetMapping("/admin/comment/{answerType}")
     public String getAnswer(
         @PathVariable("postId") int postId,
-        @PathVariable("answertype") String answertype
+        @PathVariable("answerType") String answerType
     ){
-        return commentService.generateAnswer(postId, answertype);
+        return commentService.generateAnswer(postId, answerType);
     }
 
     /**
@@ -129,7 +131,7 @@ public class CommentController {
      * @info 그리고 비밀글의 댓글을 보여준다는 것은 간접적으로 그 비밀글의 내용을 보여주는 것이기도 함
      * @info 그러니 비밀글의 경우에는 댓글 리스트도 안 보여줘야 함
      */
-    @GetMapping("/comments")
+    @GetMapping("/post/comments")
     public CommentListDTO getCommentList(
         @RequestParam(name = "postId", defaultValue = "0", required = false) Integer postId,
         @RequestParam(name = "page", defaultValue = "0", required = false) Integer page
