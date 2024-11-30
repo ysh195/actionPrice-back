@@ -80,7 +80,11 @@ public class CommentController {
         String content = requestBody.get("content");
         log.info("[class] CommentController - [method] updateComment - content : {}",  content);
 
-        return commentService.updateComment(commentId, getUsernameWithPrincipal(), content);
+        return commentService.updateComment(
+            commentId,
+            getUsernameWithPrincipal(),
+            content
+        );
     }
 
     /**
@@ -104,14 +108,21 @@ public class CommentController {
             @PathVariable("commentId") int commentId
     ) throws IllegalAccessException {
         log.info("[class] CommentController - [method] deleteComment");
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails =
+            (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         String loginedUsername = userDetails.getUsername();
 
-        SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name());
+        SimpleGrantedAuthority adminAuthority =
+            new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name());
+
         boolean isAdmin = userDetails.getAuthorities().contains(adminAuthority);
 
-        return commentService.deleteComment(commentId, loginedUsername, isAdmin);
+        return commentService.deleteComment(
+            commentId,
+            loginedUsername,
+            isAdmin
+        );
     }
 
     @Secured("ROLE_ADMIN")
@@ -141,22 +152,31 @@ public class CommentController {
         boolean isAdmin = false;
 
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserDetails userDetails =
+                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             logined_username = userDetails.getUsername();
-            SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
+            SimpleGrantedAuthority adminAuthority =
+                new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
             isAdmin =  userDetails.getAuthorities().contains(adminAuthority);
         } catch (Exception e) {
             log.info("로그인 하지 않은 사용자가 게시글에 접근함");
             log.info(e.getMessage());
         }
 
-        return commentService.getCommentListByPostId(postId, page, logined_username, isAdmin);
+        return commentService.getCommentListByPostId(
+            postId,
+            page,
+            logined_username,
+            isAdmin
+        );
     }
 
     private String getUsernameWithPrincipal(){
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
-            .getAuthentication()
-            .getPrincipal();
+        UserDetails userDetails =
+            (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         return userDetails.getUsername();
     }

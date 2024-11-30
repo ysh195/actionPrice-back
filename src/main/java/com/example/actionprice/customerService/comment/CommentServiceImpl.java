@@ -56,6 +56,8 @@ public class CommentServiceImpl implements CommentService {
                 .post(post)
                 .build();
 
+        comment = commentRepository.save(comment); // 본래 불필요한 로직이지만, 레포지토리에 저장을 해야만 id가 생기고, id가 있어야 프론트의 로직을 일관성 있게 유지 가능함
+
         user.addComment(comment);
         userRepository.save(user);
 

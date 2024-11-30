@@ -1,6 +1,5 @@
 package com.example.actionprice.auctionData;
 
-import com.example.actionprice.auctionData.detailCategory.AllSortingComponent;
 import com.example.actionprice.auctionData.service.AuctionEntityService;
 import com.example.actionprice.auctionData.originAuctionData.OriginAuctionDataFetcher;
 import com.example.actionprice.auctionData.originAuctionData.originApiRequestObj.OriginAuctionDataRow;

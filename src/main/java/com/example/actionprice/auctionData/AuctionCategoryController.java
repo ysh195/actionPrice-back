@@ -1,4 +1,4 @@
-package com.example.actionprice.auctionData.controller;
+package com.example.actionprice.auctionData;
 
 import com.example.actionprice.auctionData.dto.CategoryResultDTO;
 import com.example.actionprice.auctionData.dto.CategoryDTO;
@@ -37,7 +37,11 @@ public class AuctionCategoryController {
      */
     @GetMapping("/{large}")
     public CategoryDTO getMiddleCategoriesByLarge(@PathVariable String large) {
-        log.info("[class] AuctionCategoryController - [method] getCategoriesByLarge - large : {}", large);
+        log.info(
+            "[class] AuctionCategoryController - [method] getCategoriesByLarge - large : {}",
+            large
+        );
+
         return auctionCategoryService.getMiddleCategory(large);
     }
 
@@ -50,7 +54,12 @@ public class AuctionCategoryController {
     public CategoryDTO getSmallCategoriesByLargeAndMiddle(
             @PathVariable String large,
             @PathVariable String middle) {
-        log.info("[class] AuctionCategoryController - [method] getCategoriesByLargeAndMiddle - large : {} | middle : {}", large, middle);
+        log.info(
+            "[class] AuctionCategoryController - [method] getCategoriesByLargeAndMiddle - large : {} | middle : {}",
+            large,
+            middle
+        );
+
         return auctionCategoryService.getSmallCategory(large, middle);
     }
 
@@ -65,7 +74,13 @@ public class AuctionCategoryController {
             @PathVariable String large,
             @PathVariable String middle,
             @PathVariable String small) {
-        log.info("[class] AuctionCategoryController - [method] getCategoriesMyLargeMiddleSmall - large : {} | middle : {} | small : {}", large, middle, small);
+        log.info(
+            "[class] AuctionCategoryController - [method] getCategoriesMyLargeMiddleSmall - large : {} | middle : {} | small : {}",
+            large,
+            middle,
+            small
+        );
+
         return auctionCategoryService.getProductRankCategory(large, middle, small);
     }
 
@@ -90,20 +105,7 @@ public class AuctionCategoryController {
             @RequestParam(name = "pageNum", defaultValue = "0", required = false) Integer pageNum
     ) {
 
-        LocalDate today = LocalDate.now();
-        LocalDate oneYearAgo = today.minusYears(1);
-
-        boolean isEndDateIncorrect = endDate == null || endDate.isBefore(oneYearAgo);
-        if (isEndDateIncorrect) {
-            endDate = today; // 기본값으로 오늘 날짜로 설정
-        }
-
-        boolean isStartDateIncorrect =
-            startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate);
-        if (isStartDateIncorrect) {
-            // 기본값으로 오늘 날짜로 설정
-            startDate = today;
-        }
+        adjustSearchingDates(startDate, endDate);
 
         return auctionEntityService.getCategoryAndPage(
             large,
@@ -135,20 +137,8 @@ public class AuctionCategoryController {
         @RequestParam(value = "endDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
     ) {
         log.info("그래프 출력 시작");
-        LocalDate today = LocalDate.now();
-        LocalDate oneYearAgo = today.minusYears(1);
 
-        boolean isEndDateIncorrect = endDate == null || endDate.isBefore(oneYearAgo);
-        if (isEndDateIncorrect) {
-            endDate = today; // 기본값으로 오늘 날짜로 설정
-        }
-
-        boolean isStartDateIncorrect =
-            startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate);
-        if (isStartDateIncorrect) {
-            // 기본값으로 오늘 날짜로 설정
-            startDate = today;
-        }
+        adjustSearchingDates(startDate, endDate);
 
         log.info("그래프 출력 완료");
         return auctionEntityService.getChartData(
@@ -179,20 +169,7 @@ public class AuctionCategoryController {
             @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
 
-        LocalDate today = LocalDate.now();
-        LocalDate oneYearAgo = today.minusYears(1);
-
-        boolean isEndDateIncorrect = endDate == null || endDate.isBefore(oneYearAgo);
-        if (isEndDateIncorrect) {
-            endDate = today; // 기본값으로 오늘 날짜로 설정
-        }
-
-        boolean isStartDateIncorrect =
-            startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate);
-        if (isStartDateIncorrect) {
-            // 기본값으로 오늘 날짜로 설정
-            startDate = today;
-        }
+        adjustSearchingDates(startDate, endDate);
 
         // 페이지 없이 데이터를 가져오는 서비스 메서드 호출
         List<AuctionBaseEntity> transactionHistoryList =
@@ -219,5 +196,27 @@ public class AuctionCategoryController {
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(excelFile);
+    }
+
+    /**
+     * 날짜값들을 조회하기에 알맞도록 조정하는 메서드
+     * @author 연상훈
+     * @created 2024-11-30 오후 9:34
+     */
+    private void adjustSearchingDates(LocalDate startDate, LocalDate endDate) {
+        LocalDate today = LocalDate.now();
+        LocalDate oneYearAgo = today.minusYears(1);
+
+        boolean isEndDateIncorrect = endDate == null || endDate.isBefore(oneYearAgo);
+        if (isEndDateIncorrect) {
+            endDate = today; // 기본값으로 오늘 날짜로 설정
+        }
+
+        boolean isStartDateIncorrect =
+            startDate == null  || startDate.isBefore(oneYearAgo) || startDate.isAfter(endDate);
+        if (isStartDateIncorrect) {
+            // 기본값으로 오늘 날짜로 설정
+            startDate = today;
+        }
     }
 }

@@ -5,7 +5,6 @@ import com.example.actionprice.customerService.post.dto.PostSimpleDTO;
 import com.example.actionprice.user.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -71,9 +70,14 @@ public class PostController {
         boolean isAdmin = false;
 
         try {
-            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            UserDetails userDetails =
+                (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
             logined_username = userDetails.getUsername();
-            SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
+            SimpleGrantedAuthority adminAuthority =
+                new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
             isAdmin =  userDetails.getAuthorities().contains(adminAuthority);
         } catch (Exception e) {
             log.info("로그인 하지 않은 사용자가 게시글에 접근함");
@@ -81,7 +85,13 @@ public class PostController {
         }
 
         log.info("로그인 한 사용자가 게시글에 접근함. logined_username : {}", logined_username);
-        return postService.getDetailPost(postId, page, logined_username, isAdmin);
+
+        return postService.getDetailPost(
+            postId,
+            page,
+            logined_username,
+            isAdmin
+        );
     }
 
     /**
@@ -107,14 +117,21 @@ public class PostController {
 
         // 애초에 컨트롤러 접근 조건이 isAuthenticated()라서 인증이 되어야만 접근 가능함.
         // 인증이 안 되어 있어서 principal 불러오는 것조차 문제 있는 놈이었으면 진즉에 걸러졌음
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails =
+            (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         
         String logined_username = userDetails.getUsername();
         
-        SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+        SimpleGrantedAuthority adminAuthority =
+            new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
         boolean isAdmin =  userDetails.getAuthorities().contains(adminAuthority);
 
-        return postService.goUpdatePost(postId, logined_username, isAdmin);
+        return postService.goUpdatePost(
+            postId,
+            logined_username,
+            isAdmin
+        );
     }
 
     /**
@@ -133,14 +150,22 @@ public class PostController {
     ) {
         // 애초에 컨트롤러 접근 조건이 isAuthenticated()라서 인증이 되어야만 접근 가능함.
         // 인증이 안 되어 있어서 principal 불러오는 것조차 문제 있는 놈이었으면 진즉에 걸러졌음
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetails userDetails =
+            (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         String logined_username = userDetails.getUsername();
 
-        SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+        SimpleGrantedAuthority adminAuthority =
+            new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
         boolean isAdmin =  userDetails.getAuthorities().contains(adminAuthority);
 
-        return postService.updatePost(postId, postForm, logined_username, isAdmin);
+        return postService.updatePost(
+            postId,
+            postForm,
+            logined_username,
+            isAdmin
+        );
     }
 
     /**
@@ -161,10 +186,16 @@ public class PostController {
 
         String logined_username = userDetails.getUsername();
 
-        SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+        SimpleGrantedAuthority adminAuthority =
+            new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
         boolean isAdmin =  userDetails.getAuthorities().contains(adminAuthority);
 
-        return postService.deletePost(postId, logined_username, isAdmin);
+        return postService.deletePost(
+            postId,
+            logined_username,
+            isAdmin
+        );
     }
 
     /**

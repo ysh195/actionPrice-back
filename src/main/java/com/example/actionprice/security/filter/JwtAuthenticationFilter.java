@@ -148,8 +148,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     log.info("UserDetails : " + userDetails);
 
     UsernamePasswordAuthenticationToken authenticationToken =
-        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 추가됨
+        new UsernamePasswordAuthenticationToken(
+            userDetails,
+            null,
+            userDetails.getAuthorities()
+        );
+
+    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
     log.info("Authentication Token : " + authenticationToken);
 
     return authenticationToken;

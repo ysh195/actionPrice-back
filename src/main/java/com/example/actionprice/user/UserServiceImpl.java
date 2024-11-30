@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
     String inputed_username = userRegisterForm.getUsername();
     log.info("inputed_username: " + inputed_username);
-    User existing_user = userRepository.findById(inputed_username).orElse(null);
+    User existing_user = getUserOrNull(inputed_username);
 
     // 이미 존재하는 유저라면
     if(existing_user != null) {
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
     log.info("--------------- [UserService] check User Exists With Username ----------------");
 
     log.info("inputed_username: " + username);
-    User existing_user = userRepository.findById(username).orElse(null);
+    User existing_user = getUserOrNull(username);
 
     if(existing_user != null) {
       return true;
@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public boolean checkUsernameAndEmailExists(String username, String email) {
 
-    User existing_user = userRepository.findByEmail(email).orElse(null);
+    User existing_user = getUserOrNull(username);
 
     if(existing_user == null) {
       return false;
@@ -189,7 +189,7 @@ public class UserServiceImpl implements UserService {
    */
   @Override
   public boolean changePassword(String username, String newPassword) {
-    User user = userRepository.findById(username).orElse(null);
+    User user = getUserOrNull(username);
 
     if(user == null) {
       return false;
@@ -202,5 +202,9 @@ public class UserServiceImpl implements UserService {
     userRepository.save(user);
 
     return true;
+  }
+
+  private User getUserOrNull(String username) {
+    return userRepository.findById(username).orElse(null);
   }
 }

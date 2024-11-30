@@ -58,14 +58,14 @@ public class Comment extends BaseEntity implements Comparable<Comment> {
 
   // field - relationship
   @JsonBackReference
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "username", nullable = true) // 엔티티의 생명 주기상 null인 경우가 발생할 수 있습니다.
-  private User user;
+  private User user; // 자주 사용되니까 eager 로딩
 
   @JsonBackReference
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "postId", nullable = true)  // 엔티티의 생명 주기상 null인 경우가 발생할 수 있습니다. 그래서 null설정 가능
-  private Post post;
+  private Post post; // 자주 사용되니까 eager 로딩
 
   // method
   public void setContent(@Size(min = 1, max = 300) String content) {

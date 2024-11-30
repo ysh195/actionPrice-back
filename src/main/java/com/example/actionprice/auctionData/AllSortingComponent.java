@@ -1,4 +1,4 @@
-package com.example.actionprice.auctionData.detailCategory;
+package com.example.actionprice.auctionData;
 
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;

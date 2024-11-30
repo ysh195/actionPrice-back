@@ -40,8 +40,7 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public Map<String, String> getPersonalInfo(String username) {
         log.info("[class] MyPageServiceImpl - [method] getPersonalInfo > 실행");
-        User user = userRepository.findById(username)
-            .orElseThrow(() -> new UserNotFoundException(username));
+        User user = getUserOrThrowException(username);
 
         return Map.of("username", username, "email", user.getEmail());
     }
@@ -58,8 +57,7 @@ public class MyPageServiceImpl implements MyPageService {
     @Override
     public void deleteUser(String username) {
         log.info("[class] MyPageServiceImpl - [method] deleteUser > 실행");
-        User user = userRepository.findById(username)
-            .orElseThrow(() -> new UserNotFoundException(username));
+        User user = getUserOrThrowException(username);
 
         RefreshTokenEntity refreshTokenEntity = user.getRefreshToken();
         if (refreshTokenEntity != null) {
@@ -84,6 +82,11 @@ public class MyPageServiceImpl implements MyPageService {
         log.info("[class] MyPageServiceImpl - [method] getMyPosts > 실행");
 
         return postService.getPostListForMyPage(username, keyword, pageNum);
+    }
+
+    private User getUserOrThrowException(String username) {
+        return userRepository.findById(username)
+            .orElseThrow(() -> new UserNotFoundException(username));
     }
 
 }

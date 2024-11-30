@@ -27,17 +27,21 @@ public class TokenRefreshController {
   @PreAuthorize("isAuthenticated()")
   @PostMapping("/refresh")
   public ResponseEntity<String> tokenRefresh(@RequestHeader("Authorization") String bearerToken) {
-    log.info("엑세스 토큰 만료?");
+    log.info("엑세스 토큰에 이상 있음?");
 
     String access_token = extractTokenInHeaderStr(bearerToken);
 
     try{
       accessTokenService.validateAccessTokenAndExtractUsername(access_token);
 
+      log.info("엑세스 토큰에 이상 없음");
+
       return ResponseEntity.ok(access_token);
     } catch (AccessTokenException e) {
+      log.info("엑세스 토큰에 이상 있음!");
+
       if (e.getTokenErrors().getStatus().value() == 418){
-        log.info("엑세스 토큰 만료 O");
+        log.info("엑세스 토큰 만료됨");
         // 엑세스 토큰이 만료되었다면
         String username = e.getUsername();
 
@@ -49,6 +53,7 @@ public class TokenRefreshController {
 
         return ResponseEntity.ok(access_token);
       }
+
       log.info("그 외 엑세스 토큰 문제");
 
       throw e;

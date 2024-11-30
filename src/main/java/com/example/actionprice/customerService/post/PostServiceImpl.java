@@ -43,8 +43,10 @@ public class PostServiceImpl implements PostService{
     @Override
     public PostSimpleDTO createPost(PostForm postForm) {
         log.info("[class] PostServiceImpl - [method] createPost - postForm : " + postForm.toString());
-        User user = userRepository.findById(postForm.getUsername())
-            .orElseThrow(() -> new UserNotFoundException(postForm.getUsername()));
+        String username = postForm.getUsername();
+
+        User user = userRepository.findById(username)
+            .orElseThrow(() -> new UserNotFoundException(username));
 
         Post post = Post.builder()
                 .user(user)
@@ -53,18 +55,12 @@ public class PostServiceImpl implements PostService{
                 .published(postForm.isPublished())
                 .build();
 
+        post = postRepository.save(post); // 본래 불필요한 로직이지만, 레포지토리에 저장을 해야만 id가 생기고, id가 있어야 프론트에서 리다이렉트가 가능함
+
         user.addPost(post); // 그리고 postId가 있어야만 user의 postSet에 등록 가능
         userRepository.save(user); // post가 연결된 상태를 save
 
-        return PostSimpleDTO.builder()
-            .postId(post.getPostId())
-            .title(post.getTitle())
-            .content(post.getContent())
-            .published(post.isPublished())
-            .username(postForm.getUsername())
-            .createdAt(post.getCreatedAt())
-            .page(0)
-            .build();
+        return convertPostToSimpleDTO(username, post, 0);
     }
 
     /**
@@ -88,15 +84,7 @@ public class PostServiceImpl implements PostService{
         
         // 게시글 수정하러 가는데, commentSize는 알 필요가 없으니 그냥 0으로 고정.
         // commentSet 불러 오는 것도 repository 조회가 필요하고, getSize()로 크기 계산하는 것도 다 코드 낭비임
-        return PostSimpleDTO.builder()
-            .postId(post.getPostId())
-            .title(post.getTitle())
-            .content(post.getContent())
-            .published(post.isPublished())
-            .username(owner_username)
-            .createdAt(post.getCreatedAt())
-            .page(0)
-            .build();
+        return convertPostToSimpleDTO(owner_username, post, 0);
     }
 
     /**
@@ -124,15 +112,7 @@ public class PostServiceImpl implements PostService{
 
         post = postRepository.save(post);
 
-        return PostSimpleDTO.builder()
-                .postId(post.getPostId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .published(post.isPublished())
-                .username(owner_username)
-                .createdAt(post.getCreatedAt())
-                .page(0)
-                .build();
+        return convertPostToSimpleDTO(owner_username, post, 0);
     }
 
     /**
@@ -154,17 +134,10 @@ public class PostServiceImpl implements PostService{
         if (!post.isPublished()) {
             checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
         }
+
         postRepository.delete(post);
 
-        return PostSimpleDTO.builder()
-                .postId(post.getPostId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .published(post.isPublished())
-                .username(owner_username)
-                .createdAt(post.getCreatedAt())
-                .page(0)
-                .build();
+        return convertPostToSimpleDTO(owner_username, post, 0);
     }
 
     /**
@@ -192,15 +165,7 @@ public class PostServiceImpl implements PostService{
             checkIfPostOwnerOrAdmin(owner_username, logined_username, isAdmin);
         }
 
-        return PostSimpleDTO.builder()
-                .postId(post.getPostId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .published(post.isPublished())
-                .username(owner_username)
-                .createdAt(post.getCreatedAt())
-                .page(page)
-                .build();
+        return convertPostToSimpleDTO(owner_username, post, page);
     }
 
     /**
@@ -260,6 +225,16 @@ public class PostServiceImpl implements PostService{
         return new PostListDTO(postPage, keyword);
     }
 
+    /**
+     * 사용자가 작성자와 일치하거나 관리자인지 확인하는 메서드
+     * @param owner_username 작성자의 사용자 이름
+     * @param logined_username 로그인 된 사용자의 사용자 이름
+     * @param isAdmin 로그인 된 사용자가 관리자인지 여부
+     * @author 연상훈
+     * @created 2024-11-30 오후 9:19
+     * @info 자주 사용되니까 메서드로 만들어 버림
+     * @info 사용자와 작성자가 일치하지 않으면서 관리자도 아니면 접근 거부 예외로 처리함
+     */
     private void checkIfPostOwnerOrAdmin(String owner_username, String logined_username, boolean isAdmin) {
         // 사용자 = 작성자 또는 어드민
         if(owner_username.equals(logined_username) || isAdmin) {
@@ -272,9 +247,39 @@ public class PostServiceImpl implements PostService{
         throw new AccessDeniedException("you are not allowed to access this post");
     }
 
+    /**
+     * post 레포지토리에서 post를 가져오거나 예외 처리하는 메서드
+     * @param postId
+     * @author 연상훈
+     * @created 2024-11-30 오후 9:18
+     * @info 자주 사용되니까 메서드로 만들어 버림
+     */
     private Post getPostOrThrowException(Integer postId){
         return postRepository.findById(postId)
             .orElseThrow(() -> new PostNotFoundException(postId));
+    }
+
+    /**
+     * post 객체를 프론트로 전달할 simpleDTO로 변환하는 메서드
+     * @param username
+     * @param post
+     * @param page
+     * @author 연상훈
+     * @created 2024-11-30 오후 9:16
+     * @info 자주 사용되니까 메서드로 만들어 버림
+     * @info post.getUser().getUsername으로 하면 불필요한 호출 및 메서드 사용이기 때문에
+     * 어차피 사용자 및 작성자 검증에서 사용되는 username을 매개변수로 받음
+     */
+    private PostSimpleDTO convertPostToSimpleDTO(String username, Post post, int page) {
+        return PostSimpleDTO.builder()
+            .postId(post.getPostId())
+            .title(post.getTitle())
+            .content(post.getContent())
+            .published(post.isPublished())
+            .username(username)
+            .createdAt(post.getCreatedAt())
+            .page(page)
+            .build();
     }
 
 }

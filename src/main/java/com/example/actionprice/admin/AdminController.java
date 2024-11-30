@@ -47,6 +47,7 @@ public class AdminController {
       @RequestParam(name = "keyword", defaultValue = "", required = false) String keyword
   ) {
     log.info("[class] AdminController - [method] getUserList - page : {} | keyword : {}", pageNum, keyword);
+
     return userService.getUserList(keyword, pageNum);
   }
 
@@ -65,8 +66,13 @@ public class AdminController {
   public Map<String, Object> setBlockUser(@PathVariable("username") String selected_username) {
 
     boolean result = refreshTokenService.setBlockUserByUsername(selected_username);
+
     String message = result ? "blocked" : "unblocked";
-    return Map.of("message", message, "isBlocked", result);
+
+    return Map.of(
+        "message", message,
+        "isBlocked", result
+    );
   }
 
   /**
@@ -81,8 +87,11 @@ public class AdminController {
   @PatchMapping("/userList/{username}/reset")
   public Map<String, String> resetRefershToken(@PathVariable("username") String selected_username) {
     log.info("delete target : {}", selected_username);
+
     refreshTokenService.resetRefreshToken(selected_username);
+
     String message = String.format("user(%s)'s refresh token was reset", selected_username);
+
     return Map.of(
         "selected_username", selected_username,
         "message", message

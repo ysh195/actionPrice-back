@@ -45,7 +45,9 @@ public class MyPageController {
         @PathVariable("username") String username
     ) {
         log.info("[class] MyPageController - [method] goPersonalInfo > 실행");
+
         checkQualification(username);
+
         return myPageService.getPersonalInfo(username);
     }
     
@@ -63,7 +65,9 @@ public class MyPageController {
              @RequestParam(required = false, name = "pageNum", defaultValue = "0") int pageNum)
     {
         log.info("[class] MyPageController - [method] goMyPosts > 실행");
+
         checkQualification(username);
+
         return myPageService.getMyPosts(username, keyword, pageNum);
     }
 
@@ -77,7 +81,9 @@ public class MyPageController {
     @GetMapping(value = "/{username}/wishlist")
     public List<FavoriteSimpleDTO> getMyWishlist(@PathVariable("username") String username) {
         log.info("[class] MyPageController - [method] getMyWishlist > 실행");
+
         checkQualification(username);
+
         return favoriteService.getFavoriteList(username);
     }
 
@@ -91,7 +97,9 @@ public class MyPageController {
     @DeleteMapping(value = "/{username}")
     public String deleteUser(@PathVariable("username") String username){
         log.info("[class] MyPageController - [method] deleteUser > 실행");
+
         checkQualification(username);
+
         myPageService.deleteUser(username);
 
         return "delete user : success";
@@ -110,7 +118,9 @@ public class MyPageController {
 
         String logined_username = userDetails.getUsername();
 
-        SimpleGrantedAuthority adminAuthority = new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+        SimpleGrantedAuthority adminAuthority =
+            new SimpleGrantedAuthority(UserRole.ROLE_ADMIN.name()); // 비교대상
+
         boolean isAdmin = userDetails.getAuthorities().contains(adminAuthority);
 
         if(username.equals(logined_username) || isAdmin){

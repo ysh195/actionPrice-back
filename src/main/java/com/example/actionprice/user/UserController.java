@@ -55,10 +55,13 @@ public class UserController {
   public ResponseEntity<String> register(@Valid @RequestBody UserRegisterForm userRegisterForm) {
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     boolean isUserAlreadyExists = userService.createUser(userRegisterForm);
+
     if(isUserAlreadyExists){
       return ResponseEntity.status(HttpStatus.CONFLICT).body("Register failed. User already exists");
     }
+
     String message = String.format("Register success. Welcome, %s", userRegisterForm.getUsername());
+
     return ResponseEntity.ok(message);
   }
 
@@ -107,6 +110,7 @@ public class UserController {
   public String checkVerificationCode(@Validated(UserRegisterForm.CheckValidityOfVerificationCodeGroup.class) @RequestBody UserRegisterForm userRegisterForm){
     // 유효성 검사는 @CustomRestAdvice가 자동으로 처리함
     String resultOfVerification = sendEmailService.checkVerificationCode(userRegisterForm.getEmail(), userRegisterForm.getVerificationCode());
+
     return resultOfVerification;
   }
 
@@ -136,6 +140,7 @@ public class UserController {
     }
 
     log.info("[class] UserController - [method] checkForDuplicateUsername - new username");
+
     return ResponseEntity.ok("Username is available");
   }
 
@@ -207,6 +212,7 @@ public class UserController {
     boolean isEmailSent = sendEmailService.sendVerificationEmail(email);
 
     String resultOfSending = isEmailSent ? "인증코드가 성공적으로 발송되었습니다." : "최근 5분 내로 이미 발송된 인증코드가 있습니다. 발송된 코드를 사용해주세요.";
+
     return ResponseEntity.ok(resultOfSending);
   }
 
