@@ -28,15 +28,16 @@ public class OriginAuctionDataTests {
     /**
      * @author 연상훈
      * @created 2024-11-09 오후 11:19
-     * @updated 2024-11-29 오후 8:27 [연상훈] : 메서드가 비동기적으로 실행되도록 하여 실행 속도 향상
-     * @info 2024-11-14 오전 10:56 [연상훈] : 데이터 저장 완료
+     * @updated 2024-11-29 오후 8:27 [연상훈] : 메서드가 비동기적으로 동작하도록 하여 실행 속도 향상. 기존에는 1일치에 5분 정도 걸렸는데, 개선하고 나니 15일치가 3분만에 끝남
+     * @info 2024-11-30 오후 4:27 [연상훈] : 데이터 저장 완료
      */
     @Test
+    @Disabled
     void auctionDataFluxTest() throws Exception {
         String year = "2024";
         String month = "11";
-        int startDay = 10;
-        int endDay = 14;
+        int startDay = 15;
+        int endDay = 30;
 
         for (int i = startDay; i <= endDay; i++) {
             // 날짜 형식 맞추기

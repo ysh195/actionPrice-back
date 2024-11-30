@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -72,21 +71,33 @@ public class OriginAuctionDataFetcher {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .bodyToMono(String.class)
-            .flatMapMany(str -> {
-                JsonElement jsonElement = JsonParser.parseString(str);
-                if (jsonElement.isJsonObject()) {
-                    JsonObject jsonObject = jsonElement.getAsJsonObject();
-                    JsonElement dataElement = jsonObject.get("data");
-                    if (dataElement.isJsonArray()) {
-                        JsonArray dataArray = dataElement.getAsJsonArray();
-                        if (dataArray.size() > 0 && dataArray.get(0).isJsonPrimitive() && dataArray.get(0).getAsString().equals("001")) {
-                            return Mono.empty();
-                        }
-                    }
+            .flatMapMany(str -> convertJsonObjToEntity(str));
+    }
+
+    /**
+     * flux 객체로 변환하는 로직을 분리
+     * @author 연상훈
+     * @created 2024-11-30 오후 4:20
+     * @info
+     * 1. api를 제공하는 측에서 "text" 타입으로만 데이터를 전달함.
+     * 2. 그냥 바로 gson을 사용해서 entity로 변환하면 편하겠지만, 조회되는 데이터가 있느냐 없느냐에 따라 data값의 타입이 달라짐
+     * 3. 예상했던 것과 타입이 다르면 변환하는 과정 자체에서 에러가 발생함.
+     * 4. 따라서 jsonObject로 만든 다음에 data값의 형태를 조사하고, 그것에 따라 다르게 처리함
+     */
+    private org.reactivestreams.Publisher<? extends OriginAuctionDataRow> convertJsonObjToEntity(String str){
+        JsonElement jsonElement = JsonParser.parseString(str);
+        if (jsonElement.isJsonObject()) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            JsonElement dataElement = jsonObject.get("data");
+            if (dataElement.isJsonArray()) {
+                JsonArray dataArray = dataElement.getAsJsonArray();
+                if (dataArray.size() > 0 && dataArray.get(0).isJsonPrimitive() && dataArray.get(0).getAsString().equals("001")) {
+                    return Mono.empty();
                 }
-                OriginAuctionDocument document = gson.fromJson(str, OriginAuctionDocument.class);
-                return Flux.fromIterable(document.getData().getItem());
-            });
+            }
+        }
+        OriginAuctionDocument document = gson.fromJson(str, OriginAuctionDocument.class);
+        return Flux.fromIterable(document.getData().getItem());
     }
 
     /**
