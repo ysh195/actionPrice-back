@@ -101,7 +101,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     // 성공 시에는 principal에서 받아올 수 있지만, 실패 시에는 아예 없음
     request.setAttribute("username", username);
     UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            new UsernamePasswordAuthenticationToken(userDetails, loginForm.getPassword(), userDetails.getAuthorities());
     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
     log.info("[class] LoginFilter - [method] attemptAuthentication > authenticationToken : " + authenticationToken);
@@ -150,8 +150,11 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
    * @info - 로그인 실패 횟수 조사 결과, 5회 미만 실패했으면 실패횟수 하나 추가
    */
   @Override
-  protected void unsuccessfulAuthentication(HttpServletRequest request,
-      HttpServletResponse response, AuthenticationException failed) throws IOException {
+  protected void unsuccessfulAuthentication(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AuthenticationException failed
+  ) throws IOException {
     log.info("[class] LoginFilter - [method] unsuccessfulAuthentication > 로그인 실패");
 
     // 계정 잠금 상태인 걸로 실패한 거면 빠르게 끝냄
