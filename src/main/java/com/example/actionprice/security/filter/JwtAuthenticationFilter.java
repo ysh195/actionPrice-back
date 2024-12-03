@@ -150,7 +150,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     UsernamePasswordAuthenticationToken authenticationToken =
         new UsernamePasswordAuthenticationToken(
             userDetails,
-            null,
+            null, // 이미 인증되었기 때문에 password = null
             userDetails.getAuthorities()
         );
 
