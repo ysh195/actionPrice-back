@@ -19,6 +19,8 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -99,7 +101,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     // 성공 시에는 principal에서 받아올 수 있지만, 실패 시에는 아예 없음
     request.setAttribute("username", username);
     UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(userDetails, loginForm.getPassword(), userDetails.getAuthorities());
+            new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
     log.info("[class] LoginFilter - [method] attemptAuthentication > authenticationToken : " + authenticationToken);
