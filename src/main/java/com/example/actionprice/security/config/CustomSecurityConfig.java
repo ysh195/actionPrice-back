@@ -12,9 +12,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -53,6 +55,12 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 @Log4j2
 public class CustomSecurityConfig {
+
+    @Value("${backend.domain:#{null}}")
+    private String backendDomain;
+
+    @Value("${frontend.domain:#{null}}")
+    private String frontendDomain;
 
     private final CustomUserDetailService userDetailsService;
     private final AccessTokenService accessTokenService;
@@ -149,7 +157,15 @@ public class CustomSecurityConfig {
      */
     private CorsConfigurationSource corsConfigurationSource() { // corsConfigurationSource
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080")); // 허용할 도메인 설정
+
+        // 허용할 도메인 설정
+        List<String> domainList = new ArrayList<>();
+        domainList.add("http://localhost:3000");
+        domainList.add("http://localhost:8080");
+        if (backendDomain != null){domainList.add(backendDomain);}
+        if (frontendDomain != null){domainList.add(frontendDomain);}
+        configuration.setAllowedOrigins(domainList);
+
         configuration.setAllowedMethods(Arrays.asList("*")); // 허용할 HTTP 메서드
         configuration.setAllowedHeaders(Arrays.asList("*")); // 허용할 헤더
         configuration.setAllowCredentials(true); // 자격 증명 허용
