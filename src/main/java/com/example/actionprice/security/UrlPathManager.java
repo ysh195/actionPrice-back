@@ -30,7 +30,7 @@ public class UrlPathManager {
 
   private void basicEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authz) {
     authz.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-    authz.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll(); // 스웨거
+    authz.requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**").permitAll(); // 스웨거
   }
   
   private void adminEndPoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry authz) {
