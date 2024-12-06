@@ -102,14 +102,14 @@ public class CustomSecurityConfig {
           .exceptionHandling(exceptionHandler -> exceptionHandler
               .accessDeniedHandler(accessDeniedHandler()) // 인증 실패 후 리다이렉트하지 않도록 만들어서 계속 이상한 곳으로 요청 보내지 않도록 함
               .authenticationEntryPoint(new Http403ForbiddenEntryPoint())) // 사용자가 허락되지 않은 경로로 강제 이동 시의 처리를 진행
-          .authorizeHttpRequests(authz -> new UrlPathManager().configureAllEndpoints(authz))
+          .authorizeHttpRequests(authz -> new UrlPathManager().configureAllEndpoints(authz)) // url 경로는 UrlPathManager에서 일괄 관리
           .authenticationManager(authenticationManager)
           .addFilterBefore(new JwtAuthenticationFilter(userDetailsService, accessTokenService), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(loginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(logoutFilter(), UsernamePasswordAuthenticationFilter.class) // 필터 순서에 주의. 기본적으로 나중에 입력한 것일수록 뒤에 실행됨
           .formLogin(formLogin -> formLogin.disable());
-      return http.build();
 
+      return http.build();
     }
 
     @Bean
@@ -160,29 +160,30 @@ public class CustomSecurityConfig {
      * @see : 리액트-스프링부트 연결을 위한 cors config
      */
     private CorsConfigurationSource corsConfigurationSource() { // corsConfigurationSource
-        CorsConfiguration configuration = new CorsConfiguration();
+      CorsConfiguration configuration = new CorsConfiguration();
 
-        // 허용할 도메인 설정
-        List<String> domainList = new ArrayList<>();
-        domainList.add("http://localhost:3000");
-        domainList.add("http://localhost:8080");
-        if (backendDomain != null){
-          String domain = String.format("%s:%s", backendDomain, port);
-          domainList.add(domain);
-        }
-        if ((frontendDomain != null) && (frontendPort != null)) {
-          String domain = String.format("%s:%s", frontendDomain, frontendPort);
-          domainList.add(domain);
-        }
-        configuration.setAllowedOrigins(domainList);
+      // 허용할 도메인 설정
+      List<String> domainList = new ArrayList<>();
+      domainList.add("http://localhost:3000");
+      domainList.add("http://localhost:8080");
+      if (backendDomain != null){
+        String domain = String.format("%s:%s", backendDomain, port);
+        domainList.add(domain);
+      }
+      if ((frontendDomain != null) && (frontendPort != null)) {
+        String domain = String.format("%s:%s", frontendDomain, frontendPort);
+        domainList.add(domain);
+      }
+      configuration.setAllowedOrigins(domainList);
 
-        configuration.setAllowedMethods(Arrays.asList("*")); // 허용할 HTTP 메서드
-        configuration.setAllowedHeaders(Arrays.asList("*")); // 허용할 헤더
-        configuration.setAllowCredentials(true); // 자격 증명 허용
+      configuration.setAllowedMethods(Arrays.asList("*")); // 허용할 HTTP 메서드
+      configuration.setAllowedHeaders(Arrays.asList("*")); // 허용할 헤더
+      configuration.setAllowCredentials(true); // 자격 증명 허용
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);  // 모든 경로에 대해 CORS 설정 적용
-        return source;
+      UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+      source.registerCorsConfiguration("/**", configuration);  // 모든 경로에 대해 CORS 설정 적용
+
+      return source;
     }
 
     /**
@@ -196,6 +197,7 @@ public class CustomSecurityConfig {
      */
     private LogoutFilter logoutFilter() {
       SecurityContextLogoutHandler logoutHandler = new SecurityContextLogoutHandler();
+
       LogoutSuccessHandler logoutSuccessHandler = new LogoutSuccessHandler() {
         @Override
         public void onLogoutSuccess(
