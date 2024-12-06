@@ -102,9 +102,7 @@ public class CustomSecurityConfig {
           .exceptionHandling(exceptionHandler -> exceptionHandler
               .accessDeniedHandler(accessDeniedHandler()) // 인증 실패 후 리다이렉트하지 않도록 만들어서 계속 이상한 곳으로 요청 보내지 않도록 함
               .authenticationEntryPoint(new Http403ForbiddenEntryPoint())) // 사용자가 허락되지 않은 경로로 강제 이동 시의 처리를 진행
-          .authorizeHttpRequests(authz -> {
-            new UrlPathManager().configureAllEndpoints(authz);
-          })
+          .authorizeHttpRequests(authz -> new UrlPathManager().configureAllEndpoints(authz))
           .authenticationManager(authenticationManager)
           .addFilterBefore(new JwtAuthenticationFilter(userDetailsService, accessTokenService), UsernamePasswordAuthenticationFilter.class)
           .addFilterBefore(loginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
