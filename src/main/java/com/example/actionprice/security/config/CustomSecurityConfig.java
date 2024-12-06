@@ -56,6 +56,12 @@ import java.util.Arrays;
 @Log4j2
 public class CustomSecurityConfig {
 
+    @Value("${server.port}")
+    private String port;
+
+    @Value("${frontend.port:#{null}}")
+    private String frontendPort;
+
     @Value("${backend.domain:#{null}}")
     private String backendDomain;
 
@@ -162,8 +168,14 @@ public class CustomSecurityConfig {
         List<String> domainList = new ArrayList<>();
         domainList.add("http://localhost:3000");
         domainList.add("http://localhost:8080");
-        if (backendDomain != null){domainList.add(backendDomain);}
-        if (frontendDomain != null){domainList.add(frontendDomain);}
+        if (backendDomain != null){
+          String domain = String.format("%s:%s", backendDomain, port);
+          domainList.add(domain);
+        }
+        if ((frontendDomain != null) && (frontendPort != null)) {
+          String domain = String.format("%s:%s", frontendDomain, frontendPort);
+          domainList.add(domain);
+        }
         configuration.setAllowedOrigins(domainList);
 
         configuration.setAllowedMethods(Arrays.asList("*")); // 허용할 HTTP 메서드
