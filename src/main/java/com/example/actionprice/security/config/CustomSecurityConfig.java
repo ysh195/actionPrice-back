@@ -56,7 +56,8 @@ import java.util.Arrays;
 @Log4j2
 public class CustomSecurityConfig {
 
-    @Value("${server.port}")
+    // backend port
+    @Value("${server.port}:#{null}")
     private String port;
 
     @Value("${frontend.port:#{null}}")
@@ -166,7 +167,7 @@ public class CustomSecurityConfig {
       List<String> domainList = new ArrayList<>();
       domainList.add("http://localhost:3000");
       domainList.add("http://localhost:8080");
-      if (backendDomain != null){
+      if ((backendDomain != null) && (port != null)){
         String domain = String.format("%s:%s", backendDomain, port);
         domainList.add(domain);
       }
