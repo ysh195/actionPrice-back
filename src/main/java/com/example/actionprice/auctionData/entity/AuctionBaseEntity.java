@@ -9,7 +9,7 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import java.time.LocalDate;
 
-// TODO 엑셀 파일로 imporot 할 때 테이블의 컬럼명 수정 
+// TODO 엑셀 파일로 import 할 때 테이블의 컬럼명 수정
 /**
  * 각 DB에 들어갈 엔티티의 베이스 엔티티
  * @author 연상훈
