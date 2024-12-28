@@ -83,7 +83,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         convertTransactionHistoryListToChartData(transactionHistoryList);
 
     // set을 사용하면 중복값은 알아서 거름
-    Set<String> countries = chartDataList.stream()
+    Set<String> countries = chartDataList.parallelStream()
         .flatMap(map -> map.keySet().stream())
         .filter(key -> !key.equals("date"))
         .collect(Collectors.toSet());
@@ -410,7 +410,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
    * @info 그 추가적으로 실행하는 로직을 이용해서 중복값이 있으면 그것이 계속해서 누적되거나 병합되도록 구성함
    */
   private List<Map<String, Object>> convertTransactionHistoryListToChartData(List<AuctionBaseEntity> transactionHistoryList){
-    List<Map<String, Object>> dataList = transactionHistoryList.stream()
+    List<Map<String, Object>> dataList = transactionHistoryList.parallelStream()
         .collect(Collectors.groupingBy(
             AuctionBaseEntity::getDelDate, // 그룹으로 묶을 기준
             Collectors.toMap( // 그룹을 하나의 map으로 구성
@@ -423,7 +423,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
             )
         )) // 현 시점에서 객체 형태 Map<LocalDate, Map<String, ChartDataElement>>
         .entrySet() // map의 특성을 이용한 중복값 거르기가 끝났으니, 리스트로 변환
-        .stream()
+        .parallelStream()
         .map(entry -> {
           // 각 날짜별로 맵을 구성함
           // entry[key : delDate, value = Map<marketName, chartDataElement>]
@@ -468,7 +468,7 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     if (list == null) {
       return Collections.emptyList();
     }
-    return list.stream()
+    return list.parallelStream()
         .map(AuctionBaseEntity.class::cast)  // 타입 캐스팅
         .collect(Collectors.toList()); // 리스트로 수집
   }
