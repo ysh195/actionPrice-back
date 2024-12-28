@@ -71,7 +71,8 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
       LocalDate startDate,
       LocalDate endDate
   ) {
-    List<AuctionBaseEntity> transactionHistoryList = fetchTransactionHistoryList(large, middle, small, rank, startDate, endDate);
+    List<AuctionBaseEntity> transactionHistoryList =
+        fetchTransactionHistoryList(large, middle, small, rank, startDate, endDate);
     int daysBetween = (int)ChronoUnit.DAYS.between(startDate, endDate);
 
     // 계산할 간격 기준을 결정하고, 그것에 맞춰서 리스트 내부의 날짜값들을 수정함
@@ -114,32 +115,74 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     switch (large) {
       case "축산물":
         pageResult = aniEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-            large, middle, small, rank, startDate, endDate, pageable);
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate,
+            pageable
+        );
         break;
 
       case "수산물":
         pageResult = fishEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-            large, middle, small, rank, startDate, endDate, pageable);
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate,
+            pageable
+        );
         break;
 
       case "식량작물":
         pageResult = foodCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-            large, middle, small, rank, startDate, endDate, pageable);
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate,
+            pageable
+        );
         break;
 
       case "과일류":
         pageResult = fruitEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-            large, middle, small, rank, startDate, endDate, pageable);
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate,
+            pageable
+        );
         break;
 
       case "특용작물":
         pageResult = specialCropsEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-            large, middle, small, rank, startDate, endDate, pageable);
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate,
+            pageable
+        );
         break;
 
       case "채소류":
         pageResult = vegetableEntity_repo.findByLargeAndMiddleAndProductNameAndProductRankAndDelDateBetween(
-            large, middle, small, rank, startDate, endDate, pageable);
+            large,
+            middle,
+            small,
+            rank,
+            startDate,
+            endDate,
+            pageable
+        );
         break;
 
       default:
@@ -371,9 +414,9 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .collect(Collectors.groupingBy(
             AuctionBaseEntity::getDelDate, // 그룹으로 묶을 기준
             Collectors.toMap( // 그룹을 하나의 map으로 구성
-                AuctionBaseEntity::getMarket_name, // key
-                entity -> new ChartDataElement(entity.getPrice()), // value(ChartDataElement)
-                (existing, incoming) -> { // key 중복 시 발생할 에러의 해결 로직
+                AuctionBaseEntity::getMarket_name, // key - 시장명
+                entity -> new ChartDataElement(entity.getPrice()), // value - ChartDataElement
+                (existing, incoming) -> { // key 중복 시 발생할 에러의 해결 로직(람다식)
                   existing.stackData(incoming); // 값 누적
                   return existing;
                 }
@@ -430,7 +473,12 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
         .collect(Collectors.toList()); // 리스트로 수집
   }
 
-  private AuctionBaseEntity convertRowToAni_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
+  private AuctionBaseEntity convertRowToAni_andSave(
+      OriginAuctionDataRow row,
+      String date,
+      String marketName,
+      String category
+  ) {
     AuctionEntity_ani ani = AuctionEntity_ani.builder()
         .delDate(convertStrToLocalDate(date))
         .large(category)
@@ -445,7 +493,12 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     return aniEntity_repo.save(ani);
   }
 
-  private AuctionBaseEntity convertRowToFish_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
+  private AuctionBaseEntity convertRowToFish_andSave(
+      OriginAuctionDataRow row,
+      String date,
+      String marketName,
+      String category
+  ) {
     AuctionEntity_fish fish = AuctionEntity_fish.builder()
         .delDate(convertStrToLocalDate(date))
         .large(category)
@@ -460,7 +513,12 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     return fishEntity_repo.save(fish);
   }
 
-  private AuctionBaseEntity convertRowToFoodCrops_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
+  private AuctionBaseEntity convertRowToFoodCrops_andSave(
+      OriginAuctionDataRow row,
+      String date,
+      String marketName,
+      String category
+  ) {
     AuctionEntity_foodCrops foodCrops = AuctionEntity_foodCrops.builder()
         .delDate(convertStrToLocalDate(date))
         .large(category)
@@ -475,7 +533,12 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     return foodCropsEntity_repo.save(foodCrops);
   }
 
-  private AuctionBaseEntity convertRowToFruit_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
+  private AuctionBaseEntity convertRowToFruit_andSave(
+      OriginAuctionDataRow row,
+      String date,
+      String marketName,
+      String category
+  ) {
     AuctionEntity_fruit fruit = AuctionEntity_fruit.builder()
         .delDate(convertStrToLocalDate(date))
         .large(category)
@@ -490,7 +553,12 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     return fruitEntity_repo.save(fruit);
   }
 
-  private AuctionBaseEntity convertRowToVegetable_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
+  private AuctionBaseEntity convertRowToVegetable_andSave(
+      OriginAuctionDataRow row,
+      String date,
+      String marketName,
+      String category
+  ) {
     AuctionEntity_vegetable produce = AuctionEntity_vegetable.builder()
         .delDate(convertStrToLocalDate(date))
         .large(category)
@@ -505,7 +573,12 @@ public class AuctionEntityServiceImpl implements AuctionEntityService {
     return vegetableEntity_repo.save(produce);
   }
 
-  private AuctionBaseEntity convertRowToSpecialCrops_andSave(OriginAuctionDataRow row, String date, String marketName, String category) {
+  private AuctionBaseEntity convertRowToSpecialCrops_andSave(
+      OriginAuctionDataRow row,
+      String date,
+      String marketName,
+      String category
+  ) {
     AuctionEntity_specialCrop specialCrop = AuctionEntity_specialCrop.builder()
         .delDate(convertStrToLocalDate(date))
         .large(category)
