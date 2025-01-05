@@ -106,9 +106,9 @@ public class OriginAuctionDataFetcher {
      */
     private URI composeUri(String countryCode, String regday, String category_code) throws URISyntaxException {
 
-        String p_cert_id = "lhm3052@naver.com"; // 요청자 id
-        String apiType = "json"; // 반환 형식
-        String p_convert_kg_yn = "Y"; // 중량 변환 여부
+//        String p_cert_id = "lhm3052@naver.com"; // 요청자 id
+//        String apiType = "json"; // 반환 형식
+//        String p_convert_kg_yn = "Y"; // 중량 변환 여부
 
         String url = String.format("%s&p_country_code=%s&p_regday=%s&p_convert_kg_yn=Y&p_item_category_code=%s&p_cert_key=%s&p_cert_id=lhm3052@naver.com&p_returntype=json",
                 lastAuctionUrl,
