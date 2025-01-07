@@ -29,7 +29,8 @@ public class TokenRefreshController {
   public ResponseEntity<String> tokenRefresh(@RequestHeader("Authorization") String bearerToken) {
     log.info("엑세스 토큰에 이상 있음?");
 
-    String access_token = extractTokenInHeaderStr(bearerToken);
+    // bearerToken 값에서 "Bearer " 부분 떼어서 엑세스 토큰 값 추출
+    String access_token = bearerToken.substring(7);
 
     try{
       accessTokenService.validateAccessTokenAndExtractUsername(access_token);
@@ -58,14 +59,6 @@ public class TokenRefreshController {
 
       throw e;
     }
-  }
-
-  private String extractTokenInHeaderStr(String headerStr) {
-    // 어차피 여기 왔다는 건 앞에서 토큰 필터를 거쳤다는 거고, 거기서 bearer 없었으면 그 전에 컷 당했음
-    String tokenStr = headerStr.substring(7);
-
-    // 엑세스 토큰에 대한 엄격한 검사 후 결과 반환
-    return tokenStr;
   }
 
   private void validateRefreshToken(String username){
