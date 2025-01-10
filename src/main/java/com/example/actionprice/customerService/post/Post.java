@@ -16,7 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -27,6 +26,7 @@ import org.hibernate.annotations.BatchSize;
 /**
  * @author 연상훈
  * @created 2024-10-05 오후 10:45
+ * @updated 2025-01-10 오후 6:15 [연상훈] : @Setter 빼고 사용하는 set 메서드만 추가
  * @value postId
  * @value title
  * @value content : columnDefinition = "TEXT 설정을 사용하여 줄 나눔 가능한 긴 문자열로 설정합니다.
@@ -42,7 +42,6 @@ import org.hibernate.annotations.BatchSize;
 @Entity
 @Table(name = "post")
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -84,6 +83,14 @@ public class Post extends BaseEntity implements Comparable<Post> {
   @BatchSize(size = 10)
   @Builder.Default
   private Set<Comment> commentSet = new HashSet<>();
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setContent(String content) {
+    this.content = content;
+  }
 
   // method
   public boolean addComment(Comment comment) {
